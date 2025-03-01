@@ -39,7 +39,7 @@ const showError = ref(false)
 const handleLogin = async () => {
   try {
       const response = await loginApi({email: userEmail.value, password: userPassword.value})
-      authStore.login(response.data)
+      authStore.login(response)
       router.push('/')
   } catch (error) {
     console.error(error)
