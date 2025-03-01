@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth',{
     async login(response) {
       try {
         // console.log('response',response);
-        console.log(response);
+        console.log('----- ',response);
 
         this.token = response.access_token; // Acesse diretamente access_token
         this.user = response.user; // Acesse diretamente user
