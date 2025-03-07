@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth',{
     isAuthenticated: (state) => !!state.token,
   },
   actions:{
-    async login(response) {
+    async login(response,dispatch) {
       try {
         // console.log('response',response);
         console.log('----- ',response);
@@ -19,11 +19,18 @@ export const useAuthStore = defineStore('auth',{
         this.user = response.user; // Acesse diretamente user
         localStorage.setItem('token', response.access_token); // Use access_token
         localStorage.setItem('user', JSON.stringify(response.user));
+        dispatch
       } catch (error) {
         console.error(error);
         // throw new Error(error, 'Error logging in');
 
       }
-    }
+    },
+    logout() {
+      this.token = null;
+      this.user = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    },
   }
 })
