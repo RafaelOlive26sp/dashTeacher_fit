@@ -26,8 +26,8 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import {useAuthStore} from '@/stores/auth'
-import {login as loginApi} from '@/services/auth'
+import {useAuthStore} from '@/stores/auth.js'
+import {login as loginApi} from '@/services/auth.js'
 
 
 const userEmail = ref('')
