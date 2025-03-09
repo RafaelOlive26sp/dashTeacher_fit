@@ -2,13 +2,7 @@
   <v-conteiner class="border border-warning">
     <v-row>
       <v-col cols="12">
-        <v-card>
-          <v-card-title>Dashboard</v-card-title>
-          <v-card-text>
-            <p>Olá, {{authStore.user?.name}}</p>
-            <p>Seja bem vindo ao Dashboard</p>
-          </v-card-text>
-        </v-card>
+        <h2>DashBoad</h2>
       </v-col>
     </v-row>
   </v-conteiner>
