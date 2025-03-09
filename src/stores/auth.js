@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
-import { login } from "@/services/auth";
+import Cookies from 'js-cookie';
+import router from "@/router";
 
 export const useAuthStore = defineStore('auth',{
   state: () => ({
@@ -10,27 +11,28 @@ export const useAuthStore = defineStore('auth',{
     isAuthenticated: (state) => !!state.token,
   },
   actions:{
-    async login(response,dispatch) {
+    async login(response) {
       try {
         // console.log('response',response);
         console.log('----- ',response);
 
         this.token = response.access_token; // Acesse diretamente access_token
         this.user = response.user; // Acesse diretamente user
-        localStorage.setItem('token', response.access_token); // Use access_token
+        Cookies.set('access_token', response.access_token,{secure:true, sameSite:'Strict'}); // Use access_token
         localStorage.setItem('user', JSON.stringify(response.user));
-        dispatch
+
       } catch (error) {
         console.error(error);
         // throw new Error(error, 'Error logging in');
 
       }
     },
-    logout() {
+    async logout() {
       this.token = null;
       this.user = null;
-      localStorage.removeItem('token');
+      Cookies.remove('access_token');
       localStorage.removeItem('user');
+      await router.push({name:'login'});
     },
   }
 })
