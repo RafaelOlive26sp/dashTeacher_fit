@@ -34,5 +34,13 @@ export const useAuthStore = defineStore('auth',{
       localStorage.removeItem('user');
       await router.push({name:'login'});
     },
+    initializeAuth(){
+      const token = Cookies.get('access_token');
+      const user = localStorage.getItem('user');
+      if(token && user){
+        this.token = token;
+        this.user = JSON.parse(user);
+      }
+    }
   }
 })
