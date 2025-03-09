@@ -14,26 +14,21 @@
         :size="item.icon === '$vuetify' ? 24 : 16"
       />
     </a>
-
-    <div
-      class="text-caption text-disabled"
-      style="position: absolute; right: 16px;"
-    >
-      &copy; 2016-{{ (new Date()).getFullYear() }} <span class="d-none d-sm-inline-block">Vuetify, LLC</span>
-      —
-      <a
-        class="text-decoration-none on-surface"
-        href="https://vuetifyjs.com/about/licensing/"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        MIT License
-      </a>
+    <div class="text-caption text-disabled" style="position: absolute; right: 16px;">
+      <v-btn variant="tonal" size="small" @click="handleLogout" color="warning" append-icon="mdi-logout">
+        Logout
+      </v-btn>
     </div>
   </v-footer>
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/auth';
+
+
+ const AuthStore = useAuthStore();
+
+
   const items = [
     {
       title: 'Vuetify Documentation',
@@ -66,6 +61,16 @@
       href: 'https://reddit.com/r/vuetifyjs',
     },
   ]
+  const handleLogout = async () => {
+  try{
+    await AuthStore.logout()
+
+  }catch (error) {
+    console.error('Error ao fazer o Logout ',error)
+  }
+}
+
+
 </script>
 
 <style scoped lang="sass">
