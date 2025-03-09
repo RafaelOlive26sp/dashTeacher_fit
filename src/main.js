@@ -13,9 +13,11 @@ import App from './App.vue'
 // Composables
 import { createApp } from 'vue'
 
-
-
+// Router
 import router from "@/router/index.js";
+
+// Cookies
+import Cookies from 'js-cookie';
 
 
 
@@ -24,5 +26,7 @@ const app = createApp(App)
 registerPlugins(app)
 
 app.use(router)
+
+app.use(Cookies)
 
 app.mount('#app')
