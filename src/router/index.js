@@ -3,6 +3,7 @@ import { useAuthStore} from "@/stores/auth.js";
 import LoginView from "@/pages/LoginView.vue";
 import DashboardView from "@/pages/DashboardView.vue";
 import DafaultLayout from "@/layouts/default.vue";
+import Pagamentos from '@/components/Pagamentos.vue';
 
 
 
@@ -16,10 +17,16 @@ const routes = [
     path:'/dashboard',
     name: 'dashboard',
     component: DafaultLayout,
-    children:[{
-      path:'',
-      component: DashboardView
-    }],
+    children:[
+      {
+        path:'',
+        component: DashboardView,
+      },
+      {
+        path:'/pagamentos',
+        component: Pagamentos
+      }
+  ],
     meta:{requiresAuth: true}
   },
   {
