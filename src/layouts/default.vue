@@ -4,7 +4,7 @@
     <!-- <AppHeader/> -->
     <NavBarLeft >
       <template v-slot:content >
-        <v-main style="border:1px solid red">
+        <v-main>
           <router-view  />
         </v-main>
       </template>
