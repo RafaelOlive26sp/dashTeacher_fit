@@ -1,44 +1,35 @@
 <template >
   <v-conteiner>
-    <v-row aling="center" justify="center">
+    <v-row aling="center" justify="center" class="ma-3 rounded">
       <v-col cols="3">
-        <v-card>
-          <v-card-title>
-            <v-icon color="warning">mdi-cash-clock</v-icon>
-            <small>Pagamentos pendentes</small>
-          </v-card-title>
-          <v-card-text>
-            <v-list>
-
-            </v-list>
-          </v-card-text>
-        </v-card>
+        <expansions_Panel colorIcon="warning" icon="mdi-cash-clock">
+          <template v-slot:contentTitle>
+            <p>Pagamentos Pendentes</p>
+          </template>
+          <template v-slot:content>
+            <p>teste</p>
+          </template>
+        </expansions_Panel>
       </v-col>
       <v-col cols="3">
-        <v-card>
-          <v-card-title>
-            <v-icon color="success">mdi-cash-check</v-icon>
-            <small>Pagamentos Vigentes</small>
-          </v-card-title>
-          <v-card-text>
-            <v-list>
-
-            </v-list>
-          </v-card-text>
-        </v-card>
+        <expansions_Panel colorIcon="success" icon="mdi-cash-check">
+          <template v-slot:contentTitle>
+            <p>Pagamentos Vigentes</p>
+          </template>
+          <template v-slot:content>
+            <p>teste</p>
+          </template>
+        </expansions_Panel>
       </v-col>
       <v-col cols="3">
-        <v-card>
-          <v-card-title>
-            <v-icon color="error">mdi-cash-remove</v-icon>
-            <small>Pagamentos Vencidos</small>
-          </v-card-title>
-          <v-card-text>
-            <v-list>
-
-            </v-list>
-          </v-card-text>
-        </v-card>
+        <expansions_Panel colorIcon="error" icon="mdi-cash-remove">
+          <template v-slot:contentTitle>
+            <p>Pagamentos Vencidos</p>
+          </template>
+          <template v-slot:content>
+            <p>teste</p>
+          </template>
+        </expansions_Panel>
       </v-col>
     </v-row>
   </v-conteiner>
