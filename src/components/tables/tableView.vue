@@ -5,9 +5,9 @@
               <slot name="contentTHead" :class="props.classTh"></slot>
             </tr>
           </thead>
-          <tbody>
+          
             <slot name="contentTr"></slot>
-          </tbody>
+          
         </v-table>
 </template>
 <script setup>
