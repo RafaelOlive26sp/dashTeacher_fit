@@ -1,17 +1,20 @@
 import {defineStore} from 'pinia'
-import router from '@/router'
+// import router from '@/router'
 
 
 export const useUserStore = defineStore('user',{
   state:()=>({
-
-}),
+    payments:[]
+  }),
   getters:{
 
   },
   actions:{
-    async getPayments(){
+    async getPayment(response){
       try{
+        console.log('estamos em getPayments em actions', response);
+        this.payments = response;
+
 
       }catch(error){
         console.error(error);
@@ -19,3 +22,4 @@ export const useUserStore = defineStore('user',{
     }
   }
 })
+
