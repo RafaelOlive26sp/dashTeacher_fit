@@ -1,4 +1,4 @@
-<template >
+<template>
   <v-conteiner>
     <v-row aling="center" justify="center" class="ma-3 rounded">
       <v-col cols="3">
@@ -7,7 +7,20 @@
             <p>Pagamentos Pendentes</p>
           </template>
           <template v-slot:content>
-            <p>teste</p>
+            <tableView>
+              <template v-slot:contentTHead>
+                <th>Nome</th>
+                <th>Data</th>
+              </template>
+              <template v-slot:contentTr>
+                <tr>
+                  <td>Rafae</td>
+                  <td>
+                    10/05/25
+                  </td>
+                </tr>
+              </template>
+            </tableView>
           </template>
         </expansions_Panel>
       </v-col>
@@ -17,7 +30,20 @@
             <p>Pagamentos Vigentes</p>
           </template>
           <template v-slot:content>
-            <p>teste</p>
+            <tableView>
+              <template v-slot:contentTHead>
+                <th>Nome</th>
+                <th>Data</th>
+              </template>
+              <template v-slot:contentTr>
+                <tr>
+                  <td>Rafae</td>
+                  <td>
+                    10/05/25
+                  </td>
+                </tr>
+              </template>
+            </tableView>
           </template>
         </expansions_Panel>
       </v-col>
@@ -27,10 +53,28 @@
             <p>Pagamentos Vencidos</p>
           </template>
           <template v-slot:content>
-            <p>teste</p>
+            <tableView>
+              <template v-slot:contentTHead>
+                <th>Nome</th>
+                <th>Data</th>
+              </template>
+              <template v-slot:contentTr>
+                <tr>
+                  <td>Rafae</td>
+                  <td>
+                    10/05/25
+                  </td>
+                </tr>
+              </template>
+            </tableView>
           </template>
         </expansions_Panel>
+
+
+
+
       </v-col>
+
     </v-row>
   </v-conteiner>
 </template>
@@ -38,4 +82,3 @@
 <script setup>
 
 </script>
-
