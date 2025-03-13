@@ -10,15 +10,15 @@
             <tableView>
               <template v-slot:contentTHead>
                 <th>Nome</th>
-                <th>Data</th>
+                <th>Data de vencimento</th>
               </template>
               <template v-slot:contentTr>
-                <tr>
-                  <td>Rafae</td>
-                  <td>
-                    10/05/25
-                  </td>
-                </tr>
+                <tbody v-for="nameIndex in userStore.payments" :key="nameIndex">
+                  <tr v-if="nameIndex.status === 'pending'">
+                    <td>{{ nameIndex.students_id.users_id.name }}</td>
+                    <td>{{ nameIndex.due_date }}</td>
+                  </tr>
+                </tbody>
               </template>
             </tableView>
           </template>
@@ -33,42 +33,44 @@
             <tableView>
               <template v-slot:contentTHead>
                 <th>Nome</th>
-                <th>Data</th>
+                <th>Data de vencimento</th>
               </template>
               <template v-slot:contentTr>
-                <tr>
-                  <td>Rafae</td>
-                  <td>
-                    10/05/25
-                  </td>
-                </tr>
+                <tbody v-for="nameIndex in userStore.payments" :key="nameIndex">
+                  <tr v-if="nameIndex.status === 'paid'">
+                    <td>{{ nameIndex.students_id.users_id.name }}</td>
+                    <td>{{ nameIndex.due_date }}</td>
+                  </tr>
+                </tbody>
               </template>
             </tableView>
           </template>
         </expansions_Panel>
       </v-col>
-      <v-col cols="3">
+
+      <v-col cols="3  ">
         <expansions_Panel colorIcon="error" icon="mdi-cash-remove">
           <template v-slot:contentTitle>
             <p>Pagamentos Vencidos</p>
           </template>
           <template v-slot:content>
-            <tableView>
+            <tableView >
               <template v-slot:contentTHead>
-                <th>Nome</th>
-                <th>Data</th>
+                <th >nome</th>
+                <th>Data de vencimento</th>
               </template>
               <template v-slot:contentTr>
-                <tr>
-                  <td>Rafae</td>
-                  <td>
-                    10/05/25
-                  </td>
-                </tr>
+                <tbody v-for="nameIndex in userStore.payments" :key="nameIndex">
+                  <tr v-if="nameIndex.status === 'overdue'">
+                    <td>{{ nameIndex.students_id.users_id.name }}</td>
+                    <td>{{ nameIndex.due_date }}</td>
+                  </tr>
+                </tbody>
               </template>
             </tableView>
           </template>
         </expansions_Panel>
+
 
 
 
@@ -80,5 +82,29 @@
 </template>
 
 <script setup>
+import { useUserStore } from '@/stores/user';
+import {getPayments as getPaymentApi} from '@/services/user.js'
+import {  onMounted } from 'vue'
+
+const userStore = useUserStore();
+
+
+
+
+onMounted(()=>{
+  fethPayment()
+})
+
+
+const fethPayment = async()=>{
+  try {
+    const response = await getPaymentApi()
+    userStore.getPayment(response)
+    console.log(response)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 
 </script>
