@@ -19,6 +19,14 @@ export const useUserStore = defineStore('user',{
       }catch(error){
         console.error(error);
       }
+    },
+    async getStudentsWithUser(response){
+      try{
+        console.log('estamos em getStudentsWithUser em actions', response);
+        this.students = response;
+      }catch(error){
+        console.error(error);
+      }
     }
   }
 })
