@@ -4,6 +4,8 @@ import LoginView from "@/pages/LoginView.vue";
 import DashboardView from "@/pages/DashboardView.vue";
 import DafaultLayout from "@/layouts/default.vue";
 import Pagamentos from '@/components/Pagamentos.vue';
+// import { components } from 'vuetify/dist/vuetify-labs.js's;
+import Alunos from '@/components/Alunos.vue';
 
 
 
@@ -25,6 +27,10 @@ const routes = [
       {
         path:'/pagamentos',
         component: Pagamentos
+      },
+      {
+        path:'/alunos',
+        component: Alunos
       }
   ],
     meta:{requiresAuth: true}
