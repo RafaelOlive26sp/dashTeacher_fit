@@ -8,15 +8,20 @@
    -->
   <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers" :items="itemsUser"
     :items-length="totalItems" :loading="loading" @update:options="loadStudents">
-    <template #item.edit="{ item }">
+    <template v-slot:item.edit="{ item }">
       <div class="d-flex ga-2 ">
-        <v-icon color="medium-emphasis" icon="mdi-pencil" size="small" @click="editUser(item)"></v-icon>
-        <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="deleteUser(item)"></v-icon>
+        <v-icon color="medium-emphasis" icon="mdi-pencil" size="small" @click="openDialog(item, 'edit')"></v-icon>
+        <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="openDialog(item, 'delete')"></v-icon>
       </div>
     </template>
 
   </v-data-table-server>
-  <Dialogs :showDialog="showDialog" @update:showDialog="showDialog = $event"></Dialogs>
+  <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
+    <EditAccount v-if="actionType === 'edit'" :dialogVisible="dialogVisible" @update:dialogVisible="dialogVisible = $event"></EditAccount>
+
+    <p v-else>{{dialogMessage}}</p>
+  </Dialogs>
+
 </template>
 
 <script setup>
@@ -24,6 +29,7 @@ import { useUserStore } from '@/stores/user';
 import { getStudentsWithUser as getStudentsServices } from '@/services/user';
 import { onMounted, ref, watch } from 'vue';
 import Dialogs from './Dialogs.vue';
+import EditAccount from './EditAccount.vue'
 
 
 const userStore = useUserStore();
@@ -45,7 +51,14 @@ const itemsPerPage = ref(2);
 const totalItems = ref(0);
 const loading = ref(false);
 const options = ref({});
-const showDialog = ref(false)
+// const showDialog = ref(false);
+
+const dialogVisible = ref(false);
+const dialogTitle = ref("");
+const dialogMessage = ref("");
+const dialogActionText = ref("");
+const selectedItem = ref(null);
+const actionType = ref("");
 
 
 onMounted(() => {
@@ -74,15 +87,31 @@ const loadStudents = async (options) => {
   }
 };
 
-const editUser = (item) => {
-  showDialog.value = true
-  console.log('estamos no edit', item);
 
+const openDialog = (item, type) => {
+  selectedItem.value = item;
+  actionType.value = type;
+  dialogVisible.value = true;
+
+  if (type === "edit") {
+    // dialogTitle.value = "Editar Usuário";
+    // console.log(item);
+
+    // dialogMessage.value = `EditAccount`;
+
+    // dialogActionText.value = "Salvar";
+  } else {
+    dialogTitle.value = "Excluir Usuário";
+    dialogMessage.value = `Tem certeza que deseja remover ${item.name}?`;
+    dialogActionText.value = "Excluir";
+  }
 };
-const deleteUser = (item) => {
-  showDialog.value = true
-  console.log('estamos no delete ', item);
-
+const handleConfirm = () => {
+  if (actionType.value === "edit") {
+    console.log("Editando usuário:", selectedItem.value);
+  } else {
+    console.log("Removendo usuário:", selectedItem.value);
+  }
 };
 watch(() => itemsPerPage.value, () => {
   loadStudents(options.value)
