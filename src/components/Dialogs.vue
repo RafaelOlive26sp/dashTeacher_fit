@@ -1,40 +1,52 @@
 <template>
-  <v-row justify="space-around">
-    <v-col cols="12" md="6">
-      <v-dialog v-model="isActive" transition="dialog-top-transition" width="auto">
-        <template v-slot:default="{ isActive }">
-          <v-card>
-            <v-toolbar title="Opening from the Top"></v-toolbar>
+  <v-dialog v-model="isOpen" max-width="500">
+    <v-card>
+      <v-card-title>{{ title }}</v-card-title>
 
-            <v-card-text class="text-h2 pa-12">
-              Hello world!
-            </v-card-text>
+      <v-card-text>
+        <slot></slot>
+      </v-card-text>
 
-            <v-card-actions class="justify-end">
-              <v-btn text="Close" @click="isActive.value = false"></v-btn>
-            </v-card-actions>
-          </v-card>
-        </template>
-      </v-dialog>
-    </v-col>
-  </v-row>
+      <!-- <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn text="Cancelar" @click="closeDialog"></v-btn>
+        <v-btn v-if="confirmButtonText" color="primary" @click="confirmAction">
+          {{ confirmButtonText }}
+        </v-btn>
+      </v-card-actions> -->
+    </v-card>
+  </v-dialog>
 </template>
 
 <script setup>
-import {ref,watch} from 'vue'
-
+import { defineProps, defineEmits, ref, watch } from "vue";
 
 const props = defineProps({
-  showDialog: Boolean,
+  modelValue: Boolean, // Controle externo do dialog
+  title: String, // Título do modal
+  confirmButtonText: String // Texto do botão de confirmação (opcional)
 });
 
-const emit = defineEmits(['update:showDialog']);
+const emit = defineEmits(["update:modelValue", "confirm"]);
 
-const isActive = ref(props.showDialog);
+const isOpen = ref(props.modelValue);
 
-watch(isActive, (newVal) =>{
-  emit('update:showDialog', newVal);
+// Atualiza quando a prop muda
+watch(() => props.modelValue, (newVal) => {
+  isOpen.value = newVal;
 });
 
 
+watch(isOpen, (newVal) => {
+  emit("update:modelValue", newVal);
+});
+
+const closeDialog = () => {
+  emit("update:modelValue", false);
+};
+
+const confirmAction = () => {
+  emit("confirm");
+  closeDialog();
+};
 </script>
