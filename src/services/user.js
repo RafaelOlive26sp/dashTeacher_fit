@@ -19,7 +19,7 @@ export const getPayments = async () =>{
     throw new Error(error.response.data.message, 'Error getting payments');
   }
 }
-export const getStudentsWithUser = async ()=>{
+export const getStudentsWithUser = async (page = 1, itemsPerPage = 5)=>{
   try{
     const token = Cookies.get('access_token');
     if(!token){
@@ -28,11 +28,15 @@ export const getStudentsWithUser = async ()=>{
     const response = await api.get('/api/v1/student',{
       headers:{
         Authorization: `Bearer ${token}`
+      },
+      params:{
+        page,
+        per_page: itemsPerPage
       }
     })
-    console.log(response.data);
+    // console.log('Services ',response.data);
 
-    // return response.data.data
+    return response.data
   }catch(error){
     console.error(error);
     throw new Error(error.response.data.message, 'Error getting students');
