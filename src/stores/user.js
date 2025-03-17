@@ -4,7 +4,8 @@ import {defineStore} from 'pinia'
 
 export const useUserStore = defineStore('user',{
   state:()=>({
-    payments:[]
+    payments:[],
+    students:[]
   }),
   getters:{
 
@@ -12,7 +13,7 @@ export const useUserStore = defineStore('user',{
   actions:{
     async getPayment(response){
       try{
-        console.log('estamos em getPayments em actions', response);
+        // console.log('estamos em getPayments em actions', response);
         this.payments = response;
 
 
@@ -22,10 +23,12 @@ export const useUserStore = defineStore('user',{
     },
     async getStudentsWithUser(response){
       try{
-        console.log('estamos em getStudentsWithUser em actions', response);
+        // console.log('estamos em getStudentsWithUser em actions', response);
         this.students = response;
       }catch(error){
         console.error(error);
+        // throw new Error("error ao pegar estudantes", 'Error getting students', error);
+
       }
     }
   }
