@@ -42,4 +42,27 @@ export const getStudentsWithUser = async (page = 1, itemsPerPage = 5)=>{
     throw new Error(error.response.data.message, 'Error getting students');
   }
 }
+export const removeUserApi = async (id)=>{
+  try {
+    console.log('antes da requisição ',id);
+
+    const token = Cookies.get('access_token');
+    if(!token){
+      throw new Error('User not authenticated', 'Error getting students');
+    }
+    const response = await api.delete(`/api/v1/users/${id}`,{
+      headers:{
+        Authorization:`Bearer ${token}`
+      }
+    })
+
+    console.log(' resposta do back ',response);
+
+    return response.data
+
+
+  } catch (error) {
+    console.error(error);
+  }
+}
 
