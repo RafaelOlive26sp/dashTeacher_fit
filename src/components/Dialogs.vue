@@ -7,13 +7,13 @@
         <slot></slot>
       </v-card-text>
 
-      <!-- <v-card-actions>
+      <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn text="Cancelar" @click="closeDialog"></v-btn>
-        <v-btn v-if="confirmButtonText" color="primary" @click="confirmAction">
+        <!-- <v-btn text="Cancelar" @click="closeDialog"></v-btn> -->
+        <v-btn v-if="confirmButtonText === 'Excluir'" color="primary" @click="confirmAction">
           {{ confirmButtonText }}
         </v-btn>
-      </v-card-actions> -->
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
