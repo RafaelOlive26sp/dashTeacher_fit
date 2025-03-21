@@ -16,10 +16,19 @@
     </template>
 
   </v-data-table-server>
+  <!-- {{ userStore.responseRemoveUser.message }} -->
+    <SnackBarsView :textContent="userStore.responseRemoveUser.message" v-model="snackbar" >
+    <template v-slot:actions >
+        <v-btn color="pink" variant="text" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </SnackBarsView>
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
-    <EditAccount v-if="actionType === 'edit'" :dialogVisible="dialogVisible" @update:dialogVisible="dialogVisible = $event"></EditAccount>
+    <EditAccount v-if="actionType === 'edit'" :dialogVisible="dialogVisible"
+      @update:dialogVisible="dialogVisible = $event"></EditAccount>
 
-    <p v-else>{{dialogMessage}}</p>
+    <p v-else>{{ dialogMessage }}</p>
   </Dialogs>
 
 </template>
@@ -27,6 +36,7 @@
 <script setup>
 import { useUserStore } from '@/stores/user';
 import { getStudentsWithUser as getStudentsServices } from '@/services/user';
+import { removeUserApi as removeUserServices } from '@/services/user';
 import { onMounted, ref, watch } from 'vue';
 import Dialogs from './Dialogs.vue';
 import EditAccount from './EditAccount.vue'
@@ -59,6 +69,7 @@ const dialogMessage = ref("");
 const dialogActionText = ref("");
 const selectedItem = ref(null);
 const actionType = ref("");
+const snackbar = ref(false);
 
 
 onMounted(() => {
@@ -94,7 +105,7 @@ const openDialog = (item, type) => {
   dialogVisible.value = true;
 
   if (type === "edit") {
-    // dialogTitle.value = "Editar Usuário";
+    dialogTitle.value = "Editar Usuário";
     // console.log(item);
 
     // dialogMessage.value = `EditAccount`;
@@ -102,16 +113,30 @@ const openDialog = (item, type) => {
     // dialogActionText.value = "Salvar";
   } else {
     dialogTitle.value = "Excluir Usuário";
-    dialogMessage.value = `Tem certeza que deseja remover ${item.name}?`;
+    dialogMessage.value = `Tem certeza que deseja remover ${item.user.name}?`;
     dialogActionText.value = "Excluir";
   }
 };
-const handleConfirm = () => {
+const handleConfirm = async () => {
   if (actionType.value === "edit") {
-    console.log("Editando usuário:", selectedItem.value);
+    // console.log("Editando usuário:", selectedItem.value);
   } else {
-    console.log("Removendo usuário:", selectedItem.value);
+    // console.log("Removendo usuário:", selectedItem.value.user.id);
+    try {
+      let id = selectedItem.value.user.id;
+      const response = await removeUserServices(id);
+      await userStore.removeUser(response);
+      loadStudents(options.value);
+      snackbar.value = true;
+      // if (response.status === 200) {
+      //   snackbar.value = true;
+      // }
+    } catch (error) {
+      console.error(error);
+    }
   }
+
+
 };
 watch(() => itemsPerPage.value, () => {
   loadStudents(options.value)
