@@ -5,7 +5,9 @@ import {defineStore} from 'pinia'
 export const useUserStore = defineStore('user',{
   state:()=>({
     payments:[],
-    students:[]
+    students:[],
+    responseRemoveUser:[],
+
   }),
   getters:{
 
@@ -28,6 +30,16 @@ export const useUserStore = defineStore('user',{
       }catch(error){
         console.error(error);
         // throw new Error("error ao pegar estudantes", 'Error getting students', error);
+
+      }
+    },
+    async removeUser(response) {
+      try {
+        console.log('response dentro de store ', response);
+
+        this.responseRemoveUser = response;
+      } catch (error) {
+        console.log(error);
 
       }
     }
