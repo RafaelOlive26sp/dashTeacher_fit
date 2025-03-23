@@ -6,6 +6,7 @@ import DafaultLayout from "@/layouts/default.vue";
 import Pagamentos from '@/components/Pagamentos.vue';
 // import { components } from 'vuetify/dist/vuetify-labs.js's;
 import Alunos from '@/components/Alunos.vue';
+import Agenda from '@/components/AgendamentosView.vue';
 
 
 
@@ -31,6 +32,10 @@ const routes = [
       {
         path:'/alunos',
         component: Alunos
+      },
+      {
+        path:'/agenda',
+        component:Agenda
       }
   ],
     meta:{requiresAuth: true}

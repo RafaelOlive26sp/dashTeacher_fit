@@ -8,6 +8,13 @@
    -->
   <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers" :items="itemsUser"
     :items-length="totalItems" :loading="loading" @update:options="loadStudents">
+
+    <template v-slot:top>
+      <v-toolbar flat>
+        <v-btn class="me-2" prepend-icon="mdi-plus" rounded="lg" text="Adicione um Aluno"  @click="openDialog(item, 'created')"></v-btn>
+      </v-toolbar>
+    </template>
+
     <template v-slot:item.edit="{ item }">
       <div class="d-flex ga-2 ">
         <v-icon color="medium-emphasis" icon="mdi-pencil" size="small" @click="openDialog(item, 'edit')"></v-icon>
@@ -15,19 +22,23 @@
       </div>
     </template>
 
+
   </v-data-table-server>
-  <!-- {{ userStore.responseRemoveUser.message }} -->
-    <SnackBarsView :textContent="userStore.responseRemoveUser.message" v-model="snackbar" >
-    <template v-slot:actions >
-        <v-btn color="pink" variant="text" @click="snackbar = false">
-          Close
-        </v-btn>
-      </template>
-    </SnackBarsView>
+  <SnackBarsView :textContent="snackbarMessage" v-model="snackbar">
+    <template #actions>
+      <v-btn color="pink" variant="text" @click="snackbar = false">
+        Close
+      </v-btn>
+    </template>
+  </SnackBarsView>
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
     <EditAccount v-if="actionType === 'edit'" :dialogVisible="dialogVisible"
       @update:dialogVisible="dialogVisible = $event"></EditAccount>
+    <p v-else-if="actionType === 'created'">
+      <CriarAlunosView>
 
+      </CriarAlunosView>
+    </p>
     <p v-else>{{ dialogMessage }}</p>
   </Dialogs>
 
@@ -37,9 +48,10 @@
 import { useUserStore } from '@/stores/user';
 import { getStudentsWithUser as getStudentsServices } from '@/services/user';
 import { removeUserApi as removeUserServices } from '@/services/user';
-import { onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import Dialogs from './Dialogs.vue';
 import EditAccount from './EditAccount.vue'
+import CriarAlunosView from './CriarAlunosView.vue'
 
 
 const userStore = useUserStore();
@@ -70,6 +82,7 @@ const dialogActionText = ref("");
 const selectedItem = ref(null);
 const actionType = ref("");
 const snackbar = ref(false);
+const snackbarMessage = ref("");
 
 
 onMounted(() => {
@@ -111,10 +124,16 @@ const openDialog = (item, type) => {
     // dialogMessage.value = `EditAccount`;
 
     // dialogActionText.value = "Salvar";
-  } else {
+  } else if(type === "delete"){
     dialogTitle.value = "Excluir Usuário";
     dialogMessage.value = `Tem certeza que deseja remover ${item.user.name}?`;
     dialogActionText.value = "Excluir";
+  }
+  if(type === "created"){
+    dialogTitle.value = "Adicionar Usuário";
+    // dialogMessage.value = `Adicionar Usuário`;
+    // dialogActionText.value = "Adicionar";
+
   }
 };
 const handleConfirm = async () => {
@@ -127,13 +146,18 @@ const handleConfirm = async () => {
       const response = await removeUserServices(id);
       await userStore.removeUser(response);
       loadStudents(options.value);
+
+      snackbar.value = false
+
+      await nextTick();
+
+      snackbarMessage.value = `Usuário ${selectedItem.value.user.name} removido com sucesso!`;
       snackbar.value = true;
-      // if (response.status === 200) {
-      //   snackbar.value = true;
-      // }
+
     } catch (error) {
       console.error(error);
     }
+
   }
 
 
