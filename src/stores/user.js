@@ -7,6 +7,7 @@ export const useUserStore = defineStore('user',{
     payments:[],
     students:[],
     responseRemoveUser:[],
+    usersIncompleteProfile:[],
 
   }),
   getters:{
@@ -41,6 +42,15 @@ export const useUserStore = defineStore('user',{
       } catch (error) {
         console.log(error);
 
+      }
+    },
+    async usersWithIncompleteProfile(response){
+      try{
+
+        this.usersIncompleteProfile = response.data;
+
+      }catch(error){
+        console.log(error);
       }
     }
   }
