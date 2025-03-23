@@ -19,50 +19,68 @@ export const getPayments = async () =>{
     throw new Error(error.response.data.message, 'Error getting payments');
   }
 }
-export const getStudentsWithUser = async (page = 1, itemsPerPage = 5)=>{
-  try{
-    const token = Cookies.get('access_token');
-    if(!token){
-      throw new Error('User not authenticated', 'Error getting students');
-    }
-    const response = await api.get('/api/v1/student',{
-      headers:{
-        Authorization: `Bearer ${token}`
-      },
-      params:{
-        page,
-        per_page: itemsPerPage
+  export const getStudentsWithUser = async (page = 1, itemsPerPage = 5)=>{
+    try{
+      const token = Cookies.get('access_token');
+      if(!token){
+        throw new Error('User not authenticated', 'Error getting students');
       }
-    })
-    // console.log('Services ',response.data);
+      const response = await api.get('/api/v1/student',{
+        headers:{
+          Authorization: `Bearer ${token}`
+        },
+        params:{
+          page,
+          per_page: itemsPerPage
+        }
+      })
+      // console.log('Services ',response.data);
 
-    return response.data
-  }catch(error){
-    console.error(error);
-    throw new Error(error.response.data.message, 'Error getting students');
-  }
-}
-export const removeUserApi = async (id)=>{
-  try {
-    console.log('antes da requisição ',id);
-
-    const token = Cookies.get('access_token');
-    if(!token){
-      throw new Error('User not authenticated', 'Error getting students');
+      return response.data
+    }catch(error){
+      console.error(error);
+      throw new Error(error.response.data.message, 'Error getting students');
     }
-    const response = await api.delete(`/api/v1/users/${id}`,{
-      headers:{
-        Authorization:`Bearer ${token}`
-      }
-    })
-
-    console.log(' resposta do back ',response);
-
-    return response.data
-
-
-  } catch (error) {
-    console.error(error);
   }
-}
+  export const removeUserApi = async (id)=>{
+    try {
+      console.log('antes da requisição ',id);
+
+      const token = Cookies.get('access_token');
+      if(!token){
+        throw new Error('User not authenticated', 'Error getting students');
+      }
+      const response = await api.delete(`/api/v1/users/${id}`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      })
+
+      console.log(' resposta do back ',response);
+
+      return response.data
+
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  export const getUsersWitchIncompletedProfile = async ()=>{
+    try{
+      const token = Cookies.get('access_token');
+      if(!token){
+        throw new Error('User not authenticated', 'Error getting students');
+      }
+      const response = await api.get('/api/v1/users/',{
+        headers:{
+          Authorization: `Bearer ${token}`
+        },
+
+      })
+      return response.data
+    }catch(error){
+      console.error(error);
+      throw new Error(error.response.data.message, 'Error getting students');
+    }
+  }
 
