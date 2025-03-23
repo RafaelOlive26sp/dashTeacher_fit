@@ -3,8 +3,10 @@
     <!-- <v-btn @click="snackbar = true">
       Open Snackbar
     </v-btn> -->
-    <v-snackbar v-model="snackbar">
-      {{ props.textContent }}
+    <v-snackbar v-model="snackbar" timeout="3000">
+
+      {{ textContent }}
+
 
 
       <template v-slot:actions>
@@ -19,16 +21,26 @@
 
 
 <script setup>
-  import { ref } from 'vue'
+  import { ref, watch } from 'vue'
 
   const props = defineProps({
     textContent:{
       type: String,
       default: 'Hello, I am a snackbar'
+    },
+    modelValue:{
+      type: Boolean,
+      required: true
+
     }
   })
 
-  const snackbar = ref(false)
+  defineEmits(["update:modelValue"]);
+  const snackbar = ref(props.modelValue)
+
+  watch(()=>props.modelValue,(newValue)=>{
+    snackbar.value = newValue
+  })
   // const text = ref(`Hello, I'm a snackbar`)
 
 </script>
