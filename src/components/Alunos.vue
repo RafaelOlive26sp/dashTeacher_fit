@@ -8,12 +8,20 @@
    -->
   <v-data-table-server v-model:items-per-page="itemsPerPage" :headers="headers" :items="itemsUser"
     :items-length="totalItems" :loading="loading" @update:options="loadStudents">
+
+    <template v-slot:top>
+      <v-toolbar flat>
+        <v-btn class="me-2" prepend-icon="mdi-plus" rounded="lg" text="Adicione um Aluno"  @click="openDialog(item, 'created')"></v-btn>
+      </v-toolbar>
+    </template>
+
     <template v-slot:item.edit="{ item }">
       <div class="d-flex ga-2 ">
         <v-icon color="medium-emphasis" icon="mdi-pencil" size="small" @click="openDialog(item, 'edit')"></v-icon>
         <v-icon color="medium-emphasis" icon="mdi-delete" size="small" @click="openDialog(item, 'delete')"></v-icon>
       </div>
     </template>
+
 
   </v-data-table-server>
   <SnackBarsView :textContent="snackbarMessage" v-model="snackbar">
@@ -26,7 +34,11 @@
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
     <EditAccount v-if="actionType === 'edit'" :dialogVisible="dialogVisible"
       @update:dialogVisible="dialogVisible = $event"></EditAccount>
+    <p v-else-if="actionType === 'created'">
+      <CriarAlunosView>
 
+      </CriarAlunosView>
+    </p>
     <p v-else>{{ dialogMessage }}</p>
   </Dialogs>
 
@@ -39,6 +51,7 @@ import { removeUserApi as removeUserServices } from '@/services/user';
 import { nextTick, onMounted, ref, watch } from 'vue';
 import Dialogs from './Dialogs.vue';
 import EditAccount from './EditAccount.vue'
+import CriarAlunosView from './CriarAlunosView.vue'
 
 
 const userStore = useUserStore();
@@ -111,10 +124,16 @@ const openDialog = (item, type) => {
     // dialogMessage.value = `EditAccount`;
 
     // dialogActionText.value = "Salvar";
-  } else {
+  } else if(type === "delete"){
     dialogTitle.value = "Excluir Usuário";
     dialogMessage.value = `Tem certeza que deseja remover ${item.user.name}?`;
     dialogActionText.value = "Excluir";
+  }
+  if(type === "created"){
+    dialogTitle.value = "Adicionar Usuário";
+    // dialogMessage.value = `Adicionar Usuário`;
+    // dialogActionText.value = "Adicionar";
+
   }
 };
 const handleConfirm = async () => {
