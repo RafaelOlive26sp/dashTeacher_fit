@@ -1,7 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import { useAuthStore} from "@/stores/auth.js";
 import LoginView from "@/pages/LoginView.vue";
-import DashboardView from "@/pages/DashboardView.vue";
+import DashboardView from "@/layouts/DashboardView.vue";
 import DafaultLayout from "@/layouts/default.vue";
 import Pagamentos from '@/components/Pagamentos.vue';
 // import { components } from 'vuetify/dist/vuetify-labs.js's;
