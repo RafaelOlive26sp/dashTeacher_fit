@@ -16,14 +16,13 @@
     </template>
 
   </v-data-table-server>
-  <!-- {{ userStore.responseRemoveUser.message }} -->
-    <SnackBarsView :textContent="userStore.responseRemoveUser.message" v-model="snackbar" >
-    <template v-slot:actions >
-        <v-btn color="pink" variant="text" @click="snackbar = false">
-          Close
-        </v-btn>
-      </template>
-    </SnackBarsView>
+  <SnackBarsView :textContent="snackbarMessage" v-model="snackbar">
+    <template #actions>
+      <v-btn color="pink" variant="text" @click="snackbar = false">
+        Close
+      </v-btn>
+    </template>
+  </SnackBarsView>
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
     <EditAccount v-if="actionType === 'edit'" :dialogVisible="dialogVisible"
       @update:dialogVisible="dialogVisible = $event"></EditAccount>
@@ -37,7 +36,7 @@
 import { useUserStore } from '@/stores/user';
 import { getStudentsWithUser as getStudentsServices } from '@/services/user';
 import { removeUserApi as removeUserServices } from '@/services/user';
-import { onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import Dialogs from './Dialogs.vue';
 import EditAccount from './EditAccount.vue'
 
@@ -70,6 +69,7 @@ const dialogActionText = ref("");
 const selectedItem = ref(null);
 const actionType = ref("");
 const snackbar = ref(false);
+const snackbarMessage = ref("");
 
 
 onMounted(() => {
@@ -127,13 +127,18 @@ const handleConfirm = async () => {
       const response = await removeUserServices(id);
       await userStore.removeUser(response);
       loadStudents(options.value);
+
+      snackbar.value = false
+
+      await nextTick();
+
+      snackbarMessage.value = `Usuário ${selectedItem.value.user.name} removido com sucesso!`;
       snackbar.value = true;
-      // if (response.status === 200) {
-      //   snackbar.value = true;
-      // }
+
     } catch (error) {
       console.error(error);
     }
+
   }
 
 
