@@ -3,12 +3,8 @@
     <!-- <v-btn @click="snackbar = true">
       Open Snackbar
     </v-btn> -->
-    <v-snackbar v-model="snackbar" timeout="3000">
-
+    <v-snackbar v-model="snackbar" timeout="7000">
       {{ textContent }}
-
-
-
       <template v-slot:actions>
         <v-btn color="pink" variant="text" @click="snackbar = false">
           Close
