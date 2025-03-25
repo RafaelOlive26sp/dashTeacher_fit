@@ -44,14 +44,15 @@
     <small class="text-caption text-medium-emphasis">*Campos Obrigatorios</small>
 
 
-    <v-divider></v-divider>
+    <slot name="btnContent"></slot>
+    <!-- <v-divider></v-divider>
     <v-card-actions>
       <v-spacer></v-spacer>
 
       <v-btn text="Close" variant="plain" @click="closeDialog"></v-btn>
 
       <v-btn color="primary" text="Save" variant="tonal" @click="saveDialog"></v-btn>
-    </v-card-actions>
+    </v-card-actions> -->
   </v-container>
 
 
