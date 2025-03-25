@@ -31,14 +31,10 @@
       </v-btn>
     </template>
   </SnackBarsView>
-  <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
+  <Dialogs  v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
     <EditAccount v-if="actionType === 'edit'" :dialogVisible="dialogVisible"
       @update:dialogVisible="dialogVisible = $event"></EditAccount>
-    <p v-else-if="actionType === 'created'">
-      <CriarAlunosView>
-
-      </CriarAlunosView>
-    </p>
+      <CriarAlunosView v-else-if="actionType === 'created'" @profileCreated="loadStudents"></CriarAlunosView>
     <p v-else>{{ dialogMessage }}</p>
   </Dialogs>
 
@@ -91,7 +87,7 @@ onMounted(() => {
 
 
 
-const loadStudents = async (options) => {
+const loadStudents = async (options = {page: 1, itemsPerPage: 5}) => {
   loading.value = true;
   try {
     const response = await getStudentsServices(options.page, options.itemsPerPage);
@@ -105,9 +101,6 @@ const loadStudents = async (options) => {
 
   } finally {
     loading.value = false
-    // setTimeout(() => {
-    //   loading.value = true;
-    // }, 1000);
   }
 };
 
@@ -119,11 +112,7 @@ const openDialog = (item, type) => {
 
   if (type === "edit") {
     dialogTitle.value = "Editar Usuário";
-    // console.log(item);
 
-    // dialogMessage.value = `EditAccount`;
-
-    // dialogActionText.value = "Salvar";
   } else if(type === "delete"){
     dialogTitle.value = "Excluir Usuário";
     dialogMessage.value = `Tem certeza que deseja remover ${item.user.name}?`;
@@ -131,14 +120,14 @@ const openDialog = (item, type) => {
   }
   if(type === "created"){
     dialogTitle.value = "Adicionar Usuário";
-    // dialogMessage.value = `Adicionar Usuário`;
-    // dialogActionText.value = "Adicionar";
-
+    console.log('dialog ', dialogVisible.value)
+    dialogActionText.value = "sair";
   }
 };
 const handleConfirm = async () => {
   if (actionType.value === "edit") {
-    // console.log("Editando usuário:", selectedItem.value);
+      console.log('dialog', dialogVisible.value)
+
   } else {
     // console.log("Removendo usuário:", selectedItem.value.user.id);
     try {
