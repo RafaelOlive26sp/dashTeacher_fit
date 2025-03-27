@@ -12,7 +12,7 @@
             <p><strong>Próximo pagamento:</strong> falta ajuste </p>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" @click="schedulePayment">
+            <v-btn color="primary" @click="opensheet(aluno)">
               Agendar Pagamento
             </v-btn>
           </v-card-actions>
@@ -31,6 +31,11 @@
                 <v-text-field v-model="valor" label="Valor do Pagamento" prefix="R$" type="number" required />
               </v-col>
             </v-row>
+            <v-row justify="center" v-if="alunoSelecionado">
+              <v-col cols="6">
+                <v-text-field :model-value="alunoSelecionado.user.name" label="Aluno" readonly variant="outlined" />
+              </v-col>
+            </v-row>
 
             <v-row justify="center">
               <v-col cols="6">
@@ -40,7 +45,7 @@
           </v-card-text>
 
           <v-card-actions class="justify-center">
-            <v-btn color="primary" @click="schedulePayment(valor)">
+            <v-btn color="primary" @click="schedulePayment">
               Confirmar Pagamento
             </v-btn>
           </v-card-actions>
@@ -68,7 +73,7 @@ onMounted(async () => {
 const data = ref([]);
 const sheet = shallowRef(false)
 const valor = ref("");
-const student = ref("");
+const alunoSelecionado = ref(null);
 
 
 const dataAtual = computed(() => {
@@ -85,10 +90,13 @@ const getStudents = async () => {
   }
 };
 
-const schedulePayment = (data) => {
-    sheet.value = !sheet.value
-    student.value = data
-    console.log(data);
+const schedulePayment = () => {
+
+  if (!valor.value || !alunoSelecionado.value) {
+    alert("Por favor, insira um valor e selecione um aluno!");
+    return;
+  }
+
   try {
 
   } catch (error) {
@@ -96,6 +104,12 @@ const schedulePayment = (data) => {
 
   }
 };
+const opensheet = (aluno) => {
+  alunoSelecionado.value = aluno;
+  console.log(aluno);
+
+  sheet.value = true;
+}
 
 
 const confirmarPagamento = () => {
