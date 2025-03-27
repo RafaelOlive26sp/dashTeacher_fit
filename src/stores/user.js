@@ -8,6 +8,8 @@ export const useUserStore = defineStore('user',{
     students:[],
     responseRemoveUser:[],
     usersIncompleteProfile:[],
+    schedulesPaymentUsers:[],
+
 
 
   }),
@@ -54,7 +56,15 @@ export const useUserStore = defineStore('user',{
         console.log(error);
       }
     },
+    async fetchPayments(response){
+      try{
+      // console.log('estamos dentro de fetchPayments ',response)
+        this.schedulesPaymentUsers = response.data
 
+      }catch(error){
+        console.error('error em store',error);
+      }
+    }
   }
 })
 
