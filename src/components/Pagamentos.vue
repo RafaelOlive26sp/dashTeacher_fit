@@ -13,7 +13,7 @@
                 <th>Data de vencimento</th>
               </template>
               <template v-slot:contentTr>
-                <tbody v-for="nameIndex in userStore.payments" :key="nameIndex">
+                <tbody v-for="nameIndex in payments" :key="nameIndex">
                   <tr v-if="nameIndex.status === 'pending'">
                     <td>{{ nameIndex.students_id.users_id.name }}</td>
                     <td>{{ nameIndex.due_date }}</td>
@@ -36,7 +36,7 @@
                 <th>Data de vencimento</th>
               </template>
               <template v-slot:contentTr>
-                <tbody v-for="nameIndex in userStore.payments" :key="nameIndex">
+                <tbody v-for="nameIndex in payments" :key="nameIndex">
                   <tr v-if="nameIndex.status === 'paid'">
                     <td>{{ nameIndex.students_id.users_id.name }}</td>
                     <td>{{ nameIndex.due_date }}</td>
@@ -60,7 +60,7 @@
                 <th>Data de vencimento</th>
               </template>
               <template v-slot:contentTr>
-                <tbody v-for="nameIndex in userStore.payments" :key="nameIndex">
+                <tbody v-for="nameIndex in payments" :key="nameIndex">
                   <tr v-if="nameIndex.status === 'overdue'">
                     <td>{{ nameIndex.students_id.users_id.name }}</td>
                     <td>{{ nameIndex.due_date }}</td>
@@ -84,7 +84,7 @@
 <script setup>
 import { useUserStore } from '@/stores/user';
 import {getPayments as getPaymentApi} from '@/services/user.js'
-import {  onMounted } from 'vue'
+import {  onMounted, computed } from 'vue'
 
 const userStore = useUserStore();
 
@@ -105,6 +105,8 @@ const fethPayment = async()=>{
     console.error(error)
   }
 }
+
+const payments = computed(()=>userStore.payments)
 
 
 </script>
