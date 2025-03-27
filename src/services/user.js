@@ -44,7 +44,7 @@ export const getPayments = async () =>{
   }
   export const removeUserApi = async (id)=>{
     try {
-      console.log('antes da requisição ',id);
+      // console.log('antes da requisição ',id);
 
       const token = Cookies.get('access_token');
       if(!token){
@@ -56,7 +56,7 @@ export const getPayments = async () =>{
         }
       })
 
-      console.log(' resposta do back ',response);
+      // console.log(' resposta do back ',response);
 
       return response.data
 
@@ -108,7 +108,8 @@ export const getPayments = async () =>{
   export const fetchPaymentUser = async (data)=>{
     try{
       // console.log('Data antes do post ',data);
-      const UserID = data.id;
+      // console.log('Data antes do post ',data);
+      const UserID = data.userId;
 
       const token = Cookies.get('access_token');
       if(!token){
@@ -121,9 +122,10 @@ export const getPayments = async () =>{
         },
 
       })
+      // console.log("log da resposta da Api  ", response.data);
       return response.data
     }catch(error){
-      console.error(error);
+      // console.error(error.response.status);
       throw new Error(error.response.data.message, 'Error getting students');
     }
   }
