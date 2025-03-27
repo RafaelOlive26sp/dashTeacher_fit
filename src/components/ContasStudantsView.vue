@@ -12,7 +12,7 @@
             <p><strong>Próximo pagamento:</strong> falta ajuste </p>
           </v-card-text>
           <v-card-actions>
-            <v-btn color="primary" @click="sheet = !sheet">
+            <v-btn color="primary" @click="schedulePayment">
               Agendar Pagamento
             </v-btn>
           </v-card-actions>
@@ -40,7 +40,7 @@
           </v-card-text>
 
           <v-card-actions class="justify-center">
-            <v-btn color="primary" @click="confirmarPagamento">
+            <v-btn color="primary" @click="schedulePayment(valor)">
               Confirmar Pagamento
             </v-btn>
           </v-card-actions>
@@ -58,6 +58,7 @@ import { onMounted, ref, shallowRef, computed } from "vue";
 import { getStudentsWithUser as getStudentsWithUserApi } from "@/services/user";
 import { useUserStore } from "@/stores/user.js";
 
+
 const userStore = useUserStore();
 
 onMounted(async () => {
@@ -67,6 +68,7 @@ onMounted(async () => {
 const data = ref([]);
 const sheet = shallowRef(false)
 const valor = ref("");
+const student = ref("");
 
 
 const dataAtual = computed(() => {
@@ -83,7 +85,10 @@ const getStudents = async () => {
   }
 };
 
-const schedulePayment = () => {
+const schedulePayment = (data) => {
+    sheet.value = !sheet.value
+    student.value = data
+    console.log(data);
   try {
 
   } catch (error) {
