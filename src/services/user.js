@@ -34,7 +34,7 @@ export const getPayments = async () =>{
           per_page: itemsPerPage
         }
       })
-      // console.log('Services ',response.data);
+      console.log('Services ',response.data);
 
       return response.data
     }catch(error){
@@ -105,4 +105,5 @@ export const getPayments = async () =>{
       throw new Error(error.response.data.message, 'Error getting students');
     }
   }
+
 
