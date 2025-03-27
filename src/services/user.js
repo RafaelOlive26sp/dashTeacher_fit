@@ -105,5 +105,27 @@ export const getPayments = async () =>{
       throw new Error(error.response.data.message, 'Error getting students');
     }
   }
+  export const fetchPaymentUser = async (data)=>{
+    try{
+      // console.log('Data antes do post ',data);
+      const UserID = data.id;
+
+      const token = Cookies.get('access_token');
+      if(!token){
+        throw new Error('User not authenticated', 'Error getting students');
+      }
+
+      const response = await api.post(`/api/v1/payment/${UserID}`,data,{
+        headers:{
+          Authorization: `Bearer ${token}`
+        },
+
+      })
+      return response.data
+    }catch(error){
+      console.error(error);
+      throw new Error(error.response.data.message, 'Error getting students');
+    }
+  }
 
 
