@@ -9,6 +9,7 @@ export const useUserStore = defineStore('user',{
     responseRemoveUser:[],
     usersIncompleteProfile:[],
 
+
   }),
   getters:{
 
@@ -52,7 +53,8 @@ export const useUserStore = defineStore('user',{
       }catch(error){
         console.log(error);
       }
-    }
+    },
+
   }
 })
 
