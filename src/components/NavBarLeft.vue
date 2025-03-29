@@ -38,8 +38,8 @@
     </v-main>
 
   </v-layout>
-  <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
-    <ContasStudantsView></ContasStudantsView>
+  <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm"  >
+    <ContasStudantsView  :confirmPayment="ifConfirmPayment"></ContasStudantsView>
 
   </Dialogs>
 
@@ -57,6 +57,7 @@ const dialogTitle = ref("");
 const dialogActionText = ref("");
 const selectedItem = ref(null);
 const actionType = ref("");
+const ifConfirmPayment = ref('');
 // const dialogMessage = ref("");
 
 
@@ -64,6 +65,7 @@ const openDialog = (item, type) => {
   selectedItem.value = item;
   actionType.value = type;
   dialogVisible.value = true;
+  ifConfirmPayment.value = 'false'
 
   if (type === "agendar") {
     dialogTitle.value = "Agendar Pagamentos";
@@ -71,6 +73,10 @@ const openDialog = (item, type) => {
 
   }else if(type === "confirmar"){
     dialogTitle.value = "Confirmar Pagamento";
+    console.log('antes da mudanca ',ifConfirmPayment.value);
+    ifConfirmPayment.value = 'confirmPayment';
+    console.log('depois da mudanca ',ifConfirmPayment.value);
+
     // console.log('dialog ', dialogVisible.value)
 
     dialogActionText.value = "sair";
