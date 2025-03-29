@@ -9,6 +9,7 @@ export const useUserStore = defineStore('user',{
     responseRemoveUser:[],
     usersIncompleteProfile:[],
     schedulesPaymentUsers:[],
+    paymentConfirm:[]
 
 
 
@@ -63,6 +64,14 @@ export const useUserStore = defineStore('user',{
 
       }catch(error){
         console.error('error em store',error);
+      }
+    },
+    async confirmPaymentStore(response){
+      try {
+        this.paymentConfirm = response.data
+      } catch (error) {
+        console.log(error);
+
       }
     }
   }
