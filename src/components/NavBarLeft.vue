@@ -73,9 +73,9 @@ const openDialog = (item, type) => {
 
   }else if(type === "confirmar"){
     dialogTitle.value = "Confirmar Pagamento";
-    console.log('antes da mudanca ',ifConfirmPayment.value);
+    // console.log('antes da mudanca ',ifConfirmPayment.value);
     ifConfirmPayment.value = 'confirmPayment';
-    console.log('depois da mudanca ',ifConfirmPayment.value);
+    // console.log('depois da mudanca ',ifConfirmPayment.value);
 
     // console.log('dialog ', dialogVisible.value)
 
