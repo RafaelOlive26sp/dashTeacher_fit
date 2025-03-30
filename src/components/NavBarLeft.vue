@@ -17,8 +17,8 @@
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" title="Pagamentos" to="/pagamentos"></v-list-item>
           </template>
-          <v-list-item title="Agendar Pagamento"  @click="openDialog(item, 'agendar')"></v-list-item>
-          <v-list-item title="Confirmar Pagamento"  @click="openDialog(item, 'confirmar')"></v-list-item>
+          <v-list-item title="Agendar Pagamentos"  @click="openDialog(item, 'agendar')"></v-list-item>
+          <v-list-item title="Confirmar Pagamentos"  @click="openDialog(item, 'confirmar')"></v-list-item>
         </v-list-group>
 
         <v-list-item prepend-icon="mdi-account-group" title="Alunos" to="/alunos"></v-list-item>
