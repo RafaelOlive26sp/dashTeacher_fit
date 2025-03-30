@@ -103,6 +103,7 @@
             <v-card-text>
               <v-icon color="success" size="80">mdi-check-circle</v-icon>
               <p class="text-h6 mt-3" v-if="toggleMethodsPayment !== 'confirmPayment'">Agendamento realizado com sucesso!</p>
+                ffd{{paymentSuccessMessages}}
             </v-card-text>
 
             <v-card-actions class="justify-center">
@@ -163,6 +164,7 @@ const snackbar = ref(false)
 const scheduleProgress = ref(false)
 const paymentSuccess = ref("");
 const toggleMethodsPayment = ref("");
+const status = ref("paid");
 
 
 
@@ -239,18 +241,18 @@ const paymentConfirmed = async(aluno)=>{
 
   try {
     // console.log('data ',aluno);
-    let status = 'paid'
+
     const data = {
       id: aluno.id,
       amount: aluno.payment[0].amount,
-      status: status
+      status: status.value
     }
     // console.log(data);
 
 
     const response = await confirmPaymentApi(data);
-    // console.log('resposta da api ',response);
-    userStore.confirmPaymentStore(response);
+    console.log('resposta da api ',response);
+    await userStore.confirmPaymentStore(response);
 
   } catch (error) {
     console.log(error);
@@ -277,14 +279,24 @@ const opensheet = (metodo, aluno) => {
 
 const toggleCardPayment = computed(() =>{
   if (toggleMethodsPayment.value !== 'confirmPayment') {
-    return data.value.filter(a => a.payment.length === 0)
+     return data.value.filter(a => a.payment.length === 0) //nao tem pagamento
   }
-  return data.value.filter(a => a.payment.length !== 0)
+  const difLength = data.value.filter(a => a.payment.length !== 0)
+  console.log('difLength',difLength);
+  // if (difLength ){
+  //
+  // }
+  return data.value.filter(a => a.payment.length !== 0) //tem pagamento
 });
 
 const formatDate = (date) => {
   return format(new Date(date), "dd/MM/yyyy");
 };
+
+const paymentSuccessMessages = computed(() => {
+  console.log('Valor de paymentConfirm:', userStore.paymentConfirm);
+  return userStore.paymentConfirm ? "Pagamento confirmado com sucesso!" : "";
+});
 
 
 // const confirmarPagamento = () => {
