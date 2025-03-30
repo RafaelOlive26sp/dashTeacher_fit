@@ -1,6 +1,9 @@
 <template>
   <v-container>
-    <v-row >
+    <v-row>
+
+<!--      // data.filter(a => a.payment.length === 0) retorna quando o aluno nao tem nenhum pagamento cadstrado-->
+<!--      // data.filter(a => a.payment.length !== 0) retorna quando o aluno tem algum pagamento cadastrado-->
 
 
       <v-col v-for="aluno in toggleCardPayment" :key="aluno.id" cols="12" sm="6" md="4" >
@@ -12,6 +15,8 @@
 
            <p><strong>Valor R$: </strong>{{ aluno.payment[0].amount }} </p>
            <p><strong>Próximo pagamento: </strong>{{formatDate(aluno.payment[0].due_date)}} </p>
+           <p><strong>Status: </strong>{{aluno.payment[0].status}} </p>
+
 
 
           </v-card-text>
@@ -40,7 +45,7 @@
       <v-bottom-sheet v-model="sheet" inset>
         <v-card class="pa-5 text-center" >
           <v-card-title class="text-h6" v-if="toggleMethodsPayment !== 'confirmPayment'">Agendar Pagamento</v-card-title>
-          <v-card-title class="text-h6" >Pagamento Confirmado com Sucesso</v-card-title>
+          <v-card-title class="text-h6" v-else>Pagamento Confirmado com Sucesso</v-card-title>
           <v-divider class="mb-4"></v-divider>
 
           <!-- Exibir formulário quando o pagamento ainda não foi confirmado -->
@@ -103,7 +108,6 @@
             <v-card-text>
               <v-icon color="success" size="80">mdi-check-circle</v-icon>
               <p class="text-h6 mt-3" v-if="toggleMethodsPayment !== 'confirmPayment'">Agendamento realizado com sucesso!</p>
-                ffd{{paymentSuccessMessages}}
             </v-card-text>
 
             <v-card-actions class="justify-center">
@@ -130,7 +134,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, shallowRef, computed, watch,toRef } from "vue";
+import { onMounted, ref, shallowRef, computed, watch,toRef, defineProps } from "vue";
 import {
   getStudentsWithUser as getStudentsWithUserApi,
   fetchPaymentUser as fetchPaymentUserApi,
@@ -217,7 +221,7 @@ const schedulePayment = async () => {
         paymentSuccess.value = true; // Exibir a tela de sucesso
       }, 2000);
     }
-    console.log("Resposta da API:", response);
+    // console.log("Resposta da API:", response);
     userStore.fetchPayments(response);
     // sheet.value = false
     scheduleProgress.value = true;
@@ -253,6 +257,7 @@ const paymentConfirmed = async(aluno)=>{
     const response = await confirmPaymentApi(data);
     console.log('resposta da api ',response);
     await userStore.confirmPaymentStore(response);
+    updatePayments()
 
   } catch (error) {
     console.log(error);
@@ -281,12 +286,9 @@ const toggleCardPayment = computed(() =>{
   if (toggleMethodsPayment.value !== 'confirmPayment') {
      return data.value.filter(a => a.payment.length === 0) //nao tem pagamento
   }
-  const difLength = data.value.filter(a => a.payment.length !== 0)
-  console.log('difLength',difLength);
-  // if (difLength ){
-  //
-  // }
-  return data.value.filter(a => a.payment.length !== 0) //tem pagamento
+  // const difLength = data.value.filter(a => a.payment.length > 0 && a.payment.some(p => p.status === 'pending')) //tem pagamento
+  // console.log('difLength pending',difLength);
+  return data.value.filter(a => a.payment.length > 0 && a.payment.some(p => p.status === 'pending')) //tem pagamento
 });
 
 const formatDate = (date) => {
