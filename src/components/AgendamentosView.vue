@@ -3,12 +3,9 @@
     <v-row>
       <!-- Coluna de Agendamentos Agrupados -->
       <v-col cols="12" md="8">
-        <pre>
 
-          <!-- {{ groupedSchedules }} -->
-        </pre>
         <v-expansion-panels variant="accordion">
-          <v-expansion-panel v-for="(group, date) in groupedSchedules" :key="date" :title="formatGroupHeader(date)">
+          <v-expansion-panel v-for="(group, date) in groupedSchedules" :key="date" :title="formatGroupHeader(date)" >
             <v-expansion-panel-text>
               <v-row dense>
                 <v-col v-for="schedule in group" :key="schedule.id" cols="12" md="6">
@@ -34,7 +31,9 @@
               </v-row>
             </v-expansion-panel-text>
           </v-expansion-panel>
+
         </v-expansion-panels>
+
       </v-col>
 
       <!-- Coluna de Alunos (mantido igual) -->
