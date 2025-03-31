@@ -1,3 +1,4 @@
+// import { loadClasses } from '@/services/user';
 import {defineStore} from 'pinia'
 // import router from '@/router'
 
@@ -9,7 +10,8 @@ export const useUserStore = defineStore('user',{
     responseRemoveUser:[],
     usersIncompleteProfile:[],
     schedulesPaymentUsers:[],
-    paymentConfirm:[]
+    paymentConfirm:[],
+    loadClasses:[],
 
 
 
@@ -69,6 +71,16 @@ export const useUserStore = defineStore('user',{
     async confirmPaymentStore(response){
       try {
         this.paymentConfirm = response.data
+      } catch (error) {
+        console.log(error);
+
+      }
+    },
+    async loadDataSchedules(response){
+      try {
+        this.loadClasses = response.data
+        console.log('dados de loadDataSchedules ', response.data);
+
       } catch (error) {
         console.log(error);
 
