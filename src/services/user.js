@@ -150,5 +150,27 @@ export const getPayments = async () =>{
 
     }
   }
+  export const loadClasses = async ()=>{
+    try {
+      const token = Cookies.get('access_token');
+      if(!token){
+        throw new Error('User not authenticated', 'Error getting students');
+      }
+
+      const response = await api.get('/api/v1/schedules',{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      // console.log(response);
+
+      return response.data
+
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
 
 
