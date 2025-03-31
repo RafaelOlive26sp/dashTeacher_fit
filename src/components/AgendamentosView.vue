@@ -1,104 +1,200 @@
 <template>
   <v-container>
-    <h1 class="text-center mb-4">Agendamento de Aulas</h1>
-
     <v-row>
-      <v-col cols="12" md="6">
-        <h2 class="mb-2">Turmas Disponíveis</h2>
-        <v-row>
-          <v-col v-for="classGroup in classGroups" :key="classGroup.id" cols="12" md="4">
-            <v-sheet elevation="3" class="pa-2">
-              <v-card :color="selectedClass === classGroup.id ? 'primary' : ''"
-                      :subtitle="classGroup.level" :title="classGroup.name"
-                      @click="selectClass(classGroup)" class="cursor-pointer">
-                <p>Dias: {{ classGroup.days }}</p>
-                <p>Capacidade: {{ classGroup.capacity }} alunos</p>
-              </v-card>
-            </v-sheet>
-          </v-col>
-        </v-row>
+      <!-- Coluna de Agendamentos Agrupados -->
+      <v-col cols="12" md="8">
+        <pre>
+
+          <!-- {{ groupedSchedules }} -->
+        </pre>
+        <v-expansion-panels variant="accordion">
+          <v-expansion-panel v-for="(group, date) in groupedSchedules" :key="date" :title="formatGroupHeader(date)">
+            <v-expansion-panel-text>
+              <v-row dense>
+                <v-col v-for="schedule in group" :key="schedule.id" cols="12" md="6">
+                  <v-card :color="selectedSchedule === schedule.id ? 'primary' : 'background'" class="ma-1 pa-3"
+                    elevation="2" @click="toggleScheduleSelection(schedule.id)" hover>
+
+                    <div class="d-flex justify-space-between align-center">
+                      <div>
+                        <strong>{{ schedule.start_time }} - {{ schedule.end_time }}</strong>
+                        <!-- {{ schedule }} -->
+                        <div class="text-caption">
+                          {{ schedule.classes_id.name }} ({{ schedule.classes_id.level }})
+                          <br>
+                          <p>Max Alunos: {{ schedule.classes_id.max_students }}</p>
+                        </div>
+                      </div>
+                      <v-icon :color="selectedSchedule === schedule.id ? 'white' : 'primary'">
+                        {{ selectedSchedule === schedule.id ? 'mdi-checkbox-marked-circle' : 'mdi-clock-outline' }}
+                      </v-icon>
+                    </div>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-col>
 
-      <v-col cols="12" md="6">
-        <h2 class="mb-2">Seleção de Alunos</h2>
-        <v-row>
-          <v-col v-for="user in users" :key="user.id" cols="12" md="4">
-            <v-sheet elevation="3" class="pa-2">
-              <v-card :color="selectedUsers.includes(user) ? 'success' : ''"
-                      :subtitle="user.email" :title="user.name"
-                      @click="toggleUserSelection(user)" class="cursor-pointer">
+      <!-- Coluna de Alunos (mantido igual) -->
+      <v-col cols="12" md="4">
+        <v-sheet elevation="3" class="pa-4">
+          <v-item-group v-model="selectedUsers" multiple>
+            <!-- <v-item v-for="user in users.filter(u => u.payment.length !== 0)" :key="user.id" v-slot="{ isSelected, toggle }">
+              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="toggle" hover>
+                {{ user }}
+                <v-card-title>{{ user.user.name }}</v-card-title>
+                <v-card-subtitle>{{ user.user.email }}</v-card-subtitle>
               </v-card>
-            </v-sheet>
-          </v-col>
-        </v-row>
+            </v-item> -->
+            <v-item v-for="user in paymentConfirmed" :key="user.id" v-slot="{ isSelected, toggle }">
+              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="toggle" hover>
+                <!-- {{ user }} -->
+                <v-card-title>{{ user.user.name }}</v-card-title>
+                <v-card-subtitle>{{ user.user.email }}</v-card-subtitle>
+              </v-card>
+            </v-item>
+          </v-item-group>
+        </v-sheet>
       </v-col>
     </v-row>
-
-    <v-btn class="mt-4" color="primary" @click="showDialog = true">Agendar Aula</v-btn>
-
-    <v-dialog v-model="showDialog" max-width="500">
-      <v-card>
-        <v-card-title>Agendar Aula</v-card-title>
-        <v-card-text>
-          <v-text-field v-model="date" label="Data da Aula" type="date"></v-text-field>
-          <v-select v-model="selectedSchedule" label="Horário" :items="schedules" item-title="time" item-value="id"></v-select>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="red" @click="showDialog = false">Cancelar</v-btn>
-          <v-btn color="green" @click="scheduleClass">Confirmar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
 </template>
 
 <script setup>
-import { ref } from 'vue';
 
-const classGroups = ref([
-  { id: 1, name: 'Turma 1', capacity: 5, days: 'Segunda-feira, Terça-feira', level: 'Intermediate' },
-  { id: 2, name: 'Turma 2', capacity: 3, days: 'Segunda-feira, Quarta-feira', level: 'Intermediate' },
-  { id: 3, name: 'Turma 3', capacity: 3, days: 'Segunda-feira, Quinta-feira, Sexta-feira', level: 'Beginner' },
-]);
 
-const schedules = ref([
-  { id: 1, time: '08:30 - 09:30' },
-  { id: 2, time: '15:00 - 16:00' },
-  { id: 3, time: '19:20 - 20:20' },
-]);
 
-const users = ref([
-  { id: 1, name: 'João Silva', email: 'joao@email.com' },
-  { id: 2, name: 'Maria Oliveira', email: 'maria@email.com' },
-  { id: 3, name: 'Carlos Souza', email: 'carlos@email.com' },
-]);
 
-const selectedUsers = ref([]);
-const selectedClass = ref(null);
-const selectedSchedule = ref(null);
-const showDialog = ref(false);
-const date = ref('');
 
-const toggleUserSelection = (user) => {
-  const index = selectedUsers.value.findIndex(u => u.id === user.id);
-  if (index === -1) {
-    selectedUsers.value.push(user);
-  } else {
-    selectedUsers.value.splice(index, 1);
+import { ref, computed, onMounted } from 'vue';
+import {
+        loadClasses as loadClassesApi,
+        getStudentsWithUser as getStudentsWithUserApi,
+        } from '@/services/user.js'
+import { useUserStore } from '@/stores/user.js';
+import {format, parseISO} from 'date-fns'
+
+const userStore = useUserStore();
+
+// Modifique a estrutura para garantir o carregamento correto
+const classes = ref([]);
+const classSchedules = ref([]);
+const users = ref([]);
+// const users = ref([]);
+
+// Simulando carregamento assíncrono
+onMounted(async () => {
+  // Substitua por sua chamada API real
+  // await loadData();
+  await loadDataClasses();
+  await getStudents();
+});
+
+
+
+const loadDataClasses = async ()=>{
+  try {
+      const response = await loadClassesApi()
+      console.log('Dados passados para store',response);
+      userStore.loadDataSchedules(response)
+      classSchedules.value = response.data
+
+  } catch (error) {
+    console.log(error);
+
+  }
+}
+
+
+
+// const users = ref([
+//   { id: 1, name: 'Aluno 1', email: 'aluno1@email.com' },
+//   { id: 2, name: 'Aluno 2', email: 'aluno2@email.com' },
+//   // ... outros alunos
+// ]);
+
+
+// Adicione segurança na busca de classes
+const getClassInfo = (classId) => {
+  return classes.value.find(c => c.id === classId) || {
+    name: 'Turma não encontrada',
+    level: 'N/A'
+  };
+};
+const getStudents = async () => {
+  try {
+    const response = await getStudentsWithUserApi();
+    userStore.getStudentsWithUser(response);
+    users.value = response.data;
+  } catch (error) {
+    console.error("Error fetching students:", error);
   }
 };
 
-const selectClass = (classGroup) => {
-  selectedClass.value = classGroup.id;
+
+// Agrupar horários por data
+const groupedSchedules = computed(() => {
+  const groups = {};
+  classSchedules.value.forEach(schedule => {
+    const key = schedule.date;
+    console.log('Key de dentro do forEach ',key);
+    console.log('Antes do if',groups[key]);
+
+    if (!groups[key]) {
+      groups[key] = [];
+      console.log('dentro no if ', groups[key])
+    }
+    groups[key].push({
+      ...schedule,
+      class: getClassInfo(schedule.class_id) // Usando a função segura
+    });
+  });
+  console.log('returno para a view ', groups);
+  return groups;
+});
+
+
+
+
+// Função para formatar o cabeçalho do grupo
+const formatGroupHeader = (dateString) => {
+  return format(parseISO(dateString), 'dd/MM/yyyy');
 };
 
-const scheduleClass = () => {
-  console.log({
-    date: date.value,
-    class_id: selectedClass.value,
-    schedule_id: selectedSchedule.value,
-    users: selectedUsers.value
-  });
-  showDialog.value = false;
+// Mantido o mesmo estado e métodos de seleção
+const selectedSchedule = ref(null);
+const selectedUsers = ref([]);
+
+const toggleScheduleSelection = (scheduleId) => {
+  selectedSchedule.value = selectedSchedule.value === scheduleId ? null : scheduleId;
 };
+
+const paymentConfirmed = computed(() => {
+  return users.value.filter(u => u.payment.some(p => p.status === 'paid'))
+});
+
 </script>
+
+<style scoped>
+.v-expansion-panel {
+  margin-bottom: 8px;
+  border-radius: 8px !important;
+}
+
+.v-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.v-card:hover {
+  transform: scale(1.02);
+}
+
+.time-badge {
+  font-size: 0.8em;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+</style>
