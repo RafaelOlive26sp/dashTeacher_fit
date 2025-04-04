@@ -125,7 +125,7 @@
 
 
 
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import {
   loadClasses as loadClassesApi,
   getStudentsWithUser as getStudentsWithUserApi,
@@ -153,12 +153,22 @@ onMounted(async () => {
   await getStudents();
 });
 
+watch(
+  () => userStore.shouldRefreshSchedules,
+  async (newValue) => {
+    if(newValue) {
+      await loadDataClasses();
+      userStore.shouldRefreshSchedules = false;
+
+    }
+  }
+);
 
 
 const loadDataClasses = async () => {
   try {
     const response = await loadClassesApi()
-    console.log('Dados passados para store', response.data);
+    // console.log('Dados passados para store', response.data);
     userStore.loadDataSchedules(response)
     classSchedules.value = response.data
 
