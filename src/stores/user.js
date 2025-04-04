@@ -13,6 +13,7 @@ export const useUserStore = defineStore('user',{
     paymentConfirm:[],
     loadClasses:[],
     loadClassesCreate:[],
+    shouldRefreshSchedules: false,
 
 
 
@@ -43,7 +44,7 @@ export const useUserStore = defineStore('user',{
     },
     async removeUser(response) {
       try {
-        console.log('response dentro de store ', response);
+        // console.log('response dentro de store ', response);
 
         this.responseRemoveUser = response;
       } catch (error) {
@@ -80,7 +81,7 @@ export const useUserStore = defineStore('user',{
     async loadDataSchedules(response){
       try {
         this.loadClasses = response.data
-        console.log('dados de loadDataSchedules ', response.data);
+        // console.log('dados de loadDataSchedules ', response.data);
 
       } catch (error) {
         console.log(error);

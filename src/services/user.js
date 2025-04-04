@@ -34,7 +34,7 @@ export const getPayments = async () =>{
           per_page: itemsPerPage
         }
       })
-      console.log('Services ',response.data);
+      // console.log('Services ',response.data);
 
       return response.data
     }catch(error){
