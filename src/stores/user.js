@@ -89,8 +89,8 @@ export const useUserStore = defineStore('user',{
     },
     async loadCreatedClass(response){
       try {
-        console.log('resposta do back dentro de store ', response);
-        this.loadClassesCreate = response.data
+        // console.log('resposta do back dentro de store ', response);
+        this.loadClassesCreate = response
       } catch (error) {
         console.log(error);
 
