@@ -41,7 +41,7 @@
   </v-layout>
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm"  >
     <ContasStudantsView v-if="actionType === 'agendar'|| actionType === 'confirmar' " :confirmPayment="ifConfirmPayment"></ContasStudantsView>
-    <CreatedClassView v-if="actionType === 'createdClass' || actionType === 'createdSchedule'"></CreatedClassView>
+    <CreatedClassView v-if="actionType === 'createdClass' || actionType === 'createdSchedule'" @close="dialogVisible = false"></CreatedClassView>
 
   </Dialogs>
 
@@ -51,7 +51,10 @@
 import { useAuthStore } from '@/stores/auth';
 import { computed, ref } from 'vue';
 import CreatedClassView from "@/components/CreatedClassView.vue";
+import { useUserStore } from '@/stores/user.js';
 
+
+const userStore = useUserStore();
 const AuthStore = useAuthStore();
 const user = computed(() => AuthStore.user);
 
@@ -86,7 +89,8 @@ const openDialog = (item, type) => {
   }
   if (type === 'createdClass'){
     dialogTitle.value = "Criar Turmas";
-    // dialogActionText.value = "Criar Turmas";
+
+
   }else if (type === 'createdSchedule'){
     dialogTitle.value = "Criar Horarios";
     // dialogActionText.value = "Criar Horarios";
