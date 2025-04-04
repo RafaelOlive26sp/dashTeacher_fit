@@ -90,6 +90,7 @@ const submit = () => {
 
           emit('close');
         }, 2000);
+        userStore.shouldRefreshSchedules = true
       } catch (error) {
         console.error('Erro ao criar turma:', error)
       }
