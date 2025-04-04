@@ -178,7 +178,7 @@ const dataAtual = computed(() => {
 });
 
 watch(confirmPayment, (newValue) => {
-  console.log("Novo valor de confirmPayment:", newValue);
+  // console.log("Novo valor de confirmPayment:", newValue);
   toggleMethodsPayment.value = newValue;
 },{immediate: true});
 
@@ -256,7 +256,7 @@ const paymentConfirmed = async(aluno)=>{
 
 
     const response = await confirmPaymentApi(data);
-    console.log('resposta da api ',response);
+    // console.log('resposta da api ',response);
     await userStore.confirmPaymentStore(response);
     updatePayments()
 
@@ -300,7 +300,7 @@ const formatDate = (date) => {
 };
 
 const paymentSuccessMessages = computed(() => {
-  console.log('Valor de paymentConfirm:', userStore.paymentConfirm);
+  // console.log('Valor de paymentConfirm:', userStore.paymentConfirm);
   return userStore.paymentConfirm ? "Pagamento confirmado com sucesso!" : "";
 });
 
