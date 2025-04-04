@@ -41,8 +41,8 @@
   </v-layout>
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm"  >
     <ContasStudantsView v-if="actionType === 'agendar'|| actionType === 'confirmar' " :confirmPayment="ifConfirmPayment"></ContasStudantsView>
-    <CreatedClassView v-if="actionType === 'createdClass' || actionType === 'createdSchedule'" @close="dialogVisible = false"></CreatedClassView>
-
+    <CreatedClassView v-if="actionType === 'createdClass'" @close="dialogVisible = false"></CreatedClassView>
+    <createdScheduleView v-if="actionType === 'createdSchedule'"></createdScheduleView>
   </Dialogs>
 
 
@@ -51,10 +51,11 @@
 import { useAuthStore } from '@/stores/auth';
 import { computed, ref } from 'vue';
 import CreatedClassView from "@/components/CreatedClassView.vue";
-import { useUserStore } from '@/stores/user.js';
+import createdScheduleView from "@/components/CreatedScheduleView.vue";
+// import { useUserStore } from '@/stores/user.js';
 
 
-const userStore = useUserStore();
+// const userStore = useUserStore();
 const AuthStore = useAuthStore();
 const user = computed(() => AuthStore.user);
 
