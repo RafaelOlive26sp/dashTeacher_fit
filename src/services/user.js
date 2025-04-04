@@ -178,13 +178,13 @@ export const getPayments = async () =>{
       if(!token){
         throw new Error('User not authenticated', 'Error getting students');
       }
-      console.log('Data antes do post ',data);
+      // console.log('Data antes do post ',data);
       const response = await api.post('/api/v1/classes',data,{
         headers:{
           Authorization: `Bearer ${token}`
         }
       })
-      console.log(' resposta do back ',response.data);
+      // console.log(' resposta do back ',response.data);
       return response.data
 
     }catch (e) {
