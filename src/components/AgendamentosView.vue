@@ -32,7 +32,7 @@
                   >
                     <div class="d-flex justify-space-between align-center">
                       <div>
-                        <strong>{{ translateDay(schedule.day_of_week) }}</strong>
+                        <strong>{{ translateDay(schedule?.day_of_week) }}</strong>
                         <div class="text-caption">
                           {{ schedule.start_time }} - {{ schedule.end_time }}
                         </div>
@@ -144,6 +144,7 @@ const selectedUsers = ref([]);
 
 
 
+
 // Simulando carregamento assíncrono
 onMounted(async () => {
   // Substitua por sua chamada API real
@@ -184,6 +185,10 @@ const toggleScheduleSelection = (id) => {
 
 
 const translateDay = (day) => {
+  if (!day) {
+    return 'Dia inválido';
+  }
+
   const days = {
     monday: 'Segunda-feira',
     tuesday: 'Terça-feira',
@@ -193,6 +198,7 @@ const translateDay = (day) => {
     saturday: 'Sábado',
     sunday: 'Domingo'
   };
+
   return days[day.toLowerCase()] || day;
 };
 
