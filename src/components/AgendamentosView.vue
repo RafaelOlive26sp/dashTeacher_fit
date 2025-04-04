@@ -5,7 +5,7 @@
       <v-col cols="12" md="8">
 
         <v-expansion-panels variant="accordion">
-          <v-expansion-panel v-for="(group, date) in groupedSchedules" :key="date" :title="formatGroupHeader(date)" >
+          <v-expansion-panel v-for="(group, date) in groupedSchedules" :key="date" :title="formatGroupHeader(date)">
             <v-expansion-panel-text>
               <v-row dense>
                 <v-col v-for="schedule in group" :key="schedule.id" cols="12" md="6">
@@ -36,22 +36,28 @@
 
       </v-col>
 
-      <!-- Coluna de Alunos (mantido igual) -->
+      <!-- Coluna de Alunos Selecionados -->
       <v-col cols="12" md="4">
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedUsers" multiple>
-            <!-- <v-item v-for="user in users.filter(u => u.payment.length !== 0)" :key="user.id" v-slot="{ isSelected, toggle }">
-              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="toggle" hover>
-                {{ user }}
-                <v-card-title>{{ user.user.name }}</v-card-title>
-                <v-card-subtitle>{{ user.user.email }}</v-card-subtitle>
-              </v-card>
-            </v-item> -->
             <v-item v-for="user in paymentConfirmed" :key="user.id" v-slot="{ isSelected, toggle }">
               <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="toggle" hover>
-                <!-- {{ user }} -->
                 <v-card-title>{{ user.user.name }}</v-card-title>
-                <v-card-subtitle>{{ user.user.email }}</v-card-subtitle>
+
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="6">
+                      <div>Idade: {{ user.age }} anos</div>
+                      <div>Altura: {{ user.height }}m</div>
+                      <div>Peso: {{ user.weight }}kg</div>
+                    </v-col>
+                    <v-col cols="6">
+                      <div>Gênero: {{ user.gender === 'male' ? 'Masculino' : 'Feminino' }}</div>
+                      <div>Condição médica: {{ user.medical_condition || 'Nenhuma' }}</div>
+                      <div>Status Pagamento: {{ user.payment[0].status === 'paid' ? 'Pago' : 'Pendente' }}</div>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
               </v-card>
             </v-item>
           </v-item-group>
@@ -69,11 +75,11 @@
 
 import { ref, computed, onMounted } from 'vue';
 import {
-        loadClasses as loadClassesApi,
-        getStudentsWithUser as getStudentsWithUserApi,
-        } from '@/services/user.js'
+  loadClasses as loadClassesApi,
+  getStudentsWithUser as getStudentsWithUserApi,
+} from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js';
-import {format, parseISO} from 'date-fns'
+import { format, parseISO } from 'date-fns'
 
 const userStore = useUserStore();
 
@@ -93,12 +99,12 @@ onMounted(async () => {
 
 
 
-const loadDataClasses = async ()=>{
+const loadDataClasses = async () => {
   try {
-      const response = await loadClassesApi()
-      console.log('Dados passados para store',response);
-      userStore.loadDataSchedules(response)
-      classSchedules.value = response.data
+    const response = await loadClassesApi()
+    console.log('Dados passados para store', response);
+    userStore.loadDataSchedules(response)
+    classSchedules.value = response.data
 
   } catch (error) {
     console.log(error);
@@ -138,8 +144,8 @@ const groupedSchedules = computed(() => {
   const groups = {};
   classSchedules.value.forEach(schedule => {
     const key = schedule.date;
-    console.log('Key de dentro do forEach ',key);
-    console.log('Antes do if',groups[key]);
+    console.log('Key de dentro do forEach ', key);
+    console.log('Antes do if', groups[key]);
 
     if (!groups[key]) {
       groups[key] = [];
