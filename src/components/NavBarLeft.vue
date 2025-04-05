@@ -23,14 +23,15 @@
 
         <v-list-item prepend-icon="mdi-account-group" title="Alunos" to="/alunos"></v-list-item>
         <v-list-item prepend-icon="mdi-notebook-outline" title="Agendamentos" to="/agenda"></v-list-item>
+        <v-list-group prepend-icon="mdi-book-cog-outline">
+          <template v-slot:activator="{ props }">
+            <v-list-item v-bind="props" title="Aulas/Turmas"></v-list-item>
+          </template>
+          <v-list-item title="Criar Turmas" @click="openDialog(item, 'createdClass')" ></v-list-item>
+          <v-list-item title="Criar Horarios"  @click="openDialog(item, 'createdSchedule')"></v-list-item>
+        </v-list-group>
       </v-list>
 
-      <!-- <v-list density="compact" nav>
-        <v-list-item prepend-icon="mdi-home" title="Home" to="/"></v-list-item>
-        <v-list-item prepend-icon="mdi-cash-register" title="Pagamentos" to="/pagamentos" ></v-list-item>
-        <v-list-item prepend-icon="mdi-account-group" title="Alunos" to="/alunos"></v-list-item>
-        <v-list-item prepend-icon="mdi-notebook-outline " title="Agendamentos" to="/agenda"></v-list-item>
-      </v-list> -->
     </v-navigation-drawer>
 
     <v-main class="pa-4">
@@ -39,7 +40,8 @@
 
   </v-layout>
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm"  >
-    <ContasStudantsView  :confirmPayment="ifConfirmPayment"></ContasStudantsView>
+    <ContasStudantsView v-if="actionType === 'agendar'|| actionType === 'confirmar' " :confirmPayment="ifConfirmPayment"></ContasStudantsView>
+    <CreatedClassView v-if="actionType === 'createdClass' || actionType === 'createdSchedule'"></CreatedClassView>
 
   </Dialogs>
 
@@ -48,6 +50,7 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { computed, ref } from 'vue';
+import CreatedClassView from "@/components/CreatedClassView.vue";
 
 const AuthStore = useAuthStore();
 const user = computed(() => AuthStore.user);
@@ -75,11 +78,19 @@ const openDialog = (item, type) => {
     dialogTitle.value = "Confirmar Pagamento";
     // console.log('antes da mudanca ',ifConfirmPayment.value);
     ifConfirmPayment.value = 'confirmPayment';
-    // console.log('depois da mudanca ',ifConfirmPayment.value);
+    console.log('depois da mudanca ',ifConfirmPayment.value);
 
     // console.log('dialog ', dialogVisible.value)
 
     dialogActionText.value = "sair";
+  }
+  if (type === 'createdClass'){
+    dialogTitle.value = "Criar Turmas";
+    // dialogActionText.value = "Criar Turmas";
+  }else if (type === 'createdSchedule'){
+    dialogTitle.value = "Criar Horarios";
+    // dialogActionText.value = "Criar Horarios";
+
   }
 };
 
