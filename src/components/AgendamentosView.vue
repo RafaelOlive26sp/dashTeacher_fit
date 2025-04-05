@@ -1,25 +1,40 @@
 <template>
   <v-container>
     <v-row>
+
       <!-- Coluna de Agendamentos Agrupados -->
+
       <v-col cols="12" md="8">
 
         <v-expansion-panels variant="accordion">
-          <v-expansion-panel v-for="(group, date) in groupedSchedules" :key="date" :title="formatGroupHeader(date)">
+          <v-expansion-panel
+            v-for="group in classSchedules"
+            :key="group.id"
+          >
+            <v-expansion-panel-title>
+              {{ group.name }} ({{ group.level }}) - Max Alunos: {{ group.max_students }}
+            </v-expansion-panel-title>
+
             <v-expansion-panel-text>
               <v-row dense>
-                <v-col v-for="schedule in group" :key="schedule.id" cols="12" md="6">
-                  <v-card :color="selectedSchedule === schedule.id ? 'primary' : 'background'" class="ma-1 pa-3"
-                    elevation="2" @click="toggleScheduleSelection(schedule.id)" hover>
-
+                <v-col
+                  v-for="schedule in group.schedules_patterns"
+                  :key="schedule.id"
+                  cols="12"
+                  md="6"
+                >
+                  <v-card
+                    :color="selectedSchedule === schedule.id ? 'primary' : 'background'"
+                    class="ma-1 pa-3"
+                    elevation="2"
+                    @click="toggleScheduleSelection(schedule.id)"
+                    hover
+                  >
                     <div class="d-flex justify-space-between align-center">
                       <div>
-                        <strong>{{ schedule.start_time }} - {{ schedule.end_time }}</strong>
-                        <!-- {{ schedule }} -->
+                        <strong>{{ translateDay(schedule.day_of_week) }}</strong>
                         <div class="text-caption">
-                          {{ schedule.classes_id.name }} ({{ schedule.classes_id.level }})
-                          <br>
-                          <p>Max Alunos: {{ schedule.classes_id.max_students }}</p>
+                          {{ schedule.start_time }} - {{ schedule.end_time }}
                         </div>
                       </div>
                       <v-icon :color="selectedSchedule === schedule.id ? 'white' : 'primary'">
@@ -31,12 +46,49 @@
               </v-row>
             </v-expansion-panel-text>
           </v-expansion-panel>
-
         </v-expansion-panels>
+        <v-divider class="my-6" />
+
+        <v-card>
+          <v-card-title>
+            Aulas Extras
+          </v-card-title>
+
+          <v-card-text>
+            <v-row dense>
+              <v-col
+                v-for="extra in extraClasses"
+                :key="extra.id"
+                cols="12"
+                md="6"
+              >
+                <v-card
+                  :color="selectedSchedule === extra.id ? 'secondary' : 'background'"
+                  class="ma-1 pa-3"
+                  elevation="2"
+                  @click="toggleScheduleSelection(extra.id)"
+                  hover
+                >
+                  <div class="d-flex justify-space-between align-center">
+                    <div>
+                      <strong>{{ translateDay(extra.day_of_week) }}</strong>
+                      <div class="text-caption">
+                        {{ extra.start_time }} - {{ extra.end_time }}
+                      </div>
+                    </div>
+                    <v-icon :color="selectedSchedule === extra.id ? 'white' : 'secondary'">
+                      {{ selectedSchedule === extra.id ? 'mdi-checkbox-marked-circle' : 'mdi-clock-outline' }}
+                    </v-icon>
+                  </div>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+
 
       </v-col>
 
-      <!-- Coluna de Alunos Selecionados -->
       <v-col cols="12" md="4">
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedUsers" multiple>
@@ -79,15 +131,18 @@ import {
   getStudentsWithUser as getStudentsWithUserApi,
 } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js';
-import { format, parseISO } from 'date-fns'
+
 
 const userStore = useUserStore();
 
 // Modifique a estrutura para garantir o carregamento correto
-const classes = ref([]);
+
 const classSchedules = ref([]);
 const users = ref([]);
-// const users = ref([]);
+const selectedSchedule = ref(null);
+const selectedUsers = ref([]);
+
+
 
 // Simulando carregamento assíncrono
 onMounted(async () => {
@@ -102,7 +157,7 @@ onMounted(async () => {
 const loadDataClasses = async () => {
   try {
     const response = await loadClassesApi()
-    console.log('Dados passados para store', response);
+    console.log('Dados passados para store', response.data);
     userStore.loadDataSchedules(response)
     classSchedules.value = response.data
 
@@ -112,22 +167,6 @@ const loadDataClasses = async () => {
   }
 }
 
-
-
-// const users = ref([
-//   { id: 1, name: 'Aluno 1', email: 'aluno1@email.com' },
-//   { id: 2, name: 'Aluno 2', email: 'aluno2@email.com' },
-//   // ... outros alunos
-// ]);
-
-
-// Adicione segurança na busca de classes
-const getClassInfo = (classId) => {
-  return classes.value.find(c => c.id === classId) || {
-    name: 'Turma não encontrada',
-    level: 'N/A'
-  };
-};
 const getStudents = async () => {
   try {
     const response = await getStudentsWithUserApi();
@@ -139,41 +178,22 @@ const getStudents = async () => {
 };
 
 
-// Agrupar horários por data
-const groupedSchedules = computed(() => {
-  const groups = {};
-  classSchedules.value.forEach(schedule => {
-    const key = schedule.date;
-    console.log('Key de dentro do forEach ', key);
-    console.log('Antes do if', groups[key]);
-
-    if (!groups[key]) {
-      groups[key] = [];
-      console.log('dentro no if ', groups[key])
-    }
-    groups[key].push({
-      ...schedule,
-      class: getClassInfo(schedule.class_id) // Usando a função segura
-    });
-  });
-  console.log('returno para a view ', groups);
-  return groups;
-});
-
-
-
-
-// Função para formatar o cabeçalho do grupo
-const formatGroupHeader = (dateString) => {
-  return format(parseISO(dateString), 'dd/MM/yyyy');
+const toggleScheduleSelection = (id) => {
+  selectedSchedule.value = selectedSchedule.value === id ? null : id;
 };
 
-// Mantido o mesmo estado e métodos de seleção
-const selectedSchedule = ref(null);
-const selectedUsers = ref([]);
 
-const toggleScheduleSelection = (scheduleId) => {
-  selectedSchedule.value = selectedSchedule.value === scheduleId ? null : scheduleId;
+const translateDay = (day) => {
+  const days = {
+    monday: 'Segunda-feira',
+    tuesday: 'Terça-feira',
+    wednesday: 'Quarta-feira',
+    thursday: 'Quinta-feira',
+    friday: 'Sexta-feira',
+    saturday: 'Sábado',
+    sunday: 'Domingo'
+  };
+  return days[day.toLowerCase()] || day;
 };
 
 const paymentConfirmed = computed(() => {
