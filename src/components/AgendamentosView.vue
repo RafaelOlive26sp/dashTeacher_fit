@@ -54,7 +54,7 @@
                     <v-col cols="6">
                       <div>Gênero: {{ user.gender === 'male' ? 'Masculino' : 'Feminino' }}</div>
                       <div>Condição médica: {{ user.medical_condition || 'Nenhuma' }}</div>
-                      <div>Status Pagamento: {{ user.payment[0].status === 'paid' ? 'Pago' : 'Pendente' }}</div>
+                      <div>Status Pagamento: {{ user.payments[0].status === 'paid' ? 'Pago' : 'Pendente' }}</div>
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -177,7 +177,7 @@ const toggleScheduleSelection = (scheduleId) => {
 };
 
 const paymentConfirmed = computed(() => {
-  return users.value.filter(u => u.payment.some(p => p.status === 'paid'))
+  return users.value.filter(u => u.payments?.some(p => p.status === 'paid'))
 });
 
 </script>

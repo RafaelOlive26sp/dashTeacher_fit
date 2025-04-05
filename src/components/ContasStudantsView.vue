@@ -6,6 +6,7 @@
 <!--      // data.filter(a => a.payment.length !== 0) retorna quando o aluno tem algum pagamento cadastrado-->
 
 
+
       <v-col v-for="aluno in toggleCardPayment" :key="aluno.id" cols="12" sm="6" md="4" >
         <v-card class="pa-3" >
           <v-card-title>{{ aluno.user.name }}</v-card-title>
@@ -13,9 +14,9 @@
           <divider></divider>
           <v-card-text v-if="toggleMethodsPayment === 'confirmPayment'">
 
-           <p><strong>Valor R$: </strong>{{ aluno.payment[0].amount }} </p>
-           <p><strong>Próximo pagamento: </strong>{{formatDate(aluno.payment[0].due_date)}} </p>
-           <p><strong>Status: </strong>{{aluno.payment[0].status}} </p>
+           <p><strong>Valor R$: </strong>{{ aluno.payments[0].amount }} </p>
+           <p><strong>Próximo pagamento: </strong>{{formatDate(aluno.payments[0].due_date)}} </p>
+           <p><strong>Status: </strong>{{aluno.payments[0].status}} </p>
 
 
 
@@ -248,7 +249,7 @@ const paymentConfirmed = async(aluno)=>{
 
     const data = {
       id: aluno.id,
-      amount: aluno.payment[0].amount,
+      amount: aluno.payments[0].amount,
       status: status.value
     }
     // console.log(data);
@@ -284,11 +285,14 @@ const opensheet = (metodo, aluno) => {
 
 const toggleCardPayment = computed(() =>{
   if (toggleMethodsPayment.value !== 'confirmPayment') {
-     return data.value.filter(a => a.payment.length === 0) //nao tem pagamento
+
+     return data.value.filter(a => a.payments?.length === 0) //nao tem pagamento
+
   }
+  // console.log('-----------',data.value);
   // const difLength = data.value.filter(a => a.payment.length > 0 && a.payment.some(p => p.status === 'pending')) //tem pagamento
   // console.log('difLength pending',difLength);
-  return data.value.filter(a => a.payment.length > 0 && a.payment.some(p => p.status === 'pending')) //tem pagamento
+  return data.value.filter(a => a.payments?.length > 0 && a.payments.some(p => p.status === 'pending')) //tem pagamento
 });
 
 const formatDate = (date) => {
