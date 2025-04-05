@@ -12,6 +12,7 @@ export const useUserStore = defineStore('user',{
     schedulesPaymentUsers:[],
     paymentConfirm:[],
     loadClasses:[],
+    loadClassesCreate:[],
 
 
 
@@ -81,6 +82,15 @@ export const useUserStore = defineStore('user',{
         this.loadClasses = response.data
         console.log('dados de loadDataSchedules ', response.data);
 
+      } catch (error) {
+        console.log(error);
+
+      }
+    },
+    async loadCreatedClass(response){
+      try {
+        console.log('resposta do back dentro de store ', response);
+        this.loadClassesCreate = response.data
       } catch (error) {
         console.log(error);
 
