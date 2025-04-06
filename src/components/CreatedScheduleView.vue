@@ -37,7 +37,9 @@
   </v-col>
 
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
-    <h2>teste</h2>
+    <CreatedSchedulesView>
+
+    </CreatedSchedulesView>
   </Dialogs>
 
 
@@ -47,12 +49,15 @@ import { ref, onMounted } from 'vue';
 import { loadClasses as loadClassesApi } from '@/services/user';
 import { format } from 'date-fns'
 import Dialogs from './Dialogs.vue';
+import CreatedSchedulesView from './CreatedSchedulesView.vue';
 
 const classSchedules = ref([]);
 const selectedClasses = ref([]);
 // const hidden = ref(false)
 const dialogVisible = ref(false)
 const dialogTitle = ref("Criar Turmas")
+const selectedItem = ref(null)
+const actionType = ref("")
 
 
 onMounted(() => {
@@ -75,7 +80,9 @@ const formatDate = (dateStr) => {
   return format(new Date(dateStr), 'dd/MM/yyyy')
 }
 
-const openDialog = () => {
+const openDialog = (item, type) => {
+  selectedItem.value = item;
+  actionType.value = type;
   dialogVisible.value = true
 }
 
