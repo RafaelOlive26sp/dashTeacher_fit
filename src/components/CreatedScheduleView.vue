@@ -8,11 +8,8 @@
           <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3" @click="toggle" hover>
             <v-card-title>{{ turma.name }}</v-card-title>
 
-            <!-- <v-fab :active="!isSelected" class="me-4" icon="mdi-plus" location="bottom end"  absolute offset  style="bottom: 32px;"></v-fab> -->
-
-            <v-fab :active="isSelected" icon="mdi-plus" class="fab-overlap fab-edit" absolute ></v-fab>
-            <v-fab :active="isSelected" icon="mdi-text-box-edit" class="fab-overlap fab-add " absolute></v-fab>
-
+            <v-fab :active="isSelected" icon="mdi-plus" class="fab-overlap fab-edit" absolute @click="openDialog(item, 'createClass')"></v-fab>
+            <v-fab :active="isSelected" icon="mdi-text-box-edit" class="fab-overlap fab-add " absolute @click="openDialog(item, 'editClass')"></v-fab>
 
             <v-card-text>
               <v-row>
@@ -39,16 +36,23 @@
     </v-sheet>
   </v-col>
 
+  <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
+    <h2>teste</h2>
+  </Dialogs>
+
 
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
 import { loadClasses as loadClassesApi } from '@/services/user';
 import { format } from 'date-fns'
+import Dialogs from './Dialogs.vue';
 
 const classSchedules = ref([]);
 const selectedClasses = ref([]);
-const hidden = ref(false)
+// const hidden = ref(false)
+const dialogVisible = ref(false)
+const dialogTitle = ref("Criar Turmas")
 
 
 onMounted(() => {
@@ -70,6 +74,11 @@ const loadDataClasses = async () => {
 const formatDate = (dateStr) => {
   return format(new Date(dateStr), 'dd/MM/yyyy')
 }
+
+const openDialog = () => {
+  dialogVisible.value = true
+}
+
 const levelLabel = (level) => {
   switch (level) {
     case 'basic':
@@ -110,11 +119,11 @@ const translateDay = (day) => {
   right: 1px;
   z-index: 10;
 }
+
 .fab-add {
   position: absolute;
   top: -52px;
   right: 1px;
   z-index: 10;
 }
-
 </style>
