@@ -191,5 +191,24 @@ export const getPayments = async () =>{
       console.log(e)
     }
   }
+  export const createdScheduleInClass = async (data)=>{
+    try{
+      const token = Cookies.get('access_token');
+      if(!token){
+        throw new Error('User not authenticated', 'Error getting students');
+      }
+      // console.log('Data antes do post ',data);
+      const response = await api.post('/api/v1/created/schedules/classes',data,{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log(' resposta do back ',response.data);
+      return response.data
+
+    }catch (e) {
+      console.log(e)
+    }
+  }
 
 
