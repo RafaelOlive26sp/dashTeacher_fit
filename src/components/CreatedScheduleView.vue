@@ -8,8 +8,8 @@
           <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3" @click="toggle" hover>
             <v-card-title>{{ turma.name }}</v-card-title>
 
-            <v-fab :active="isSelected" icon="mdi-plus" class="fab-overlap fab-edit" absolute @click="openDialog(item, 'createClass')"></v-fab>
-            <v-fab :active="isSelected" icon="mdi-text-box-edit" class="fab-overlap fab-add " absolute @click="openDialog(item, 'editClass')"></v-fab>
+            <v-fab :active="isSelected" icon="mdi-plus" class="fab-overlap fab-edit" absolute @click="openDialog(turma.id, 'createClass')"></v-fab>
+            <v-fab :active="isSelected" icon="mdi-text-box-edit" class="fab-overlap fab-add " absolute @click="openDialog(turma.id, 'editClass')"></v-fab>
 
             <v-card-text>
               <v-row>
@@ -37,9 +37,9 @@
   </v-col>
 
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
-    <CreatedSchedulesView>
+    <Schedules :class-id="selectedItem" >
 
-    </CreatedSchedulesView>
+    </Schedules>
   </Dialogs>
 
 
@@ -49,7 +49,7 @@ import { ref, onMounted } from 'vue';
 import { loadClasses as loadClassesApi } from '@/services/user';
 import { format } from 'date-fns'
 import Dialogs from './Dialogs.vue';
-import CreatedSchedulesView from './CreatedSchedulesView.vue';
+import Schedules from './SchedulesView.vue';
 
 const classSchedules = ref([]);
 const selectedClasses = ref([]);
@@ -58,6 +58,7 @@ const dialogVisible = ref(false)
 const dialogTitle = ref("Criar Turmas")
 const selectedItem = ref(null)
 const actionType = ref("")
+const dialogActionText = ref("Criar")
 
 
 onMounted(() => {
@@ -84,6 +85,11 @@ const openDialog = (item, type) => {
   selectedItem.value = item;
   actionType.value = type;
   dialogVisible.value = true
+  if (type === 'createClass'){
+    dialogActionText .value = "Criar"
+    selectedItem.value = item
+    console.log('Criar', item);
+  }
 }
 
 const levelLabel = (level) => {
