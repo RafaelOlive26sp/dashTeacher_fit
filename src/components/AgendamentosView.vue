@@ -223,10 +223,10 @@ const handleApoointment = (data, toggle, type)=>{
 
 
   }
-  const dataAppointment = [
-      {dataUser},
-      {dataTurma}
-    ]
+  const dataAppointment = {
+    user: dataUser.value,
+    turma: dataTurma.value
+  }
   try {
       // console.log('estamos na funcao recebendo este valor de turmas, ', turma);
       console.log('Dados unificados ', dataAppointment);
