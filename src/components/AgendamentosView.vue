@@ -4,32 +4,22 @@
 
       <!-- Coluna de Agendamentos Agrupados -->
 
-      <v-col cols="12" md="8">
+      <!-- <v-col cols="12" md="8">
 
         <v-expansion-panels variant="accordion">
-          <v-expansion-panel
-            v-for="group in classSchedules"
-            :key="group.id"
-          >
-            <v-expansion-panel-title>
+          <v-expansion-panel v-for="group in classSchedules" :key="group.id">
+
+            <v-expansion-panel-title :class="selectedGroupId === group.id ? 'bg-primary text-white' : ''"
+              @click="selectGroup(group.id)">
               {{ group.name }} ({{ group.level }}) - Max Alunos: {{ group.max_students }}
             </v-expansion-panel-title>
 
             <v-expansion-panel-text>
               <v-row dense>
-                <v-col
-                  v-for="schedule in group.schedules_patterns"
-                  :key="schedule.id"
-                  cols="12"
-                  md="6"
-                >
-                  <v-card
-                    :color="selectedSchedule === schedule.id ? 'primary' : 'background'"
-                    class="ma-1 pa-3"
-                    elevation="2"
-                    @click="toggleScheduleSelection(schedule.id)"
-                    hover
-                  >
+                <v-col v-for="schedule in group.schedules_patterns" :key="schedule.id" cols="12" md="6">
+                  <v-card   class="ma-1 pa-3"
+  color="grey-lighten-4"
+  elevation="2" hover>
                     <div class="d-flex justify-space-between align-center">
                       <div>
                         <strong>{{ translateDay(schedule?.day_of_week) }}</strong>
@@ -56,19 +46,9 @@
 
           <v-card-text>
             <v-row dense>
-              <v-col
-                v-for="extra in extraClasses"
-                :key="extra.id"
-                cols="12"
-                md="6"
-              >
-                <v-card
-                  :color="selectedSchedule === extra.id ? 'secondary' : 'background'"
-                  class="ma-1 pa-3"
-                  elevation="2"
-                  @click="toggleScheduleSelection(extra.id)"
-                  hover
-                >
+              <v-col v-for="extra in extraClasses" :key="extra.id" cols="12" md="6">
+                <v-card :color="selectedSchedule === extra.id ? 'secondary' : 'background'" class="ma-1 pa-3"
+                  elevation="2" @click="toggleScheduleSelection(extra.id)" hover>
                   <div class="d-flex justify-space-between align-center">
                     <div>
                       <strong>{{ translateDay(extra.day_of_week) }}</strong>
@@ -87,13 +67,50 @@
         </v-card>
 
 
+      </v-col> -->
+
+      <v-col cols="12" md="8">
+        <v-sheet elevation="3" class="pa-4">
+          <v-item-group v-model="selectedClasses" mandatory>
+            <v-item :value="turma" v-for="turma in classSchedules" :key="turma.id" v-slot="{ isSelected, toggle }">
+
+              <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3" @click="handleApoointment(turma, toggle,'turma')" hover>
+                <v-card-title>{{ turma.name }}</v-card-title>
+
+                <v-card-text>
+                  <v-row>
+                    <v-col cols="6">
+                      <div><strong>Nível:</strong> {{ levelLabel(turma.level) }}</div>
+                      <div><strong>Máx. alunos:</strong> {{ turma.max_students }}</div>
+                      <div><strong>Criada em:</strong> {{ formatDate(turma.created_at) }}</div>
+                    </v-col>
+                    <v-col cols="6">
+                      <div><strong>Horários:</strong></div>
+                      <ul class="pl-4">
+                        <li v-for="(schedule, index) in turma.schedules_patterns" :key="index">
+                          {{ translateDay(schedule.day_of_week) }} -
+                          {{ schedule.start_time.slice(0, 5) }} às
+                          {{ schedule.end_time.slice(0, 5) }}
+                        </li>
+                        <p v-if="turma.schedules_patterns.length === 0">Sem Horarios.</p>
+
+                      </ul>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-item>
+          </v-item-group>
+        </v-sheet>
       </v-col>
+      <divider></divider>
+
 
       <v-col cols="12" md="4">
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedUsers" multiple>
             <v-item v-for="user in paymentConfirmed" :key="user.id" v-slot="{ isSelected, toggle }">
-              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="toggle" hover>
+              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="handleApoointment(user, toggle, 'user')" hover>
                 <v-card-title>{{ user.user.name }}</v-card-title>
 
                 <v-card-text>
@@ -131,6 +148,7 @@ import {
   getStudentsWithUser as getStudentsWithUserApi,
 } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js';
+import { format } from 'date-fns';
 
 
 const userStore = useUserStore();
@@ -141,6 +159,9 @@ const classSchedules = ref([]);
 const users = ref([]);
 const selectedSchedule = ref(null);
 const selectedUsers = ref([]);
+const selectedClasses = ref(null);
+const dataUser = ref('');
+const dataTurma = ref('');
 
 
 
@@ -156,7 +177,7 @@ onMounted(async () => {
 watch(
   () => userStore.shouldRefreshSchedules,
   async (newValue) => {
-    if(newValue) {
+    if (newValue) {
       await loadDataClasses();
       userStore.shouldRefreshSchedules = false;
 
@@ -188,10 +209,41 @@ const getStudents = async () => {
   }
 };
 
+const handleApoointment = (data, toggle, type)=>{
+  toggle()
 
-const toggleScheduleSelection = (id) => {
-  selectedSchedule.value = selectedSchedule.value === id ? null : id;
-};
+      if(type === 'user'){
+         dataUser.value  = data
+      }else{
+        dataTurma.value = data
+      }
+
+  if(!dataTurma.value.length  && !dataUser.value.length ){
+      console.log('os campos estao vazios' );
+
+
+  }
+  const dataAppointment = [
+      {dataUser},
+      {dataTurma}
+    ]
+  try {
+      // console.log('estamos na funcao recebendo este valor de turmas, ', turma);
+      console.log('Dados unificados ', dataAppointment);
+
+  } catch (error) {
+    console.log(error);
+
+  }
+}
+
+
+// const toggleScheduleSelection = (id) => {
+//   selectedSchedule.value = selectedSchedule.value === id ? null : id;
+// };
+// const selectGroup = (groupId) => {
+//   selectGroup.value = groupId;
+// }
 
 
 const translateDay = (day) => {
@@ -212,9 +264,26 @@ const translateDay = (day) => {
   return days[day.toLowerCase()] || day;
 };
 
+const formatDate = (dateStr) => {
+  return format(new Date(dateStr), 'dd/MM/yyyy')
+}
+
 const paymentConfirmed = computed(() => {
   return users.value.filter(u => u.payments?.some(p => p.status === 'paid'))
 });
+
+const levelLabel = (level) => {
+  switch (level) {
+    case 'basic':
+      return 'Básico';
+    case 'intermediate':
+      return 'Intermediário';
+    case 'advanced':
+      return 'Avançado';
+    default:
+      return 'Nível desconhecido';
+  }
+}
 
 </script>
 
