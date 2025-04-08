@@ -110,8 +110,10 @@
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedUsers" >
             <v-item v-for="user in paymentConfirmed" :key="user.id" v-slot="{ isSelected, toggle }">
-              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="handleApoointment(user, toggle, 'user')" hover>
+              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="handleApoointment(user, toggle, 'user')" hover v-if="user.classes.length === 0">
                 <v-card-title>{{ user.user.name }}</v-card-title>
+
+
 
                 <v-card-text>
                   <v-row>
@@ -145,6 +147,8 @@
   <dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm" >
       <ResumoAgendamentoView :data="dataAppointment" @confirmar="dialogVisible = false"></ResumoAgendamentoView>
   </dialogs>
+
+
 </template>
 
 <script setup>
@@ -156,7 +160,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import {
   loadClasses as loadClassesApi,
-  getStudentsWithUser as getStudentsWithUserApi,
+  getStudentsWithClass as getStudentsWithClassApi,
 } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js';
 import { format } from 'date-fns';
@@ -225,7 +229,7 @@ const loadDataClasses = async () => {
 
 const getStudents = async () => {
   try {
-    const response = await getStudentsWithUserApi();
+    const response = await getStudentsWithClassApi();
     userStore.getStudentsWithUser(response);
     users.value = response.data;
   } catch (error) {
@@ -264,15 +268,6 @@ const handleApoointment = (data, toggle, type)=>{
     dialogTitle.value = 'Resumo do Agendamento'
 
 }
-
-
-
-// const toggleScheduleSelection = (id) => {
-//   selectedSchedule.value = selectedSchedule.value === id ? null : id;
-// };
-// const selectGroup = (groupId) => {
-//   selectGroup.value = groupId;
-// }
 
 
 const translateDay = (day) => {
