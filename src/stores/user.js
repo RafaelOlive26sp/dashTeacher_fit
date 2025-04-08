@@ -14,6 +14,7 @@ export const useUserStore = defineStore('user',{
     loadClasses:[],
     loadClassesCreate:[],
     shouldRefreshSchedules: false,
+    successAppointmentUserData:[],
 
 
 
@@ -95,6 +96,13 @@ export const useUserStore = defineStore('user',{
       } catch (error) {
         console.log(error);
 
+      }
+    },
+    async successAppointmentUser(response){
+      try {
+        this.successAppointmentUserData = response
+      }catch (e) {
+        console.log(e)
       }
     }
   }
