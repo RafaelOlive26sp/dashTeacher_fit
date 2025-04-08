@@ -7,9 +7,20 @@
 
           <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3" @click="toggle" hover>
             <v-card-title>{{ turma.name }}</v-card-title>
+            <!-- <pre>
+              {{ turma }}
+            </pre> -->
 
-            <v-fab :active="isSelected" icon="mdi-plus" class="fab-overlap fab-edit" absolute @click="openDialog(turma.id, 'createClass')"></v-fab>
-            <v-fab :active="isSelected" icon="mdi-text-box-edit" class="fab-overlap fab-add " absolute @click="openDialog(turma.id, 'editClass')"></v-fab>
+            <v-fab :active="isSelected" icon="mdi-plus" class="fab-overlap fab-edit"
+                   absolute @click="openDialog(turma.id, 'createClass')">
+
+            </v-fab>
+
+
+            <v-fab :active="isSelected" icon="mdi-text-box-edit" class="fab-overlap fab-add "
+                   absolute @click="openDialog(turma.id, 'editClass')" v-if="turma.schedules_patterns.length > 0">
+
+            </v-fab>
 
             <v-card-text>
               <v-row>
@@ -26,6 +37,8 @@
                       {{ schedule.start_time.slice(0, 5) }} às
                       {{ schedule.end_time.slice(0, 5) }}
                     </li>
+                    <p v-if="turma.schedules_patterns.length === 0">Sem Horarios.</p>
+
                   </ul>
                 </v-col>
               </v-row>
@@ -37,7 +50,9 @@
   </v-col>
 
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
-    <Schedules :class-id="selectedItem" >
+    <Schedules :class-id="selectedItem" @close="dialogVisible = false" @refresh-data="loadDataClasses"
+              v-if="actionType === 'createClass'">
+      >
 
     </Schedules>
   </Dialogs>
@@ -88,7 +103,7 @@ const openDialog = (item, type) => {
   if (type === 'createClass'){
     dialogActionText .value = "Criar"
     selectedItem.value = item
-    console.log('Criar', item);
+    // console.log('Criar', item);
   }
 }
 
