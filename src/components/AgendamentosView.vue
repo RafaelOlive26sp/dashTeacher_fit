@@ -108,7 +108,7 @@
 
       <v-col cols="12" md="4">
         <v-sheet elevation="3" class="pa-4">
-          <v-item-group v-model="selectedUsers" multiple>
+          <v-item-group v-model="selectedUsers" >
             <v-item v-for="user in paymentConfirmed" :key="user.id" v-slot="{ isSelected, toggle }">
               <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="handleApoointment(user, toggle, 'user')" hover>
                 <v-card-title>{{ user.user.name }}</v-card-title>
@@ -134,6 +134,17 @@
       </v-col>
     </v-row>
   </v-container>
+  <SnackBarsView :textContent="snackbarMessage" v-model="snackbar">
+    <template #actions>
+      <v-btn color="pink" variant="text" @click="snackbar = false">
+        Close
+      </v-btn>
+    </template>
+  </SnackBarsView>
+
+  <dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm" >
+      <ResumoAgendamentoView :data="dataAppointment" @confirmar="dialogVisible = false"></ResumoAgendamentoView>
+  </dialogs>
 </template>
 
 <script setup>
@@ -149,6 +160,8 @@ import {
 } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js';
 import { format } from 'date-fns';
+import Dialogs from "@/components/Dialogs.vue";
+import ResumoAgendamentoView from "@/components/ResumoAgendamentoView.vue";
 
 
 const userStore = useUserStore();
@@ -157,11 +170,22 @@ const userStore = useUserStore();
 
 const classSchedules = ref([]);
 const users = ref([]);
-const selectedSchedule = ref(null);
+// const selectedSchedule = ref(null);
 const selectedUsers = ref([]);
 const selectedClasses = ref(null);
 const dataUser = ref('');
 const dataTurma = ref('');
+const snackbarMessage = ref('');
+const snackbar = ref(false);
+const dialogVisible = ref(false);
+const dialogTitle = ref("");
+const dataAppointment = [
+  {
+    user: '',
+    turma: ''
+  }
+]
+
 
 
 
@@ -214,28 +238,33 @@ const handleApoointment = (data, toggle, type)=>{
 
       if(type === 'user'){
          dataUser.value  = data
-      }else{
+      }
+      if (type === 'turma'){
         dataTurma.value = data
       }
 
-  if(!dataTurma.value.length  && !dataUser.value.length ){
-      console.log('os campos estao vazios' );
 
 
+  if (!dataTurma.value || !dataUser.value ||
+    (Array.isArray(dataTurma.value) && !dataTurma.value.length) ||
+    (Array.isArray(dataUser.value) && !dataUser.value.length)
+  ) {
+    snackbarMessage.value = 'Selecione uma turma e um aluno para continuar';
+    snackbar.value = true;
+    return;
   }
-  const dataAppointment = {
-    user: dataUser.value,
-    turma: dataTurma.value
-  }
-  try {
-      // console.log('estamos na funcao recebendo este valor de turmas, ', turma);
-      console.log('Dados unificados ', dataAppointment);
 
-  } catch (error) {
-    console.log(error);
+ // dataAppointment = {
+ //    user: dataUser.value,
+ //    turma: dataTurma.value
+ //  }
+  dataAppointment[0].user = dataUser.value
+  dataAppointment[0].turma = dataTurma.value
+    dialogVisible.value = true
+    dialogTitle.value = 'Resumo do Agendamento'
 
-  }
 }
+
 
 
 // const toggleScheduleSelection = (id) => {
@@ -274,7 +303,7 @@ const paymentConfirmed = computed(() => {
 
 const levelLabel = (level) => {
   switch (level) {
-    case 'basic':
+    case 'beginner':
       return 'Básico';
     case 'intermediate':
       return 'Intermediário';
