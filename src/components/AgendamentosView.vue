@@ -74,7 +74,8 @@
           <v-item-group v-model="selectedClasses" mandatory>
             <v-item :value="turma" v-for="turma in classSchedules" :key="turma.id" v-slot="{ isSelected, toggle }">
 
-              <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3" @click="handleApoointment(turma, toggle,'turma')" hover>
+              <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3"
+                @click="handleApoointment(turma, toggle, 'turma')" hover>
                 <v-card-title>{{ turma.name }}</v-card-title>
 
                 <v-card-text>
@@ -82,6 +83,7 @@
                     <v-col cols="6">
                       <div><strong>Nível:</strong> {{ levelLabel(turma.level) }}</div>
                       <div><strong>Máx. alunos:</strong> {{ turma.max_students }}</div>
+                      <div><strong>Qtd. alunos:</strong> {{ turma.students?.length }}</div>
                       <div><strong>Criada em:</strong> {{ formatDate(turma.created_at) }}</div>
                     </v-col>
                     <v-col cols="6">
@@ -108,13 +110,11 @@
 
       <v-col cols="12" md="4">
         <v-sheet elevation="3" class="pa-4">
-          <v-item-group v-model="selectedUsers" >
+          <v-item-group v-model="selectedUsers">
             <v-item v-for="user in paymentConfirmed" :key="user.id" v-slot="{ isSelected, toggle }">
-              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3" @click="handleApoointment(user, toggle, 'user')" hover v-if="user.classes.length === 0">
+              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3"
+                @click="handleApoointment(user, toggle, 'user')" hover v-if="user.classes.length === 0">
                 <v-card-title>{{ user.user.name }}</v-card-title>
-
-
-
                 <v-card-text>
                   <v-row>
                     <v-col cols="6">
@@ -128,8 +128,11 @@
                       <div>Status Pagamento: {{ user.payments[0].status === 'paid' ? 'Pago' : 'Pendente' }}</div>
                     </v-col>
                   </v-row>
+
+
                 </v-card-text>
               </v-card>
+
             </v-item>
           </v-item-group>
         </v-sheet>
@@ -144,8 +147,9 @@
     </template>
   </SnackBarsView>
 
-  <dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm" >
-      <ResumoAgendamentoView :data="dataAppointment" @confirmar="dialogVisible = false"></ResumoAgendamentoView>
+  <dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
+    <ResumoAgendamentoView :data="dataAppointment" @confirmar="dialogVisible = false" @recarregar="handleCarregar">
+    </ResumoAgendamentoView>
   </dialogs>
 
 
@@ -213,6 +217,10 @@ watch(
   }
 );
 
+const handleCarregar = ()=>{
+  loadDataClasses()
+  getStudents()
+}
 
 const loadDataClasses = async () => {
   try {
@@ -237,15 +245,15 @@ const getStudents = async () => {
   }
 };
 
-const handleApoointment = (data, toggle, type)=>{
+const handleApoointment = (data, toggle, type) => {
   toggle()
 
-      if(type === 'user'){
-         dataUser.value  = data
-      }
-      if (type === 'turma'){
-        dataTurma.value = data
-      }
+  if (type === 'user') {
+    dataUser.value = data
+  }
+  if (type === 'turma') {
+    dataTurma.value = data
+  }
 
 
 
@@ -258,14 +266,14 @@ const handleApoointment = (data, toggle, type)=>{
     return;
   }
 
- // dataAppointment = {
- //    user: dataUser.value,
- //    turma: dataTurma.value
- //  }
+  // dataAppointment = {
+  //    user: dataUser.value,
+  //    turma: dataTurma.value
+  //  }
   dataAppointment[0].user = dataUser.value
   dataAppointment[0].turma = dataTurma.value
-    dialogVisible.value = true
-    dialogTitle.value = 'Resumo do Agendamento'
+  dialogVisible.value = true
+  dialogTitle.value = 'Resumo do Agendamento'
 
 }
 
@@ -293,6 +301,9 @@ const formatDate = (dateStr) => {
 }
 
 const paymentConfirmed = computed(() => {
+  // console.log('users.value', users.value);
+  // console.log('users.value.filter', users.value.filter(u => u.payments?.some(p => p.status === 'paid')));
+
   return users.value.filter(u => u.payments?.some(p => p.status === 'paid'))
 });
 
