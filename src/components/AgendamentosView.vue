@@ -148,7 +148,7 @@
   </SnackBarsView>
 
   <dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
-    <ResumoAgendamentoView :data="dataAppointment" @confirmar="dialogVisible = false" @recarregar="handleCarregar">
+    <ResumoAgendamentoView :data="dataAppointment" @confirmar="dialogVisible = false" @recarregar="handleRecarregar">
     </ResumoAgendamentoView>
   </dialogs>
 
@@ -217,9 +217,23 @@ watch(
   }
 );
 
-const handleCarregar = ()=>{
+const handleRecarregar = (dados)=>{
   loadDataClasses()
   getStudents()
+  // console.log('handleRecarregar ',dados.cancelado)
+  if(dados?.cancelado) {
+    dialogVisible.value = false
+    snackbarMessage.value = 'Agendamento cancelado com sucesso';
+    snackbar.value = true;
+    selectedUsers.value = []
+    selectedClasses.value = null
+    dataUser.value = ''
+    dataTurma.value = ''
+  } else {
+    snackbarMessage.value = 'Agendamento realizado com sucesso';
+    snackbar.value = true;
+  }
+
 }
 
 const loadDataClasses = async () => {
@@ -261,8 +275,8 @@ const handleApoointment = (data, toggle, type) => {
     (Array.isArray(dataTurma.value) && !dataTurma.value.length) ||
     (Array.isArray(dataUser.value) && !dataUser.value.length)
   ) {
-    snackbarMessage.value = 'Selecione uma turma e um aluno para continuar';
-    snackbar.value = true;
+    // snackbarMessage.value = 'Selecione uma turma e um aluno para continuar';
+    // snackbar.value = true;
     return;
   }
 
