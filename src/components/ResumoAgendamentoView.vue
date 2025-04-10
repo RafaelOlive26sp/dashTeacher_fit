@@ -70,6 +70,7 @@
             <v-progress-linear indeterminate></v-progress-linear>
           </template>
         </v-btn>
+        <v-btn color="deep-orange-lighten-3" class="ml-2" @click="emit('recarregar',{cancelado: true})">Cancelar</v-btn>
       </v-col>
     </v-row>
   </v-container>
