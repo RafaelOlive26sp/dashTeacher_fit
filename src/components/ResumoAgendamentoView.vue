@@ -1,8 +1,8 @@
 <template>
   <v-container>
-<!--    {{props.data[0].user}}-->
-<!--    <br>-->
-<!--    {{props.data[0].turma}}-->
+    <!--    {{props.data[0].user}}-->
+    <!--    <br>-->
+    <!--    {{props.data[0].turma}}-->
     <v-row justify="center">
       <!-- Card da Turma -->
       <v-col cols="12" md="8">
@@ -58,15 +58,8 @@
 
       <!-- Campo de Data de Início -->
       <v-col cols="12" md="8">
-        <v-text-field
-          v-model="startDate"
-          type="date"
-          label="Data de Início do Aluno na Turma"
-          :rules="[v => !!v || 'A data de início é obrigatória']"
-          outlined
-          dense
-          clearable
-        ></v-text-field>
+        <v-text-field v-model="startDate" type="date" label="Data de Início do Aluno na Turma"
+          :rules="[v => !!v || 'A data de início é obrigatória']" outlined dense clearable></v-text-field>
       </v-col>
 
       <!-- Botão de Confirmação -->
@@ -80,14 +73,13 @@
       </v-col>
     </v-row>
   </v-container>
-    <v-alert :text="messageAlert" :type="color" variant="tonal" border="start"
-             :border-color="border_color_alert"
-             elevation="2" v-if="exibirAlerta"></v-alert>
+  <v-alert :text="messageAlert" :type="color" variant="tonal" border="start" :border-color="border_color_alert"
+    elevation="2" v-if="exibirAlerta"></v-alert>
 </template>
 
 <script setup>
-import { ref,watch } from 'vue'
-import {handleAppointmentUser as handleAppointmentUserApi} from '@/services/user.js'
+import { ref, watch } from 'vue'
+import { handleAppointmentUser as handleAppointmentUserApi } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js'
 
 
@@ -100,89 +92,91 @@ const props = defineProps({
 });
 
 // Variáveis
-  const aluno = props.data[0].user;
-  const turma = props.data[0].turma;
-  const startDate = ref(null); // nova data de início
-  const messageAlert = ref('');
-  const exibirAlerta = ref(false);
-  const loading = ref(false);
-  const color = ref('warning');
-  const border_color_alert = ref('error accent-2');
+const aluno = props.data[0].user;
+const turma = props.data[0].turma;
+const startDate = ref(null); // nova data de início
+const messageAlert = ref('');
+const exibirAlerta = ref(false);
+const loading = ref(false);
+const color = ref('warning');
+const border_color_alert = ref('error accent-2');
 
 
-  const emit = defineEmits(['confirmar']);
+const emit = defineEmits(['confirmar','recarregar']);
 
 // Funções auxiliares
-  const levelLabel = (level) => {
-    const levels = {
-      beginner: 'Iniciante',
-      intermediate: 'Intermediário',
-      advanced: 'Avançado'
-    };
-    return levels[level] || 'Desconhecido';
+const levelLabel = (level) => {
+  const levels = {
+    beginner: 'Iniciante',
+    intermediate: 'Intermediário',
+    advanced: 'Avançado'
   };
+  return levels[level] || 'Desconhecido';
+};
 
-  const translateDay = (day) => {
-    const days = {
-      monday: 'Segunda-feira',
-      tuesday: 'Terça-feira',
-      wednesday: 'Quarta-feira',
-      thursday: 'Quinta-feira',
-      friday: 'Sexta-feira',
-      saturday: 'Sábado',
-      sunday: 'Domingo'
-    };
-    return days[day] || day;
+const translateDay = (day) => {
+  const days = {
+    monday: 'Segunda-feira',
+    tuesday: 'Terça-feira',
+    wednesday: 'Quarta-feira',
+    thursday: 'Quinta-feira',
+    friday: 'Sexta-feira',
+    saturday: 'Sábado',
+    sunday: 'Domingo'
   };
+  return days[day] || day;
+};
 
-  const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('pt-BR');
-  };
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('pt-BR');
+};
 
-  watch(
-    ()=> userStore.successAppointmentUserData,
-    async (newValue) => {
-        if (newValue){
-          exibirAlerta.value = true
-          color.value = 'success'
-          border_color_alert.value = 'success ascent-4'
-          messageAlert.value = newValue.message
-          setTimeout(() => {
-            exibirAlerta.value = false
-            loading.value = false
-            emit('confirmar', newValue)
-          }, 2000);
-        }
-      // console.log('newValue', newValue.message);
-        }
-  )
-  const confirmarAgendamento = async () => {
+watch(
+  () => userStore.successAppointmentUserData,
+  async (newValue) => {
+    if (newValue) {
+      exibirAlerta.value = true
+      color.value = 'success'
+      border_color_alert.value = 'success ascent-4'
+      messageAlert.value = newValue.message
+      emit('recarregar');
 
-    if (!startDate.value) {
-        messageAlert.value = 'Por favor, selecione uma data de início antes de confirmar.'
-        exibirAlerta.value = true
-      return;
+      setTimeout(() => {
+        exibirAlerta.value = false
+        loading.value = false
+        emit('confirmar', newValue)
+      }, 2000);
     }
+    // console.log('newValue', newValue.message);
+  }
+)
+const confirmarAgendamento = async () => {
+
+  if (!startDate.value) {
+    messageAlert.value = 'Por favor, selecione uma data de início antes de confirmar.'
+    exibirAlerta.value = true
+    return;
+  }
 
 
-    const dados = {
-      students_id: aluno.id,
-      classes_id: turma.id,
-      start_date: startDate.value
-    };
-    // console.log('dados', dados);
-    // emit('confirmar', dados);
-    loading.value = true
-    try{
-      const response = await handleAppointmentUserApi(dados);
-      await userStore.successAppointmentUser(response)
-    }catch (e) {
-      console.log(e)
-    }
-
-
+  const dados = {
+    students_id: aluno.id,
+    classes_id: turma.id,
+    start_date: startDate.value
   };
+  // console.log('dados', dados);
+
+  loading.value = true
+  try {
+    const response = await handleAppointmentUserApi(dados);
+    await userStore.successAppointmentUser(response)
+  } catch (e) {
+    console.log(e)
+  }
+
+
+};
 </script>
 
 <style scoped>
