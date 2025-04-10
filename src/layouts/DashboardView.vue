@@ -293,107 +293,7 @@ const turmasFiltradas = computed(() => {
 }
 </style> -->
 
-<script setup>
-import { ref, computed } from 'vue'
 
-const filtroNivel = ref('todos')
-
-const turmas = ref([
-  {
-    id: 1,
-    name: 'Turma 1',
-    level: 'beginner',
-    schedules_patterns: [
-      { day_of_week: 'Segunda', start_time: '07:00', end_time: '08:00' },
-      { day_of_week: 'Quarta', start_time: '16:00', end_time: '17:00' },
-      { day_of_week: 'Sexta', start_time: '20:00', end_time: '21:00' },
-    ],
-    students: [
-      {
-        id: 1,
-        name: 'João da Silva',
-        age: 45,
-        gender: 'Masculino',
-        medical_condition: 'Nenhuma',
-      },
-      {
-        id: 2,
-        name: 'Ana Oliveira',
-        age: 38,
-        gender: 'Feminino',
-        medical_condition: 'Diabetes tipo 2',
-      },
-      {
-        id: 3,
-        name: 'aAna Oliveira',
-        age: 38,
-        gender: 'Feminino',
-        medical_condition: 'Diabetes tipo 2',
-      },
-      {
-        id: 4,
-        name: 'Adasna Oliveira',
-        age: 38,
-        gender: 'Feminino',
-        medical_condition: 'Diabetes tipo 2',
-      },
-      {
-        id: 5,
-        name: 'Adasna Oliveira',
-        age: 38,
-        gender: 'Feminino',
-        medical_condition: 'Diabetes tipo 2',
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Turma 2',
-    level: 'intermediate',
-    schedules_patterns: [
-      { day_of_week: 'Segunda', start_time: '20:00', end_time: '21:00' },
-      { day_of_week: 'Terça', start_time: '09:00', end_time: '10:00' },
-      { day_of_week: 'Quarta', start_time: '13:33', end_time: '14:33' },
-    ],
-    students: [
-      {
-        id: 3,
-        name: 'Carlos Lima',
-        age: 54,
-        gender: 'Masculino',
-        medical_condition: 'Nenhuma',
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: 'Turma 3',
-    level: 'advanced',
-    schedules_patterns: [
-      { day_of_week: 'Segunda', start_time: '18:00', end_time: '19:00' },
-    ],
-    students: [],
-  },
-])
-
-const turmasFiltradas = computed(() => {
-  if (filtroNivel.value === 'todos') return turmas.value
-  return turmas.value.filter(turma => turma.level === filtroNivel.value)
-})
-
-const corPorNivel = (level) => {
-  switch (level) {
-    case 'beginner':
-      return 'bg-blue-darken-1 text-white'
-    case 'intermediate':
-      return 'bg-green-darken-1 text-white'
-    case 'advanced':
-      return 'bg-red-darken-1 text-white'
-    default:
-      return ''
-  }
-}
-</script>
 
 <template>
   <v-container fluid>
@@ -407,6 +307,7 @@ const corPorNivel = (level) => {
         ]" label="Filtrar por Nível" variant="outlined" density="compact" />
       </v-col>
     </v-row>
+    {{filtroNivel}}
 
     <v-row>
       <v-col v-for="turma in turmasFiltradas" :key="turma.id" cols="12" md="6">
@@ -415,7 +316,7 @@ const corPorNivel = (level) => {
             style="font-size: 1rem;">
             <span>{{ turma.name }} ({{ turma.level }})</span>
           </v-card-title>
-
+          {{turma.classes}}
           <v-card-text class="pt-2">
             <strong>Horários:</strong>
             <ul class="ml-4 mb-2" style="font-size: 0.9rem;">
@@ -437,7 +338,7 @@ const corPorNivel = (level) => {
                 </v-card>
               </v-col>
 
-              <v-col v-if="turma.students.length === 0" cols="12">
+              <v-col v-if="turma.students?.length === 0" cols="12">
                 <v-alert type="info" density="compact" border="start" class="mt-2">
                   Nenhum aluno cadastrado.
                 </v-alert>
@@ -449,3 +350,168 @@ const corPorNivel = (level) => {
     </v-row>
   </v-container>
 </template>
+
+<script setup>
+import {ref, computed, onMounted, watch} from 'vue'
+import {getDataScheduleCls as getDataScheduleClsServicesApi} from '@/services/user.js'
+import { useUserStore } from '@/stores/user.js'
+
+
+const userStore = useUserStore()
+const filtroNivel = ref('todos')
+
+onMounted (()=>{
+  getDataClsSchedule()
+})
+const dataScheduleStore = ref([])
+
+watch(
+  () => userStore.dataScheduleStoreUsersClass,
+  (newValue) => {
+    // turmas.value = newValue
+    console.log('estamos dentro do watch', newValue.data)
+    dataScheduleStore.value = newValue.data
+  },
+  { immediate: true }
+)
+
+
+  // const dados = ref(
+  //   {
+  //     "id": 1,
+  //     "age": 65,
+  //     "height": "1.85",
+  //     "weight": "96.00",
+  //     "gender": "female",
+  //     "medical_condition": "nanhuma",
+  //     "users_id": 2,
+  //       'user':{
+  //         "id": 2,
+  //         "name": "Sofia Cassin"
+  //       },
+  //       'classes':{
+  //         "id": 1,
+  //         "students_id": 1,
+  //         "classes_id": 1,
+  //         "start_date": "2025-04-14",
+  //         "end_date": null,
+  //           'classe':{
+  //             "id": 1,
+  //             "name": "turma 3",
+  //             "max_students": 3,
+  //             "level": "beginner",
+  //             'schedules_patterns': [
+  //
+  //             ],
+  //           }
+  //       }
+  //
+  //
+  //   }
+  // )
+  const turmas = ref([
+    {
+      id: 1,
+      name: 'Turma 1',
+      level: 'beginner',
+      schedules_patterns: [
+        { day_of_week: 'Segunda', start_time: '07:00', end_time: '08:00' },
+        { day_of_week: 'Quarta', start_time: '16:00', end_time: '17:00' },
+        { day_of_week: 'Sexta', start_time: '20:00', end_time: '21:00' },
+      ],
+      students: [
+        {
+          id: 1,
+          name: 'João da Silva',
+          age: 45,
+          gender: 'Masculino',
+          medical_condition: 'Nenhuma',
+        },
+        {
+          id: 2,
+          name: 'Ana Oliveira',
+          age: 38,
+          gender: 'Feminino',
+          medical_condition: 'Diabetes tipo 2',
+        },
+        {
+          id: 3,
+          name: 'aAna Oliveira',
+          age: 38,
+          gender: 'Feminino',
+          medical_condition: 'Diabetes tipo 2',
+        },
+        {
+          id: 4,
+          name: 'Adasna Oliveira',
+          age: 38,
+          gender: 'Feminino',
+          medical_condition: 'Diabetes tipo 2',
+        },
+        {
+          id: 5,
+          name: 'Adasna Oliveira',
+          age: 38,
+          gender: 'Feminino',
+          medical_condition: 'Diabetes tipo 2',
+        },
+      ],
+    },
+    {
+      id: 2,
+      name: 'Turma 2',
+      level: 'intermediate',
+      schedules_patterns: [
+        { day_of_week: 'Segunda', start_time: '20:00', end_time: '21:00' },
+        { day_of_week: 'Terça', start_time: '09:00', end_time: '10:00' },
+        { day_of_week: 'Quarta', start_time: '13:33', end_time: '14:33' },
+      ],
+      students: [
+        {
+          id: 3,
+          name: 'Carlos Lima',
+          age: 54,
+          gender: 'Masculino',
+          medical_condition: 'Nenhuma',
+        },
+      ],
+    },
+    {
+      id: 3,
+      name: 'Turma 3',
+      level: 'advanced',
+      schedules_patterns: [
+        { day_of_week: 'Segunda', start_time: '18:00', end_time: '19:00' },
+      ],
+      students: [],
+    },
+  ])
+
+const turmasFiltradas = computed(() => {
+  if (filtroNivel.value === 'todos') return dataScheduleStore.value
+  return dataScheduleStore.value.filter(turma => turma.level === filtroNivel.value)
+})
+
+const corPorNivel = (level) => {
+  switch (level) {
+    case 'beginner':
+      return 'bg-blue-darken-1 text-white'
+    case 'intermediate':
+      return 'bg-green-darken-1 text-white'
+    case 'advanced':
+      return 'bg-red-darken-1 text-white'
+    default:
+      return ''
+  }
+}
+
+const getDataClsSchedule = async ()=>{
+  try {
+    const response = await getDataScheduleClsServicesApi()
+    console.log('estamos dentro da funcao getDataCls ',response)
+    await userStore.getDataScheduleStore(response)
+  }catch (e) {
+    console.log(e)
+  }
+}
+</script>
