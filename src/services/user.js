@@ -249,5 +249,24 @@ export const getPayments = async () =>{
       throw new Error(error.response.data.message, 'Error getting students');
     }
   }
+  export const getDataScheduleCls = async ()=>{
+    try{
+      const token = Cookies.get('access_token');
+      if(!token){
+        throw new Error('User not authenticated', 'Error getting students');
+      }
+      const response = await api.get('/api/v1/clschedule',{
+        headers:{
+          Authorization: `Bearer ${token}`
+        },
+      })
+      console.log(' resposta do back ',response.data);
+
+      return response.data
+    }catch(error){
+      console.error(error);
+      throw new Error(error.response.data.message, 'Error getting students');
+    }
+  }
 
 
