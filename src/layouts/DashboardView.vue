@@ -307,20 +307,37 @@ const turmasFiltradas = computed(() => {
         ]" label="Filtrar por Nível" variant="outlined" density="compact" />
       </v-col>
     </v-row>
-    {{filtroNivel}}
+    <v-row>
+      <v-col cols="12">
+        <v-card class="pa-4" color="#1e1e1e" variant="flat">
+          <h2 class="text-h6 text-white mb-2">
+            💪 Sistema de Agendamentos de Treinamento Funcional
+          </h2>
+          <p class="text-body-2 text-grey-lighten-1">
+            Bem-vindo(a) ao nosso sistema! Aqui você encontra a organização completa das turmas de treinamento
+            funcional, separadas por nível (iniciante, intermediário, avançado), horários disponíveis e informações dos
+            alunos participantes.
+          </p>
+          <p class="text-body-2 text-grey-lighten-1 mt-2">
+            Use o filtro acima para visualizar apenas as turmas de um nível específico. Mantenha-se organizado e
+            acompanhe todos os detalhes com facilidade!
+          </p>
+        </v-card>
+      </v-col>
+    </v-row>
+    <!-- {{filtroNivel}} -->
 
     <v-row>
       <v-col v-for="turma in turmasFiltradas" :key="turma.id" cols="12" md="6">
         <v-card class="mb-4 pa-3" elevation="5" rounded="xl">
-          <v-card-title class="py-2 px-4 d-flex justify-space-between align-center" :class="corPorNivel(turma.level)"
-            style="font-size: 1rem;">
-            <span>{{ turma.name }} ({{ turma.level }})</span>
+          <v-card-title class="py-2 px-4 d-flex justify-space-between align-center"
+            :class="corPorNivel(turma.classe.level)" style="font-size: 1rem;">
+            <span>{{ turma.classe.name }} ({{ turma.classe.level }})</span>
           </v-card-title>
-          {{turma.classes}}
           <v-card-text class="pt-2">
             <strong>Horários:</strong>
             <ul class="ml-4 mb-2" style="font-size: 0.9rem;">
-              <li v-for="(pattern, index) in turma.schedules_patterns" :key="index">
+              <li v-for="(pattern, index) in turma.classe.schedules_patterns" :key="index">
                 {{ pattern.day_of_week }}: {{ pattern.start_time }} - {{ pattern.end_time }}
               </li>
             </ul>
@@ -334,11 +351,12 @@ const turmasFiltradas = computed(() => {
                     <strong>Idade:</strong> {{ aluno.age }} <br />
                     <strong>Sexo:</strong> {{ aluno.gender }} <br />
                     <strong>Condição Médica:</strong> {{ aluno.medical_condition }}
+                    <strong>Pagamento:</strong>{{ aluno.payments.length > 0 ? aluno.payments[0].status : 'Não pago' }}
                   </div>
                 </v-card>
               </v-col>
 
-              <v-col v-if="turma.students?.length === 0" cols="12">
+              <v-col v-if="turma.students.length === 0" cols="12">
                 <v-alert type="info" density="compact" border="start" class="mt-2">
                   Nenhum aluno cadastrado.
                 </v-alert>
@@ -352,145 +370,72 @@ const turmasFiltradas = computed(() => {
 </template>
 
 <script setup>
-import {ref, computed, onMounted, watch} from 'vue'
-import {getDataScheduleCls as getDataScheduleClsServicesApi} from '@/services/user.js'
+import { ref, computed, onMounted, watch } from 'vue'
+import { getDataScheduleCls as getDataScheduleClsServicesApi } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js'
 
 
 const userStore = useUserStore()
 const filtroNivel = ref('todos')
 
-onMounted (()=>{
+onMounted(() => {
+
   getDataClsSchedule()
+
 })
 const dataScheduleStore = ref([])
 
 watch(
   () => userStore.dataScheduleStoreUsersClass,
   (newValue) => {
-    // turmas.value = newValue
-    console.log('estamos dentro do watch', newValue.data)
-    dataScheduleStore.value = newValue.data
+    if (newValue && Array.isArray(newValue.data)) {
+      dataScheduleStore.value = newValue.data
+    } else {
+      dataScheduleStore.value = []
+    }
   },
   { immediate: true }
 )
-
-
-  // const dados = ref(
-  //   {
-  //     "id": 1,
-  //     "age": 65,
-  //     "height": "1.85",
-  //     "weight": "96.00",
-  //     "gender": "female",
-  //     "medical_condition": "nanhuma",
-  //     "users_id": 2,
-  //       'user':{
-  //         "id": 2,
-  //         "name": "Sofia Cassin"
-  //       },
-  //       'classes':{
-  //         "id": 1,
-  //         "students_id": 1,
-  //         "classes_id": 1,
-  //         "start_date": "2025-04-14",
-  //         "end_date": null,
-  //           'classe':{
-  //             "id": 1,
-  //             "name": "turma 3",
-  //             "max_students": 3,
-  //             "level": "beginner",
-  //             'schedules_patterns': [
-  //
-  //             ],
-  //           }
-  //       }
-  //
-  //
-  //   }
-  // )
-  const turmas = ref([
-    {
-      id: 1,
-      name: 'Turma 1',
-      level: 'beginner',
-      schedules_patterns: [
-        { day_of_week: 'Segunda', start_time: '07:00', end_time: '08:00' },
-        { day_of_week: 'Quarta', start_time: '16:00', end_time: '17:00' },
-        { day_of_week: 'Sexta', start_time: '20:00', end_time: '21:00' },
-      ],
-      students: [
-        {
-          id: 1,
-          name: 'João da Silva',
-          age: 45,
-          gender: 'Masculino',
-          medical_condition: 'Nenhuma',
-        },
-        {
-          id: 2,
-          name: 'Ana Oliveira',
-          age: 38,
-          gender: 'Feminino',
-          medical_condition: 'Diabetes tipo 2',
-        },
-        {
-          id: 3,
-          name: 'aAna Oliveira',
-          age: 38,
-          gender: 'Feminino',
-          medical_condition: 'Diabetes tipo 2',
-        },
-        {
-          id: 4,
-          name: 'Adasna Oliveira',
-          age: 38,
-          gender: 'Feminino',
-          medical_condition: 'Diabetes tipo 2',
-        },
-        {
-          id: 5,
-          name: 'Adasna Oliveira',
-          age: 38,
-          gender: 'Feminino',
-          medical_condition: 'Diabetes tipo 2',
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Turma 2',
-      level: 'intermediate',
-      schedules_patterns: [
-        { day_of_week: 'Segunda', start_time: '20:00', end_time: '21:00' },
-        { day_of_week: 'Terça', start_time: '09:00', end_time: '10:00' },
-        { day_of_week: 'Quarta', start_time: '13:33', end_time: '14:33' },
-      ],
-      students: [
-        {
-          id: 3,
-          name: 'Carlos Lima',
-          age: 54,
-          gender: 'Masculino',
-          medical_condition: 'Nenhuma',
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: 'Turma 3',
-      level: 'advanced',
-      schedules_patterns: [
-        { day_of_week: 'Segunda', start_time: '18:00', end_time: '19:00' },
-      ],
-      students: [],
-    },
-  ])
-
 const turmasFiltradas = computed(() => {
-  if (filtroNivel.value === 'todos') return dataScheduleStore.value
-  return dataScheduleStore.value.filter(turma => turma.level === filtroNivel.value)
+  if (!Array.isArray(dataScheduleStore.value)) return []
+
+  const agrupadas = {}
+
+  for (const aluno of dataScheduleStore.value) {
+    for (const matricula of aluno.classes) {
+
+      const turma = matricula.classe
+      const turmaId = turma.id
+
+      if (!agrupadas[turmaId]) {
+        agrupadas[turmaId] = {
+          id: turmaId,
+          classe: turma,
+          students: []
+        }
+      }
+
+      agrupadas[turmaId].students.push({
+        id: aluno.id,
+        name: aluno.user.name,
+        age: aluno.age,
+        gender: aluno.gender,
+        medical_condition: aluno.medical_condition,
+        payments: aluno.payments ?? [],
+      })
+    }
+  }
+
+  const turmas = Object.values(agrupadas)
+
+  if (filtroNivel.value === 'todos') return turmas
+  return turmas.filter(t => t.classe.level === filtroNivel.value)
 })
+
+
+
+
+
 
 const corPorNivel = (level) => {
   switch (level) {
@@ -505,12 +450,12 @@ const corPorNivel = (level) => {
   }
 }
 
-const getDataClsSchedule = async ()=>{
+const getDataClsSchedule = async () => {
   try {
     const response = await getDataScheduleClsServicesApi()
-    console.log('estamos dentro da funcao getDataCls ',response)
+    console.log('estamos dentro da funcao getDataCls ', response)
     await userStore.getDataScheduleStore(response)
-  }catch (e) {
+  } catch (e) {
     console.log(e)
   }
 }
