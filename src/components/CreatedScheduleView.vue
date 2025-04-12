@@ -1,5 +1,6 @@
 <template>
 
+
   <v-col cols="12" md="8">
     <v-sheet elevation="3" class="pa-4">
       <v-item-group v-model="selectedClasses">
@@ -11,14 +12,14 @@
               {{ turma }}
             </pre> -->
 
-            <v-fab :active="isSelected" icon="mdi-plus" class="fab-overlap fab-edit"
-                   absolute @click="openDialog(turma.id, 'createClass')">
+            <v-fab :active="isSelected" icon="mdi-plus" class="fab-overlap fab-edit" absolute
+              @click="openDialog(turma.id, 'createClass')">
 
             </v-fab>
 
 
-            <v-fab :active="isSelected" icon="mdi-text-box-edit" class="fab-overlap fab-add "
-                   absolute @click="openDialog(turma.id, 'editClass')" v-if="turma.schedules_patterns.length > 0">
+            <v-fab :active="isSelected" icon="mdi-text-box-edit" class="fab-overlap fab-add " absolute
+              @click="openDialog(turma.id, 'editClass')" v-if="turma.schedules_patterns.length > 0">
 
             </v-fab>
 
@@ -51,11 +52,12 @@
 
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
     <Schedules :class-id="selectedItem" @close="dialogVisible = false" @refresh-data="loadDataClasses"
-              v-if="actionType === 'createClass'">
+      v-if="actionType === 'createClass'">
       >
 
     </Schedules>
   </Dialogs>
+  <tutorial v-model="showTutorial"  />
 
 
 </template>
@@ -65,6 +67,7 @@ import { loadClasses as loadClassesApi } from '@/services/user';
 import { format } from 'date-fns'
 import Dialogs from './Dialogs.vue';
 import Schedules from './SchedulesView.vue';
+import tutorial from './tutorial/CriarHoraio.vue';
 
 const classSchedules = ref([]);
 const selectedClasses = ref([]);
@@ -74,6 +77,7 @@ const dialogTitle = ref("Criar Turmas")
 const selectedItem = ref(null)
 const actionType = ref("")
 const dialogActionText = ref("Criar")
+const showTutorial = ref(false)
 
 
 onMounted(() => {
@@ -100,8 +104,8 @@ const openDialog = (item, type) => {
   selectedItem.value = item;
   actionType.value = type;
   dialogVisible.value = true
-  if (type === 'createClass'){
-    dialogActionText .value = "Criar"
+  if (type === 'createClass') {
+    dialogActionText.value = "Criar"
     selectedItem.value = item
     // console.log('Criar', item);
   }
