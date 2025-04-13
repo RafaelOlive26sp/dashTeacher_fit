@@ -29,7 +29,19 @@
       </v-btn>
     </template>
   </SnackBarsView>
-
+  <TutorialView v-model="showTutorial" title="Como criar uma turma">
+    <template v-slot:contentTutorial>
+      <ul class="ml-4 mt-2">
+        <li class="mb-1">Escolha um <strong>nome</strong> para a turma.</li>
+        <li class="mb-1">Defina o <strong>máximo de alunos</strong> que podem se inscrever.</li>
+        <li class="mb-1">Selecione o <strong>nível</strong> da turma.</li>
+        <li class="mb-1">Clique em <strong>"Salvar"</strong> para criar a turma.</li>
+      </ul>
+      <p class="mt-3">
+        As turmas criadas serão exibidas na lista e ficarão disponíveis para os alunos agendarem suas aulas.
+      </p>
+    </template>
+  </TutorialView>
 </template>
 
 <script setup>
@@ -37,6 +49,7 @@ import { ref } from 'vue'
 import { createdClass as createdClassApi } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js'
 import SnackBarsView from "@/components/snackBar/SnackBarsView.vue";
+import TutorialView from "@/components/tutorial/TutorialView.vue";
 
 const userStore = useUserStore()
 const emit = defineEmits(['close'])

@@ -32,11 +32,23 @@
     </template>
   </SnackBarsView>
   <Dialogs  v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
-    <EditAccount v-if="actionType === 'edit'" :dialogVisible="dialogVisible"
-      @update:dialogVisible="dialogVisible = $event"></EditAccount>
+    <EditAccount v-if="actionType === 'edit'" :dialogVisible="dialogVisible" @update:dialogVisible="dialogVisible = $event">
+      <template v-slot:content>
+        <p>ainda em Desenvolvimento</p>
+      </template>
+    </EditAccount>
       <CriarAlunosView v-else-if="actionType === 'created'" @profileCreated="loadStudents"></CriarAlunosView>
     <p v-else>{{ dialogMessage }}</p>
   </Dialogs>
+  <TutorialView v-model="showTutorial" title="Campo de Ações">
+    <template v-slot:contentTutorial>
+      <ul class="ml-4 mt-2">
+        <li class="mb-1">Nesta sessao voce pode excluir o Aluno.</li>
+        <li class="mb-1">Escolha um <strong>aluno</strong> Clique no icone de Lixeira e confirme.</li>
+      </ul>
+
+    </template>
+  </TutorialView>
 
 </template>
 
@@ -48,6 +60,7 @@ import { nextTick, onMounted, ref, watch } from 'vue';
 import Dialogs from './Dialogs.vue';
 import EditAccount from './EditAccount.vue'
 import CriarAlunosView from './CriarAlunosView.vue'
+import TutorialView from "@/components/tutorial/TutorialView.vue";
 
 
 const userStore = useUserStore();
@@ -111,7 +124,7 @@ const openDialog = (item, type) => {
   dialogVisible.value = true;
 
   if (type === "edit") {
-    dialogTitle.value = "Editar Usuário";
+    // dialogTitle.value = "Editar Usuário";
 
   } else if(type === "delete"){
     dialogTitle.value = "Excluir Usuário";

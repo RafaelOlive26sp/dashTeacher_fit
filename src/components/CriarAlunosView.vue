@@ -82,7 +82,25 @@
     </template>
   </SnackBarsView>
 
-
+  <TutorialView v-model="showTutorial" title="Como criar um cadastro de aluno">
+    <template v-slot:contentTutorial>
+      <ul class="ml-4 mt-2">
+        <li class="mb-1">Escolha um usuario.</li>
+        <li class="mb-1">Selecione a <strong>idade</strong> do aluno.</li>
+        <li class="mb-1">Defina a <strong>Altura</strong> do aluno.</li>
+        <li class="mb-1">Defina o <strong>Peso</strong> do aluno.</li>
+        <li class="mb-1">Defina o <strong>Sexo</strong> do aluno.</li>
+        <li class="mb-1">Selecione se é <strong>Fumante</strong>.</li>
+        <li class="mb-1">Se tem alguma restrição medica se  <strong>Não Houver</strong> Registre como <strong>NÃO TEM</strong>.</li>
+        <li class="mb-1">Selecione se tem alguma experiencia anterior, como quando foi a ultima vez que praticou exercicios fisicos ou similares .</li>
+        <li class="mb-1">E por fim selecione se ele pratica alguma atividade ou exercicio fisico atualmente.</li>
+        <li class="mb-1">Clique em <strong>"Salvar"</strong> para criar o aluno.</li>
+      </ul>
+      <p class="mt-3">
+        Os alunos criados serão exibidos na lista e ficarão disponíveis para os alunos agendarem suas aulas.
+      </p>
+    </template>
+  </TutorialView>
 
 
 
@@ -95,6 +113,7 @@ import { useUserStore } from "@/stores/user.js";
 import Dialogs from "@/components/Dialogs.vue";
 import EditAccount from "@/components/EditAccount.vue";
 import SnackBarsView from "./snackBar/SnackBarsView.vue";
+import TutorialView from "@/components/tutorial/TutorialView.vue";
 
 const emit = defineEmits(["profileCreated"]);
 const userStore = useUserStore();
