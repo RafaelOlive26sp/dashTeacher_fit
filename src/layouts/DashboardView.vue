@@ -305,6 +305,7 @@ const turmasFiltradas = computed(() => {
           { title: 'Intermediário', value: 'intermediate' },
           { title: 'Avançado', value: 'advanced' },
         ]" label="Filtrar por Nível" variant="outlined" density="compact" />
+      <v-btn class="me-2" prepend-icon="mdi-pencil" rounded="lg" text="Editar Turmas"  @click="openDialog(item, 'created')"></v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -367,20 +368,32 @@ const turmasFiltradas = computed(() => {
       </v-col>
     </v-row>
   </v-container>
+  <Dialog v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
+
+    <EditClassesView :dataSchedules="dataScheduleStore">
+
+    </EditClassesView>
+
+  </Dialog>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { getDataScheduleCls as getDataScheduleClsServicesApi } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js'
+import EditClassesView from '@/components/EditClasses/EditClassesView.vue'
+import Dialog from '@/components/Dialogs.vue'
 
 
 const userStore = useUserStore()
 const filtroNivel = ref('todos')
+const dialogVisible = ref(false)
+const dialogTitle = ref('')
 
 onMounted(() => {
 
   getDataClsSchedule()
+
 
 })
 const dataScheduleStore = ref([])
@@ -432,11 +445,6 @@ const turmasFiltradas = computed(() => {
   return turmas.filter(t => t.classe.level === filtroNivel.value)
 })
 
-
-
-
-
-
 const corPorNivel = (level) => {
   switch (level) {
     case 'beginner':
@@ -458,5 +466,9 @@ const getDataClsSchedule = async () => {
   } catch (e) {
     console.log(e)
   }
+}
+const openDialog =()=>{
+  dialogVisible.value = true
+
 }
 </script>
