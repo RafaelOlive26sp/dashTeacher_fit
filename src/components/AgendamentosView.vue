@@ -73,11 +73,11 @@
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedClasses" mandatory>
             <v-item :value="turma" v-for="turma in classSchedules" :key="turma.id" v-slot="{ isSelected, toggle }">
-
+                <!-- {{turma}} -->
               <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3"
                 @click="handleApoointment(turma, toggle, 'turma')" hover>
                 <v-card-title>{{ turma.name }}</v-card-title>
-
+                  <!-- {{turma}} -->
                 <v-card-text>
                   <v-row>
                     <v-col cols="6">
@@ -240,7 +240,7 @@ const loadDataClasses = async () => {
   try {
     const response = await loadClassesApi()
     // console.log('Dados passados para store', response.data);
-    userStore.loadDataSchedules(response)
+    await userStore.loadDataSchedules(response)
     classSchedules.value = response.data
 
   } catch (error) {
