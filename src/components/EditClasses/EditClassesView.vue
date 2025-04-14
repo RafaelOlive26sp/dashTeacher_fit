@@ -1,7 +1,7 @@
 <template>
   <pre>
 
-    {{ turmasSemEstudantes }}
+    {{ dataScheduleStore }}
   </pre>
    <v-container fluid>
 
