@@ -5,6 +5,7 @@
   </pre>
    <v-container fluid>
 
+
      <v-row>
          <v-col v-for="turma in turmasFiltradas" :key="turma.id" cols="12" md="6">
            <v-card class="mb-4 pa-3" elevation="5" rounded="xl">
@@ -49,6 +50,7 @@
 </template>
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import CardTurmasView from '@/components/CardTurmas/CardTurmasView.vue'
 
 const filtroNivel = ref('todos')
 const dataScheduleStore = ref([])
