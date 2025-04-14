@@ -1,7 +1,8 @@
 <template>
   <pre>
 
-    {{ dataScheduleStore }}
+    <!-- {{ dataScheduleStore }}]
+       -->
   </pre>
    <v-container fluid>
 
@@ -89,7 +90,7 @@ const turmasFiltradas = computed(() => {
   const agrupadas = {}
 
   for (const aluno of dataScheduleStore.value) {
-    console.log('Alunos ',aluno);
+    // console.log('Alunos ',aluno);
 
     for (const matricula of aluno.classes) {
 
