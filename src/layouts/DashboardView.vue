@@ -461,7 +461,7 @@ const corPorNivel = (level) => {
 const getDataClsSchedule = async () => {
   try {
     const response = await getDataScheduleClsServicesApi()
-    console.log('estamos dentro da funcao getDataCls ', response)
+    // console.log('estamos dentro da funcao getDataCls ', response)
     await userStore.getDataScheduleStore(response)
   } catch (e) {
     console.log(e)
