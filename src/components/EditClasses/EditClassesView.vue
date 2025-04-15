@@ -1,9 +1,11 @@
 <template>
   <pre>
 
-    <!-- {{ dataScheduleStore }}]
-       -->
+<!--     {{ dataScheduleStore }}]-->
+<!--    {{ dataendPoint }}-->
+<!--    {{ allClassSchedules }}-->
   </pre>
+
    <v-container fluid>
 
 
@@ -46,92 +48,121 @@
            </v-card>
          </v-col>
        </v-row>
+
+
+     <!-- Turmas sem alunos -->
+     <v-row class="mt-6">
+       <v-col v-for="turma in allClassSchedules" :key="`sem-aluno-${turma.id}`" cols="12" md="6">
+         <v-card class="mb-4 pa-3" elevation="2" rounded="xl">
+           <v-card-title class="py-2 px-4 d-flex justify-space-between align-center"
+                         :class="corPorNivel(turma.level)" style="font-size: 1rem;">
+             <span>{{ turma.name }} ({{ turma.level }})</span>
+           </v-card-title>
+           <v-card-text class="pt-2">
+             <strong>Horários:</strong>
+             <ul class="ml-4 mb-2" style="font-size: 0.9rem;">
+               <li v-for="(pattern, index) in turma.schedules_patterns" :key="index">
+                 {{ pattern.day_of_week }}: {{ pattern.start_time }} - {{ pattern.end_time }}
+               </li>
+             </ul>
+
+             <v-alert type="info" density="compact" border="start" class="mt-2">
+               Nenhum aluno cadastrado nesta turma.
+             </v-alert>
+           </v-card-text>
+         </v-card>
+       </v-col>
+     </v-row>
    </v-container>
-  <!-- {{ props.dataSchedules }} -->
+
 </template>
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
-import CardTurmasView from '@/components/CardTurmas/CardTurmasView.vue'
-
-const filtroNivel = ref('todos')
-const dataScheduleStore = ref([])
-const props = defineProps({
-  dataSchedules:{
-    Object
-  }
-})
-
-watch(() => props.dataSchedules, (newValue) => {
-  dataScheduleStore.value = newValue
-}, { immediate: true })
-
-import {loadClasses} from '@/services/user.js'
-
-// const userStore = useUserStore()
-const allClassSchedules = ref([])
-onMounted(async () => {
-  const response = await loadClasses()
-  if (response) {
-    // allClassSchedules.value = response.data
-    allClassSchedules.value = response.data.filter(turma => turma.students.length === 0);
+  import { computed, onMounted, ref, watch } from 'vue'
+  import {loadClasses} from '@/services/user.js'
 
 
-  }
+  const filtroNivel = ref('todos')
+  const dataScheduleStore = ref([])
+
+  const props = defineProps({
+    dataSchedules:{
+      Object
+    }
+  })
+
+  // este metodo retorna os dados dos alunos
+  watch(() => props.dataSchedules, (newValue) => {
+    dataScheduleStore.value = newValue
+  }, { immediate: true })
 
 
-})
+
+  const allClassSchedules = ref([])
+  onMounted(async () => {
+
+    // este metodo retorna as turmas que não tem alunos
+    const response = await loadClasses()
+    if (response) {
+      // allClassSchedules.value = response.data
+      allClassSchedules.value = response.data.filter(turma => turma.students.length === 0);
+    }
 
 
-const turmasFiltradas = computed(() => {
+  })
 
 
-  if (!Array.isArray(dataScheduleStore.value)) return []
 
-  const agrupadas = {}
 
-  for (const aluno of dataScheduleStore.value) {
-    // console.log('Alunos ',aluno);
+  const turmasFiltradas = computed(() => {
 
-    for (const matricula of aluno.classes) {
 
-      const turma = matricula.classe
-      const turmaId = turma.id
+    if (!Array.isArray(dataScheduleStore.value)) return []
 
-      if (!agrupadas[turmaId]) {
-        agrupadas[turmaId] = {
-          id: turmaId,
-          classe: turma,
-          students: []
+    const agrupadas = {}
+
+    for (const aluno of dataScheduleStore.value) {
+      // console.log('Alunos ',aluno);
+
+      for (const matricula of aluno.classes) {
+
+        const turma = matricula.classe
+        const turmaId = turma.id
+
+        if (!agrupadas[turmaId]) {
+          agrupadas[turmaId] = {
+            id: turmaId,
+            classe: turma,
+            students: []
+          }
         }
-      }
 
-      agrupadas[turmaId].students.push({
-        id: aluno.id,
-        name: aluno.user.name,
-        age: aluno.age,
-        gender: aluno.gender,
-        medical_condition: aluno.medical_condition,
-        payments: aluno.payments ?? [],
-      })
+        agrupadas[turmaId].students.push({
+          id: aluno.id,
+          name: aluno.user.name,
+          age: aluno.age,
+          gender: aluno.gender,
+          medical_condition: aluno.medical_condition,
+          payments: aluno.payments ?? [],
+        })
+      }
+    }
+
+    const turmas = Object.values(agrupadas)
+
+    if (filtroNivel.value === 'todos') return turmas
+    return turmas.filter(t => t.classe.level === filtroNivel.value)
+  })
+
+  const corPorNivel = (level) => {
+    switch (level) {
+      case 'beginner':
+        return 'bg-blue-darken-1 text-white'
+      case 'intermediate':
+        return 'bg-green-darken-1 text-white'
+      case 'advanced':
+        return 'bg-red-darken-1 text-white'
+      default:
+        return ''
     }
   }
-
-  const turmas = Object.values(agrupadas)
-
-  if (filtroNivel.value === 'todos') return turmas
-  return turmas.filter(t => t.classe.level === filtroNivel.value)
-})
-
-const corPorNivel = (level) => {
-  switch (level) {
-    case 'beginner':
-      return 'bg-blue-darken-1 text-white'
-    case 'intermediate':
-      return 'bg-green-darken-1 text-white'
-    case 'advanced':
-      return 'bg-red-darken-1 text-white'
-    default:
-      return ''
-  }
-}
 </script>
