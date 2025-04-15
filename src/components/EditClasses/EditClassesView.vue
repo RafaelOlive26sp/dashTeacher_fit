@@ -1,84 +1,133 @@
 <template>
-  <pre>
-
-<!--     {{ dataScheduleStore }}]-->
-<!--    {{ dataendPoint }}-->
-<!--    {{ allClassSchedules }}-->
-  </pre>
-
-   <v-container fluid>
-
-
-     <v-row>
+  <v-container fluid>
+      <v-row>
          <v-col v-for="turma in turmasFiltradas" :key="turma.id" cols="12" md="6">
            <v-card class="mb-4 pa-3" elevation="5" rounded="xl">
              <v-card-title class="py-2 px-4 d-flex justify-space-between align-center"
                :class="corPorNivel(turma.classe.level)" style="font-size: 1rem;">
                <span>{{ turma.classe.name }} ({{ turma.classe.level }})</span>
              </v-card-title>
+
              <v-card-text class="pt-2">
+               <!-- Horários -->
                <strong>Horários:</strong>
                <ul class="ml-4 mb-2" style="font-size: 0.9rem;">
-                 <li v-for="(pattern, index) in turma.classe.schedules_patterns" :key="index">
+                 <li
+                   v-for="(pattern, index) in turma.classe.schedules_patterns"
+                   :key="index"
+                 >
                    {{ pattern.day_of_week }}: {{ pattern.start_time }} - {{ pattern.end_time }}
                  </li>
                </ul>
 
                <strong>Alunos:</strong>
-               <v-row>
-                 <v-col v-for="aluno in turma.students" :key="aluno.id" cols="12" sm="6">
-                   <v-card outlined class="pa-3 h-100">
+
+
+<!--                {{// turma.classe}}-->
+             <draggable
+               :list="turma.students"
+               group="alunos"
+               item-key="id"
+               class="d-flex flex-wrap"
+               :animation="200"
+               :data-turma-id="turma.id"
+               @end="(evt) => onDrop(turma, evt)"
+             >
+               <template #item="{ element }">
+                 <v-col cols="12" sm="6">
+                   <v-card outlined class="pa-3 ma-1">
                      <div style="font-size: 0.9rem;">
-                       <strong>Nome:</strong> {{ aluno.name }} <br />
-                       <strong>Idade:</strong> {{ aluno.age }} <br />
-                       <strong>Sexo:</strong> {{ aluno.gender }} <br />
-                       <strong>Condição Médica:</strong> {{ aluno.medical_condition }}
-                       <strong>Pagamento:</strong>{{ aluno.payments.length > 0 ? aluno.payments[0].status : 'Não pago' }}
+                       <strong>Nome:</strong> {{ element.name }}<br />
+                       <strong>Idade:</strong> {{ element.age }}<br />
+                       <strong>Sexo:</strong> {{ element.gender }}<br />
+                       <strong>Experiência:</strong> {{ element.experience_level }}
                      </div>
                    </v-card>
                  </v-col>
+               </template>
+             </draggable>
 
-                 <v-col v-if="turma.students.length === 0" cols="12">
-                   <v-alert type="info" density="compact" border="start" class="mt-2">
-                     Nenhum aluno cadastrado.
-                   </v-alert>
-                 </v-col>
-               </v-row>
+
              </v-card-text>
            </v-card>
          </v-col>
-       </v-row>
+      </v-row>
 
 
      <!-- Turmas sem alunos -->
-     <v-row class="mt-6">
-       <v-col v-for="turma in allClassSchedules" :key="`sem-aluno-${turma.id}`" cols="12" md="6">
-         <v-card class="mb-4 pa-3" elevation="2" rounded="xl">
-           <v-card-title class="py-2 px-4 d-flex justify-space-between align-center"
-                         :class="corPorNivel(turma.level)" style="font-size: 1rem;">
-             <span>{{ turma.name }} ({{ turma.level }})</span>
-           </v-card-title>
-           <v-card-text class="pt-2">
-             <strong>Horários:</strong>
-             <ul class="ml-4 mb-2" style="font-size: 0.9rem;">
-               <li v-for="(pattern, index) in turma.schedules_patterns" :key="index">
-                 {{ pattern.day_of_week }}: {{ pattern.start_time }} - {{ pattern.end_time }}
-               </li>
-             </ul>
+    <!-- Turmas sem alunos -->
+    <v-row class="mt-6">
+      <v-col
+        v-for="turma in allClassSchedules"
+        :key="`sem-aluno-${turma.id}`"
+        cols="12"
+        md="6"
+      >
+        <v-card class="mb-4 pa-3" elevation="2" rounded="xl">
+          <v-card-title
+            class="py-2 px-4 d-flex justify-space-between align-center"
+            :class="corPorNivel(turma.level)"
+            style="font-size: 1rem;"
+          >
+            <span>{{ turma.name }} ({{ turma.level }})</span>
+          </v-card-title>
 
-             <v-alert type="info" density="compact" border="start" class="mt-2">
-               Nenhum aluno cadastrado nesta turma.
-             </v-alert>
-           </v-card-text>
-         </v-card>
-       </v-col>
-     </v-row>
+          <v-card-text class="pt-2">
+            <strong>Horários:</strong>
+            <ul class="ml-4 mb-2" style="font-size: 0.9rem;">
+              <li
+                v-for="(pattern, index) in turma.schedules_patterns"
+                :key="index"
+              >
+                {{ pattern.day_of_week }}: {{ pattern.start_time }} - {{ pattern.end_time }}
+              </li>
+            </ul>
+
+            <!-- Draggable com drop funcional -->
+            <draggable
+              :list="turma.students"
+              group="students"
+              item-key="id"
+              class="d-flex flex-wrap"
+              :animation="200"
+              :data-turma-id="turma.id"
+              @end="(evt) => onDrop(turma, evt)"
+            >
+              <template #item="{ element }">
+                <v-col cols="12" sm="6">
+                  <v-card outlined class="pa-3 ma-1">
+                    <div style="font-size: 0.9rem;">
+                      <strong>Nome:</strong> {{ element.name }}<br />
+                      <strong>Idade:</strong> {{ element.age }}<br />
+                      <strong>Sexo:</strong> {{ element.gender }}<br />
+                      <strong>Experiência:</strong> {{ element.experience_level }}
+                    </div>
+                  </v-card>
+                </v-col>
+              </template>
+            </draggable>
+
+            <!-- Exibir alerta apenas se não houver alunos -->
+            <v-alert
+              v-if="turma.students?.length === 0"
+              type="info"
+              density="compact"
+              border="start"
+              class="mt-2"
+            >
+              Nenhum aluno cadastrado nesta turma.
+            </v-alert>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
    </v-container>
 
 </template>
 <script setup>
   import { computed, onMounted, ref, watch } from 'vue'
   import {loadClasses} from '@/services/user.js'
+  import draggable from "vuedraggable";
 
 
   const filtroNivel = ref('todos')
@@ -110,7 +159,15 @@
 
   })
 
+  const onDrop = (turmaOrigem, evt) => {
 
+    const alunoMovido = evt.item?._underlying_vm_ || evt.clone;
+    const turmaDestino = evt.to.dataset?.turmaId || 'Turma não detectada';
+
+    console.log('🔁 Aluno movido:', alunoMovido?.id || alunoMovido);
+    console.log('➡️  Turma destino:', turmaDestino);
+    console.log('⬅️  Turma origem:', turmaOrigem.id || turmaOrigem);
+  }
 
 
   const turmasFiltradas = computed(() => {
