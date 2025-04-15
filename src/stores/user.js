@@ -1,3 +1,4 @@
+// import { loadClasses } from '@/services/user';
 import {defineStore} from 'pinia'
 // import router from '@/router'
 
@@ -8,6 +9,15 @@ export const useUserStore = defineStore('user',{
     students:[],
     responseRemoveUser:[],
     usersIncompleteProfile:[],
+    schedulesPaymentUsers:[],
+    paymentConfirm:[],
+    loadClasses:[],
+    loadClassesCreate:[],
+    shouldRefreshSchedules: false,
+    successAppointmentUserData:[],
+    dataScheduleStoreUsersClass:[],
+
+
 
   }),
   getters:{
@@ -36,7 +46,7 @@ export const useUserStore = defineStore('user',{
     },
     async removeUser(response) {
       try {
-        console.log('response dentro de store ', response);
+        // console.log('response dentro de store ', response);
 
         this.responseRemoveUser = response;
       } catch (error) {
@@ -52,7 +62,58 @@ export const useUserStore = defineStore('user',{
       }catch(error){
         console.log(error);
       }
+    },
+    async fetchPayments(response){
+      try{
+      // console.log('estamos dentro de fetchPayments ',response)
+        this.schedulesPaymentUsers = response.data
+
+      }catch(error){
+        console.error('error em store',error);
+      }
+    },
+    async confirmPaymentStore(response){
+      try {
+        this.paymentConfirm = response.data
+      } catch (error) {
+        console.log(error);
+
+      }
+    },
+    async loadDataSchedules(response){
+      try {
+        this.loadClasses = response.data
+        // console.log('dados de loadDataSchedules ', response.data);
+
+      } catch (error) {
+        console.log(error);
+
+      }
+    },
+    async loadCreatedClass(response){
+      try {
+        // console.log('resposta do back dentro de store ', response);
+        this.loadClassesCreate = response
+      } catch (error) {
+        console.log(error);
+
+      }
+    },
+    async successAppointmentUser(response){
+      try {
+        this.successAppointmentUserData = response
+      }catch (e) {
+        console.log(e)
+      }
+    },
+    async getDataScheduleStore(response){
+      try{
+        this.dataScheduleStoreUsersClass = response
+      }catch (e) {
+        console.log(e)
+      }
     }
+
   }
 })
 
