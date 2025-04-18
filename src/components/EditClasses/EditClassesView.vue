@@ -25,8 +25,8 @@
 
             <!--                {{// turma.classe}}-->
             <draggable :list="turma.students" group="alunos" item-key="id" class="d-flex flex-wrap" :animation="200"
-               @end="(evt) => onDrop(evt)" :data-turma-id="turma.id">
-              <template #item="{ element }">
+              @end="(evt) => onDrop(evt)" :data-turma-id="turma.id">
+              <!-- <template #item="{ element }">
                 <v-col cols="12" sm="6">
                   <v-card outlined class="pa-3 ma-1">
                     <div style="font-size: 0.9rem;">
@@ -34,6 +34,20 @@
                       <strong>Idade:</strong> {{ element.age }}<br />
                       <strong>Sexo:</strong> {{ element.gender }}<br />
                       <strong>Experiência:</strong> {{ element.experience_level }}
+                    </div>
+                  </v-card>
+                </v-col>
+              </template> -->
+
+              <template #item="{ element }">
+                <v-col cols="12" sm="6">
+                  <v-card outlined class="pa-3 ma-1">
+                    <div style="font-size: 0.9rem;">
+                      <strong>Nome:</strong> {{ element.user.name }}<br />
+                      <strong>Idade:</strong> {{ element.age }}<br />
+                      <strong>Sexo:</strong> {{ element.gender }}<br />
+                      <strong>Experiência:</strong> {{ element.experience_level }}<br />
+                      <strong>Início da matrícula:</strong> {{ element.start_date }}
                     </div>
                   </v-card>
                 </v-col>
@@ -67,7 +81,7 @@
 
             <!-- Draggable com drop funcional -->
             <draggable :list="turma.students" group="students" item-key="id" class="d-flex flex-wrap" :animation="200"
-              @end="(evt) => onDrop(evt)" :data-turma-id="turma.id" >
+              @end="(evt) => onDrop(evt)" :data-turma-id="turma.id">
               <template #item="{ element }">
                 <v-col cols="12" sm="6">
                   <v-card outlined class="pa-3 ma-1">
@@ -97,7 +111,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { loadClasses } from '@/services/user.js'
 import draggable from "vuedraggable";
-import {updateStudentsInClass as updateStudentsInClassServicesApi } from '@/services/user.js'
+import { updateStudentsInClass as updateStudentsInClassServicesApi } from '@/services/user.js'
 
 
 const filtroNivel = ref('todos')
@@ -112,6 +126,7 @@ const props = defineProps({
 // este metodo retorna os dados dos alunos
 watch(() => props.dataSchedules, (newValue) => {
   dataScheduleStore.value = newValue
+  console.log('dataScheduleStore', dataScheduleStore.value);
 }, { immediate: true })
 
 
@@ -140,7 +155,7 @@ const onDrop = (evt) => {
   // console.log('➡️  Turma destino: id ', turmaDestinoid);
   // console.log('⬅️  Turma origem: id ' , turmaOrigemId.id || turmaOrigemId);
 
-  if (!alunoMovido || !turmaOrigemId || !turmaDestinoid || turmaOrigemId === turmaDestinoid ) return;
+  if (!alunoMovido || !turmaOrigemId || !turmaDestinoid || turmaOrigemId === turmaDestinoid) return;
 
   const todasAsTurmas = [...turmasFiltradas.value, ...allClassSchedules.value];
   // console.log('todasAsTurmas', todasAsTurmas);
@@ -171,13 +186,14 @@ const onDrop = (evt) => {
 }
 
 const updateStudentsInClass = async (turmaId, alunoId) => {
+  console.log('turmaId', alunoId);
   const data = {
-    id: alunoId.id,
+    id: alunoId.matriculaId,
     classes_id: turmaId.id,
-    students_id:alunoId.studentId,
+    students_id: alunoId.studentId,
     start_date: alunoId.start_date,
   }
-  // console.log('Dados para atualizar os alunos na turma:', data);
+  console.log('Dados para atualizar os alunos na turma:', data);
 
   try {
     const response = await updateStudentsInClassServicesApi(data)
@@ -198,7 +214,7 @@ const turmasFiltradas = computed(() => {
     // console.log('Alunos ',aluno);
 
     for (const matricula of aluno.classes) {
-        // console.log('aluno.Classes-- com ID', aluno.classes);
+      // console.log('aluno.Classes-- com ID', aluno.classes);
       // console.log('matricula', matricula);
 
       const turma = matricula.classe
@@ -217,14 +233,10 @@ const turmasFiltradas = computed(() => {
 
       // Verifica se o aluno já está na turma antes de adicioná-lo
       agrupadas[turmaId].students.push({
-        id: matricula.id,
+        ...aluno,
         studentId:aluno.id,
-        name: aluno.user.name,
-        age: aluno.age,
-        gender: aluno.gender,
-        start_date: matricula.start_date,
-        medical_condition: aluno.medical_condition,
-        payments: aluno.payments ?? [],
+        matriculaId: matricula.id,
+        start_date: matricula.start_date
       })
     }
   }
