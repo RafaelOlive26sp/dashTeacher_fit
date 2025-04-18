@@ -7,10 +7,7 @@
             :class="corPorNivel(turma.classe.level)" style="font-size: 1rem;">
             <span>{{ turma.classe.name }} ({{ turma.classe.level }})</span>
           </v-card-title>
-          <pre>
 
-            <!-- {{ turma.students }} -->
-          </pre>
           <v-card-text class="pt-2">
             <!-- Horários -->
             <strong>Horários:</strong>
@@ -23,7 +20,7 @@
             <strong>Alunos:</strong>
 
 
-            <!-- {{turma.students}} -->
+
             <draggable :list="turma.students" group="alunos" item-key="id" class="d-flex flex-wrap" :animation="200"
               @end="(evt) => onDrop(evt)" :data-turma-id="turma.id">
               <template #item="{ element }">
@@ -31,7 +28,7 @@
                   <v-card outlined class="pa-3 ma-1">
                     <!-- {{element}} -->
                     <div style="font-size: 0.9rem;">
-                      <strong>Nome:</strong> {{ element.user.name }}<br />
+                      <strong>Nome:</strong> {{ element.user?.name }}<br />
                       <strong>Idade:</strong> {{ element.age }}<br />
                       <strong>Sexo:</strong> {{ element.gender }}<br />
                       <strong>Experiência:</strong> {{ element.medical_condition }}
@@ -40,19 +37,7 @@
                 </v-col>
               </template>
 
-              <!-- <template #item="{ element }">
-                <v-col cols="12" sm="6">
-                  <v-card outlined class="pa-3 ma-1">
-                    <div style="font-size: 0.9rem;">
-                      <strong>Nome:</strong> {{ element.name }}<br />
-                      <strong>Idade:</strong> {{ element.age }}<br />
-                      <strong>Sexo:</strong> {{ element.gender }}<br />
-                      <strong>Experiência:</strong> {{ element.experience_level }}<br />
-                      <strong>Início da matrícula:</strong> {{ element.start_date }}
-                    </div>
-                  </v-card>
-                </v-col>
-              </template> -->
+
             </draggable>
 
 
@@ -62,16 +47,18 @@
     </v-row>
 
 
-    <!-- Turmas sem alunos -->
+
     <!-- Turmas sem alunos -->
     <v-row class="mt-6">
       <v-col v-for="turma in allClassSchedules" :key="`sem-aluno-${turma.id}`" cols="12" md="6">
         <v-card class="mb-4 pa-3" elevation="2" rounded="xl">
           <v-card-title class="py-2 px-4 d-flex justify-space-between align-center" :class="corPorNivel(turma.level)"
             style="font-size: 1rem;">
-            <span>{{ turma.name }} ({{ turma.level }})</span>
+            <span>{{ turma?.name }} ({{ turma?.level }})</span>
           </v-card-title>
-
+<!--          <pre>-->
+<!--            {{turma}}-->
+<!--          </pre>-->
           <v-card-text class="pt-2">
             <strong>Horários:</strong>
             <ul class="ml-4 mb-2" style="font-size: 0.9rem;">
@@ -83,30 +70,35 @@
             <!-- Draggable com drop funcional -->
             <draggable :list="turma.students" group="alunos" item-key="id" class="d-flex flex-wrap" :animation="200"
               @end="(evt) => onDrop(evt)" :data-turma-id="turma.id">
-              <template #item="{ element }">
-                <v-col cols="12" sm="6">
-                  <v-card outlined class="pa-3 ma-1">
-                    <div style="font-size: 0.9rem;">
-                      <strong>Nome:</strong> {{ element.user.name }}<br />
-                      <strong>Idade:</strong> {{ element.age }}<br />
-                      <strong>Sexo:</strong> {{ element.gender }}<br />
-                      <strong>Experiência:</strong> {{ element.experience_level }}<br />
-                      <strong>Início da matrícula:</strong> {{ element.start_date }}
-                    </div>
-                  </v-card>
-                </v-col>
-              </template>
+
+                <template #item="{ element }">
+
+                  <v-col cols="12" sm="6" >
+                    <v-slide-y-transition>
+                        <v-card v-if="element.isPlaceholder" class="ma-1 pa-4 d-flex align-center justify-center"
+                                style="border: 2px dashed #ccc; min-height: 120px; border-radius: 8px; width: 100%;">
+                          Solte um aluno aqui
+
+                        </v-card>
+
+                      <v-card v-else outlined class="pa-3 ma-1" >
+                        <div style="font-size: 0.9rem;">
+                          <strong>Nome:</strong> {{ element.user.name }}<br />
+                          <strong>Idade:</strong> {{ element.age }}<br />
+                          <strong>Sexo:</strong> {{ element.gender }}<br />
+                          <strong>Experiência:</strong> {{ element.experience_level }}<br />
+                          <strong>Início da matrícula:</strong> {{ element.start_date }}
+                        </div>
+                      </v-card>
+
+                    </v-slide-y-transition>
+                  </v-col>
 
 
-              <!-- Placeholder quando turma.students estiver vazio -->
-              <template #footer>
-                <v-col cols="12">
-                  <div class="d-flex align-center justify-center ma-2 pa-4"
-                    style="border: 2px dashed #ccc; border-radius: 8px; min-height: 80px;">
-                    Solte um aluno aqui
-                  </div>
-                </v-col>
-              </template>
+                </template>
+
+
+
             </draggable>
 
 
@@ -147,8 +139,13 @@ onMounted(async () => {
   // este metodo retorna as turmas que não tem alunos
   const response = await loadClasses()
   if (response) {
-    // allClassSchedules.value = response.data
-    allClassSchedules.value = response.data.filter(turma => turma.students.length === 0);
+    const turmasSemAlunos = response.data.filter(turma => turma.students.length === 0)
+      .map(turma =>({
+        ...turma,
+        students: [{ isPlaceholder: true }] // Adiciona um aluno fictício para exibir o card
+      }))
+    allClassSchedules.value = turmasSemAlunos
+    // allClassSchedules.value = response.data.filter(turma => turma.students.length === 0);
   }
 
 
@@ -159,6 +156,10 @@ const onDrop = (evt) => {
   const alunoMovido = evt.item?._underlying_vm_ || evt.clone;
   const turmaOrigemId = evt.from.dataset?.turmaId || 'Origem nao detectada';
   const turmaDestinoid = evt.to.dataset?.turmaId || 'Turma não detectada';
+
+
+
+
 
 
   // console.log('🔁 Aluno movido: id ', alunoMovido || alunoMovido);
@@ -189,6 +190,30 @@ const onDrop = (evt) => {
 
 
   updateStudentsInClass(turmaDestino, alunoMovido);
+
+
+  // Update turmaOrigem and turmaDestino
+  if (!turmaOrigem.students.length) {
+
+    const turmaOrigemCompleta = {
+      id: turmaOrigem.id,
+      classe: turmaOrigem.classe, // mantemos os dados da turma
+      students: [{ isPlaceholder: true }]
+    };
+    console.log('turmaOrigemCompleta', turmaOrigemCompleta.classe);
+    allClassSchedules.value.push({
+      ...turmaOrigemCompleta.classe,
+      students: [{ isPlaceholder: true }] // Adiciona a turma completa de volta
+    });
+    console.log('turmaOrigemCompleta', turmaOrigemCompleta);
+
+  }
+  if (turmaDestino.students.length) {
+    turmaDestino.students = turmaDestino.students.filter(s => !s.isPlaceholder);
+    // console.log('turmaDestino.students', turmaDestino.students);
+    allClassSchedules.value = allClassSchedules.value.filter(t => t.id !== turmaDestino.id);
+    console.log('turmaDestino.students', turmaDestino.students);
+  }
 
 
   // console.log(`O aluno movido foi ${alunoMovido?.name}, e está na turma ${turmaDestino.id} agora, mas saiu da turma ${turmaOrigem.id} `);
@@ -248,10 +273,19 @@ watchEffect(() => {
         ...aluno,
         studentId: aluno.id,
         matriculaId: matricula.id,
-        start_date: matricula.start_date
+        start_date: matricula.start_date,
+
       })
     }
   }
+  // for (const turmaId in agrupadas) {
+  //   // console.log('agrupadas[turmaId]', agrupadas[turmaId]);
+  //   if (agrupadas[turmaId].students.length === 0) {
+  //     console.log('Turma sem alunos:', agrupadas[turmaId]);
+  //    agrupadas[turmaId].students.push({isPlaceholder: true})
+  //     console.log('Turma sem alunos:', agrupadas[turmaId]);
+  //   }
+  // }
 
   turmasAgrupadas.value = Object.values(agrupadas)
 })
