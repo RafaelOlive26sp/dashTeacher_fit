@@ -73,7 +73,7 @@
   </v-container>
   <Dialog v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
 
-    <EditClassesView :dataSchedules="dataScheduleStore">
+    <EditClassesView :dataSchedules="dataScheduleStore" @updateClass="getDataClsSchedule">
 
     </EditClassesView>
 
