@@ -81,7 +81,7 @@
             </ul>
 
             <!-- Draggable com drop funcional -->
-            <draggable :list="turma.students" group="students" item-key="id" class="d-flex flex-wrap" :animation="200"
+            <draggable :list="turma.students" group="alunos" item-key="id" class="d-flex flex-wrap" :animation="200"
               @end="(evt) => onDrop(evt)" :data-turma-id="turma.id">
               <template #item="{ element }">
                 <v-col cols="12" sm="6">
