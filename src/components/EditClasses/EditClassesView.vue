@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col v-for="turma in turmasFiltradas" :key="turma.id" cols="12" md="6">
+      <v-col v-for="turma in turmasAgrupadas" :key="turma.id" cols="12" md="6">
         <v-card class="mb-4 pa-3" elevation="5" rounded="xl">
           <v-card-title class="py-2 px-4 d-flex justify-space-between align-center"
             :class="corPorNivel(turma.classe.level)" style="font-size: 1rem;">
@@ -23,9 +23,23 @@
             <strong>Alunos:</strong>
 
 
-            <!--                {{// turma.classe}}-->
+                           <!-- {{turma.students}} -->
             <draggable :list="turma.students" group="alunos" item-key="id" class="d-flex flex-wrap" :animation="200"
               @end="(evt) => onDrop(evt)" :data-turma-id="turma.id">
+              <template #item="{ element }">
+                <v-col cols="12" sm="6">
+                  <v-card outlined class="pa-3 ma-1">
+                    <!-- {{element}} -->
+                    <div style="font-size: 0.9rem;">
+                      <strong>Nome:</strong> {{ element.user.name }}<br />
+                      <strong>Idade:</strong> {{ element.age }}<br />
+                      <strong>Sexo:</strong> {{ element.gender }}<br />
+                      <strong>Experiência:</strong> {{ element.medical_condition }}
+                    </div>
+                  </v-card>
+                </v-col>
+              </template>
+
               <!-- <template #item="{ element }">
                 <v-col cols="12" sm="6">
                   <v-card outlined class="pa-3 ma-1">
@@ -33,25 +47,12 @@
                       <strong>Nome:</strong> {{ element.name }}<br />
                       <strong>Idade:</strong> {{ element.age }}<br />
                       <strong>Sexo:</strong> {{ element.gender }}<br />
-                      <strong>Experiência:</strong> {{ element.experience_level }}
-                    </div>
-                  </v-card>
-                </v-col>
-              </template> -->
-
-              <template #item="{ element }">
-                <v-col cols="12" sm="6">
-                  <v-card outlined class="pa-3 ma-1">
-                    <div style="font-size: 0.9rem;">
-                      <strong>Nome:</strong> {{ element.user.name }}<br />
-                      <strong>Idade:</strong> {{ element.age }}<br />
-                      <strong>Sexo:</strong> {{ element.gender }}<br />
                       <strong>Experiência:</strong> {{ element.experience_level }}<br />
                       <strong>Início da matrícula:</strong> {{ element.start_date }}
                     </div>
                   </v-card>
                 </v-col>
-              </template>
+              </template> -->
             </draggable>
 
 
@@ -108,25 +109,29 @@
 
 </template>
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch,watchEffect } from 'vue'
 import { loadClasses } from '@/services/user.js'
 import draggable from "vuedraggable";
 import { updateStudentsInClass as updateStudentsInClassServicesApi } from '@/services/user.js'
+import { useUserStore } from '@/stores/user.js'
 
 
+const emit = defineEmits(['updateClass'])
+const userStore = useUserStore()
 const filtroNivel = ref('todos')
 const dataScheduleStore = ref([])
 
-const props = defineProps({
-  dataSchedules: {
-    Object
-  }
-})
+// const props = defineProps({
+//   dataSchedules: {
+//     Object
+//   }
+// })
 
 // este metodo retorna os dados dos alunos
-watch(() => props.dataSchedules, (newValue) => {
-  dataScheduleStore.value = newValue
-  console.log('dataScheduleStore', dataScheduleStore.value);
+watch(() => userStore.dataScheduleStoreUsersClass, (newValue) => {
+  if(!newValue || !newValue.data) return
+  dataScheduleStore.value = newValue.data
+  // console.log('dataScheduleStore', dataScheduleStore.value);
 }, { immediate: true })
 
 
@@ -198,6 +203,9 @@ const updateStudentsInClass = async (turmaId, alunoId) => {
   try {
     const response = await updateStudentsInClassServicesApi(data)
     console.log('Resposta do servidor:', response)
+    await userStore.getDataScheduleStore()
+    emit('updateClass') // Emite o evento para o pai, se necessário
+    // Atualiza a lista de turmas filtradas
   } catch (error) {
     console.error('Erro ao atualizar os alunos na turma:', error)
   }
@@ -206,20 +214,21 @@ const updateStudentsInClass = async (turmaId, alunoId) => {
 const turmasFiltradas = computed(() => {
 
 
-  if (!Array.isArray(dataScheduleStore.value)) return []
+if (filtroNivel.value === 'todos') return turmasAgrupadas.value
+return turmasAgrupadas.value.filter(t => t.classe.level === filtroNivel.value)
+
+})
+
+const turmasAgrupadas = ref([])
+
+watchEffect(() => {
+  if (!Array.isArray(dataScheduleStore.value)) return
 
   const agrupadas = {}
 
   for (const aluno of dataScheduleStore.value) {
-    // console.log('Alunos ',aluno);
-
     for (const matricula of aluno.classes) {
-      // console.log('aluno.Classes-- com ID', aluno.classes);
-      // console.log('matricula', matricula);
-
       const turma = matricula.classe
-      // console.log('turma --- ', turma);
-      // Verifica se a turma já existe no objeto agrupadas
       const turmaId = turma.id
 
       if (!agrupadas[turmaId]) {
@@ -229,9 +238,7 @@ const turmasFiltradas = computed(() => {
           students: []
         }
       }
-      // console.log('agrupadas[turmaId]', agrupadas[turmaId]);
 
-      // Verifica se o aluno já está na turma antes de adicioná-lo
       agrupadas[turmaId].students.push({
         ...aluno,
         studentId:aluno.id,
@@ -241,13 +248,10 @@ const turmasFiltradas = computed(() => {
     }
   }
 
-  const turmas = Object.values(agrupadas)
-  // console.log('turmas ---- ', turmas);
-  if (filtroNivel.value === 'todos') return turmas
-
-  return turmas.filter(t => t.classe.level === filtroNivel.value)
-
+  turmasAgrupadas.value = Object.values(agrupadas)
 })
+
+
 
 const corPorNivel = (level) => {
   switch (level) {
