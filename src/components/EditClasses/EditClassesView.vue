@@ -23,7 +23,7 @@
             <strong>Alunos:</strong>
 
 
-                           <!-- {{turma.students}} -->
+            <!-- {{turma.students}} -->
             <draggable :list="turma.students" group="alunos" item-key="id" class="d-flex flex-wrap" :animation="200"
               @end="(evt) => onDrop(evt)" :data-turma-id="turma.id">
               <template #item="{ element }">
@@ -87,20 +87,29 @@
                 <v-col cols="12" sm="6">
                   <v-card outlined class="pa-3 ma-1">
                     <div style="font-size: 0.9rem;">
-                      <strong>Nome:</strong> {{ element.name }}<br />
+                      <strong>Nome:</strong> {{ element.user.name }}<br />
                       <strong>Idade:</strong> {{ element.age }}<br />
                       <strong>Sexo:</strong> {{ element.gender }}<br />
-                      <strong>Experiência:</strong> {{ element.experience_level }}
+                      <strong>Experiência:</strong> {{ element.experience_level }}<br />
+                      <strong>Início da matrícula:</strong> {{ element.start_date }}
                     </div>
                   </v-card>
                 </v-col>
               </template>
+
+
+              <!-- Placeholder quando turma.students estiver vazio -->
+              <template #footer>
+                <v-col cols="12">
+                  <div class="d-flex align-center justify-center ma-2 pa-4"
+                    style="border: 2px dashed #ccc; border-radius: 8px; min-height: 80px;">
+                    Solte um aluno aqui
+                  </div>
+                </v-col>
+              </template>
             </draggable>
 
-            <!-- Exibir alerta apenas se não houver alunos -->
-            <v-alert v-if="turma.students?.length === 0" type="info" density="compact" border="start" class="mt-2">
-              Nenhum aluno cadastrado nesta turma.
-            </v-alert>
+
           </v-card-text>
         </v-card>
       </v-col>
@@ -109,7 +118,7 @@
 
 </template>
 <script setup>
-import { computed, onMounted, ref, watch,watchEffect } from 'vue'
+import { computed, onMounted, ref, watch, watchEffect } from 'vue'
 import { loadClasses } from '@/services/user.js'
 import draggable from "vuedraggable";
 import { updateStudentsInClass as updateStudentsInClassServicesApi } from '@/services/user.js'
@@ -125,7 +134,7 @@ const dataScheduleStore = ref([])
 
 // este metodo retorna os dados dos alunos
 watch(() => userStore.dataScheduleStoreUsersClass, (newValue) => {
-  if(!newValue || !newValue.data) return
+  if (!newValue || !newValue.data) return
   dataScheduleStore.value = newValue.data
   // console.log('dataScheduleStore', dataScheduleStore.value);
 }, { immediate: true })
@@ -210,8 +219,8 @@ const updateStudentsInClass = async (turmaId, alunoId) => {
 const turmasFiltradas = computed(() => {
 
 
-if (filtroNivel.value === 'todos') return turmasAgrupadas.value
-return turmasAgrupadas.value.filter(t => t.classe.level === filtroNivel.value)
+  if (filtroNivel.value === 'todos') return turmasAgrupadas.value
+  return turmasAgrupadas.value.filter(t => t.classe.level === filtroNivel.value)
 
 })
 
@@ -237,7 +246,7 @@ watchEffect(() => {
 
       agrupadas[turmaId].students.push({
         ...aluno,
-        studentId:aluno.id,
+        studentId: aluno.id,
         matriculaId: matricula.id,
         start_date: matricula.start_date
       })
