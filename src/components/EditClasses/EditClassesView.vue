@@ -121,11 +121,7 @@ const userStore = useUserStore()
 const filtroNivel = ref('todos')
 const dataScheduleStore = ref([])
 
-// const props = defineProps({
-//   dataSchedules: {
-//     Object
-//   }
-// })
+
 
 // este metodo retorna os dados dos alunos
 watch(() => userStore.dataScheduleStoreUsersClass, (newValue) => {
@@ -202,7 +198,7 @@ const updateStudentsInClass = async (turmaId, alunoId) => {
 
   try {
     const response = await updateStudentsInClassServicesApi(data)
-    console.log('Resposta do servidor:', response)
+    // console.log('Resposta do servidor:', response)
     await userStore.getDataScheduleStore()
     emit('updateClass') // Emite o evento para o pai, se necessário
     // Atualiza a lista de turmas filtradas
