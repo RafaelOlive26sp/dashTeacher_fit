@@ -74,10 +74,19 @@
           <v-item-group v-model="selectedClasses" mandatory>
             <v-item :value="turma" v-for="turma in classSchedules" :key="turma.id" v-slot="{ isSelected, toggle }">
                 <!-- {{turma}} -->
+
               <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3"
                 @click="handleApoointment(turma, toggle, 'turma')" hover>
                 <v-card-title>{{ turma.name }}</v-card-title>
                   <!-- {{turma}} -->
+                    <!-- Marca d'água "Sem Aluno" -->
+  <div
+    v-if=" turma.students.length === 0"
+    class="position-absolute text-grey-lighten-1 text-center"
+    style="top: 50%; left: 35%; transform: translate(-50%, -50%); opacity: 0.2; font-size: 1.5rem;"
+  >
+    Sem Aluno
+  </div>
                 <v-card-text>
                   <v-row>
                     <v-col cols="6">
@@ -98,6 +107,7 @@
 
                       </ul>
                     </v-col>
+
                   </v-row>
                 </v-card-text>
               </v-card>
