@@ -200,19 +200,19 @@ const onDrop = (evt) => {
       classe: turmaOrigem.classe, // mantemos os dados da turma
       students: [{ isPlaceholder: true }]
     };
-    console.log('turmaOrigemCompleta', turmaOrigemCompleta.classe);
+    // console.log('turmaOrigemCompleta', turmaOrigemCompleta.classe);
     allClassSchedules.value.push({
       ...turmaOrigemCompleta.classe,
       students: [{ isPlaceholder: true }] // Adiciona a turma completa de volta
     });
-    console.log('turmaOrigemCompleta', turmaOrigemCompleta);
+    // console.log('turmaOrigemCompleta', turmaOrigemCompleta);
 
   }
   if (turmaDestino.students.length) {
     turmaDestino.students = turmaDestino.students.filter(s => !s.isPlaceholder);
     // console.log('turmaDestino.students', turmaDestino.students);
     allClassSchedules.value = allClassSchedules.value.filter(t => t.id !== turmaDestino.id);
-    console.log('turmaDestino.students', turmaDestino.students);
+    // console.log('turmaDestino.students', turmaDestino.students);
   }
 
 
@@ -221,14 +221,14 @@ const onDrop = (evt) => {
 }
 
 const updateStudentsInClass = async (turmaId, alunoId) => {
-  console.log('turmaId', alunoId);
+  // console.log('turmaId', alunoId);
   const data = {
     id: alunoId.matriculaId,
     classes_id: turmaId.id,
     students_id: alunoId.studentId,
     start_date: alunoId.start_date,
   }
-  console.log('Dados para atualizar os alunos na turma:', data);
+  // console.log('Dados para atualizar os alunos na turma:', data);
 
   try {
     const response = await updateStudentsInClassServicesApi(data)
