@@ -6,7 +6,7 @@
         <!-- <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg" subtitle="email@gmailcom"
           :title="user?.name"></v-list-item> -->
         <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-          :title="user?.name"></v-list-item>
+          :title="user?.name" @click="openDialog(item, 'perfil')"></v-list-item>
       </v-list>
 
       <v-divider></v-divider>
@@ -43,6 +43,7 @@
     <ContasStudantsView v-if="actionType === 'agendar'|| actionType === 'confirmar' " :confirmPayment="ifConfirmPayment"></ContasStudantsView>
     <CreatedClassView v-if="actionType === 'createdClass'" @close="dialogVisible = false"></CreatedClassView>
     <createdScheduleView v-if="actionType === 'createdSchedule'"></createdScheduleView>
+    <EditPerfilView v-if="actionType === 'perfil'" @close="dialogVisible = false"></EditPerfilView>
   </Dialogs>
 
 
@@ -53,6 +54,7 @@ import { computed, ref } from 'vue';
 import CreatedClassView from "@/components/CreatedClassView.vue";
 import createdScheduleView from "@/components/CreatedScheduleView.vue";
 import ContasStudantsView from "@/components/ContasStudantsView.vue";
+import EditPerfilView from "@/components/perfil/EditPerfilView.vue";
 // import { useUserStore } from '@/stores/user.js';
 
 
@@ -83,7 +85,7 @@ const openDialog = (item, type) => {
     dialogTitle.value = "Confirmar Pagamento";
     // console.log('antes da mudanca ',ifConfirmPayment.value);
     ifConfirmPayment.value = 'confirmPayment';
-    console.log('depois da mudanca ',ifConfirmPayment.value);
+    // console.log('depois da mudanca ',ifConfirmPayment.value);
 
     // console.log('dialog ', dialogVisible.value)
 
@@ -96,6 +98,10 @@ const openDialog = (item, type) => {
   }else if (type === 'createdSchedule'){
     dialogTitle.value = "Criar Horarios";
     // dialogActionText.value = "Criar Horarios";
+
+  }
+  if (type === 'perfil'){
+    dialogTitle.value = "Perfil";
 
   }
 };
