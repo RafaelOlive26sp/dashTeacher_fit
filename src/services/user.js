@@ -268,5 +268,24 @@ export const getPayments = async () =>{
       throw new Error(error.response.data.message, 'Error getting students');
     }
   }
+  export const updateStudentsInClass = async (data)=>{
+    try{
+      const token = Cookies.get('access_token');
+      if(!token){
+        throw new Error('User not authenticated', 'Error getting students');
+      }
+      // console.log('Data antes do post ',data);
+      const response = await api.put(`/api/v1/clschedule/${data.id}`,data,{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log(' resposta do back ',response.data);
+      return response.data
+
+    }catch (e) {
+      console.log(e)
+    }
+  }
 
 
