@@ -52,6 +52,7 @@ import { useAuthStore } from '@/stores/auth';
 import { computed, ref } from 'vue';
 import CreatedClassView from "@/components/CreatedClassView.vue";
 import createdScheduleView from "@/components/CreatedScheduleView.vue";
+import ContasStudantsView from "@/components/ContasStudantsView.vue";
 // import { useUserStore } from '@/stores/user.js';
 
 

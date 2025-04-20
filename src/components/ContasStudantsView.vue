@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <v-row>
-
-<!--      // data.filter(a => a.payment.length === 0) retorna quando o aluno nao tem nenhum pagamento cadstrado-->
+        <!-- {{ toggleCardPayment }} -->
+     <!-- // data.filter(a => a.payment.length === 0) retorna quando o aluno nao tem nenhum pagamento cadstrado -->
 <!--      // data.filter(a => a.payment.length !== 0) retorna quando o aluno tem algum pagamento cadastrado-->
 
 
@@ -150,9 +150,7 @@ import {format} from 'date-fns';
 
 const userStore = useUserStore();
 
-onMounted(async () => {
-  await getStudents();
-});
+
 
 const props = defineProps(["confirmPayment"]);
 
@@ -177,6 +175,31 @@ const dataAtual = computed(() => {
   return new Date().toLocaleDateString("pt-BR");
 });
 
+const fetchAllStudents = async()=>{
+  let page= 1
+  const itemsPerPage = 5
+  const allStudent = []
+  try {
+    let response
+
+    do {
+      response = await getStudentsWithUserApi(page, itemsPerPage);
+      if( response.data.length > 0){
+        allStudent.push(...response.data);
+      }
+      page++;
+    } while (page <= response.meta.last_page);
+
+    data.value = allStudent;
+  } catch (error) {
+    console.log('Erro ao buscar os estudantes',error);
+
+  }
+}
+
+onMounted(async () => {
+  await fetchAllStudents();
+});
 watch(confirmPayment, (newValue) => {
   // console.log("Novo valor de confirmPayment:", newValue);
   toggleMethodsPayment.value = newValue;
@@ -186,6 +209,7 @@ const getStudents = async () => {
   try {
     const response = await getStudentsWithUserApi();
     userStore.getStudentsWithUser(response);
+    // console.log("Resposta da API:", response);
     data.value = response.data;
   } catch (error) {
     console.error("Error fetching students:", error);
@@ -299,10 +323,10 @@ const formatDate = (date) => {
   return format(new Date(date), "dd/MM/yyyy");
 };
 
-const paymentSuccessMessages = computed(() => {
-  // console.log('Valor de paymentConfirm:', userStore.paymentConfirm);
-  return userStore.paymentConfirm ? "Pagamento confirmado com sucesso!" : "";
-});
+// const paymentSuccessMessages = computed(() => {
+//   // console.log('Valor de paymentConfirm:', userStore.paymentConfirm);
+//   return userStore.paymentConfirm ? "Pagamento confirmado com sucesso!" : "";
+// });
 
 
 // const confirmarPagamento = () => {

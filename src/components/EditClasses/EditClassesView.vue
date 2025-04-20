@@ -84,7 +84,13 @@
       </v-col>
     </v-row>
   </v-container>
-
+  <TutorialView title="Como funciona?" :show="true" :close="false">
+    <template v-slot:contentTutorial>
+      <p>Arraste os alunos entre as turmas para realocá-los.</p>
+      <p>As turmas sem alunos são exibidas no final.</p>
+      <p>Apos isto esta tudo certo o Aluno ja foi transferido de turma</p>
+    </template>
+  </TutorialView>
 </template>
 <script setup>
 import { computed, onMounted, ref, watch, watchEffect } from 'vue'
@@ -92,6 +98,7 @@ import { loadClasses } from '@/services/user.js'
 import draggable from "vuedraggable";
 import { updateStudentsInClass as updateStudentsInClassServicesApi } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js'
+import TutorialView from '@/components/tutorial/TutorialView.vue'
 
 
 const emit = defineEmits(['updateClass'])

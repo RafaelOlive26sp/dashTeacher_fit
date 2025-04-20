@@ -1,74 +1,6 @@
 <template>
   <v-container>
     <v-row>
-
-      <!-- Coluna de Agendamentos Agrupados -->
-
-      <!-- <v-col cols="12" md="8">
-
-        <v-expansion-panels variant="accordion">
-          <v-expansion-panel v-for="group in classSchedules" :key="group.id">
-
-            <v-expansion-panel-title :class="selectedGroupId === group.id ? 'bg-primary text-white' : ''"
-              @click="selectGroup(group.id)">
-              {{ group.name }} ({{ group.level }}) - Max Alunos: {{ group.max_students }}
-            </v-expansion-panel-title>
-
-            <v-expansion-panel-text>
-              <v-row dense>
-                <v-col v-for="schedule in group.schedules_patterns" :key="schedule.id" cols="12" md="6">
-                  <v-card   class="ma-1 pa-3"
-  color="grey-lighten-4"
-  elevation="2" hover>
-                    <div class="d-flex justify-space-between align-center">
-                      <div>
-                        <strong>{{ translateDay(schedule?.day_of_week) }}</strong>
-                        <div class="text-caption">
-                          {{ schedule.start_time }} - {{ schedule.end_time }}
-                        </div>
-                      </div>
-                      <v-icon :color="selectedSchedule === schedule.id ? 'white' : 'primary'">
-                        {{ selectedSchedule === schedule.id ? 'mdi-checkbox-marked-circle' : 'mdi-clock-outline' }}
-                      </v-icon>
-                    </div>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-expansion-panel-text>
-          </v-expansion-panel>
-        </v-expansion-panels>
-        <v-divider class="my-6" />
-
-        <v-card>
-          <v-card-title>
-            Aulas Extras
-          </v-card-title>
-
-          <v-card-text>
-            <v-row dense>
-              <v-col v-for="extra in extraClasses" :key="extra.id" cols="12" md="6">
-                <v-card :color="selectedSchedule === extra.id ? 'secondary' : 'background'" class="ma-1 pa-3"
-                  elevation="2" @click="toggleScheduleSelection(extra.id)" hover>
-                  <div class="d-flex justify-space-between align-center">
-                    <div>
-                      <strong>{{ translateDay(extra.day_of_week) }}</strong>
-                      <div class="text-caption">
-                        {{ extra.start_time }} - {{ extra.end_time }}
-                      </div>
-                    </div>
-                    <v-icon :color="selectedSchedule === extra.id ? 'white' : 'secondary'">
-                      {{ selectedSchedule === extra.id ? 'mdi-checkbox-marked-circle' : 'mdi-clock-outline' }}
-                    </v-icon>
-                  </div>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-
-
-      </v-col> -->
-
       <v-col cols="12" md="8">
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedClasses" mandatory>
@@ -154,10 +86,30 @@
     </template>
   </SnackBarsView>
 
-  <dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
+  <dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm" persistent="persistent">
     <ResumoAgendamentoView :data="dataAppointment" @confirmar="dialogVisible = false" @recarregar="handleRecarregar">
     </ResumoAgendamentoView>
   </dialogs>
+  <TutorialView title="Agendamentos" :show="userStore.showTutorial">
+    <template v-slot:contentTutorial>
+      <div class="tutorial-content">
+        <p><strong>1. Selecione uma turma:</strong> Escolha uma turma disponível na lista para iniciar o agendamento.
+        </p>
+        <p><strong>2. Selecione um aluno:</strong> Apenas alunos com pagamento confirmado estarão disponíveis para
+          seleção.</p>
+        <p><strong>3. Confirme o agendamento:</strong> Após selecionar a turma e o aluno, clique no botão <v-btn
+            color="primary" small>Confirmar Agendamento</v-btn> para confirmar.</p>
+        <p><strong>4. Cancelamento:</strong> Você pode cancelar o agendamento a qualquer momento, caso necessário.</p>
+        <v-alert type="info" class="mt-4">
+          <strong>Dica:</strong> Se nenhum aluno estiver disponível, verifique o status de pagamento dos alunos.
+        </v-alert>
+      </div>
+    </template>
+    <template #actions>
+      <v-btn @click="userStore.showTutorial = false">Fechar</v-btn>
+    </template>
+
+  </TutorialView>
 
 
 </template>
@@ -177,6 +129,7 @@ import { useUserStore } from '@/stores/user.js';
 import { format } from 'date-fns';
 import Dialogs from "@/components/Dialogs.vue";
 import ResumoAgendamentoView from "@/components/ResumoAgendamentoView.vue";
+import TutorialView from "@/components/tutorial/TutorialView.vue";
 
 
 const userStore = useUserStore();
