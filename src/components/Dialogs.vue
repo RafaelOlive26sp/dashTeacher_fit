@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isOpen" max-width="1000" >
+  <v-dialog v-model="isOpen" max-width="1000" :persistent="persistent">
     <v-card>
       <v-card-title>{{ title }}</v-card-title>
 
@@ -24,7 +24,8 @@ import { defineProps, defineEmits, ref, watch } from "vue";
 const props = defineProps({
   modelValue: Boolean, // Controle externo do dialog
   title: String, // Título do modal
-  confirmButtonText: String // Texto do botão de confirmação (opcional)
+  confirmButtonText: String, // Texto do botão de confirmação (opcional)
+  persistent: String, // Se o modal deve ser persistente
 });
 
 const emit = defineEmits(["update:modelValue", "confirm"]);
