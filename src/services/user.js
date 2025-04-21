@@ -260,7 +260,7 @@ export const getPayments = async () =>{
           Authorization: `Bearer ${token}`
         },
       })
-      console.log(' resposta do back ',response.data);
+      // console.log(' resposta do back ',response.data);
 
       return response.data
     }catch(error){
