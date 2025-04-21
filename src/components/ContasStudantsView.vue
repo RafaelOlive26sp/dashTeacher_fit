@@ -1,45 +1,51 @@
 <template>
   <v-container>
     <v-row>
-        <!-- {{ toggleCardPayment }} -->
-     <!-- // data.filter(a => a.payment.length === 0) retorna quando o aluno nao tem nenhum pagamento cadstrado -->
-<!--      // data.filter(a => a.payment.length !== 0) retorna quando o aluno tem algum pagamento cadastrado-->
+
+<!--        <v-card class="pa-6 mx-auto my-8" max-width="800" elevation="10" color="surface" v-if="toggleCardPayment.length === 0">-->
+
+<!--          <v-card-text class="text-body-1 text-medium-emphasis">-->
+<!--            <v-icon color="grey" size="32" class="mb-2">mdi-calendar-remove</v-icon>-->
+<!--            <div v-if="toggleMethodsPayment !== 'confirmPayment'">-->
+<!--              Não há alunos para agendar o pagamento-->
+<!--            </div>-->
+<!--            <div v-else>-->
+<!--              Não há alunos com pagamentos pendentes-->
+<!--            </div>-->
+<!--          </v-card-text>-->
+<!--        </v-card>-->
+        <v-col v-for="aluno in toggleCardPayment" :key="aluno.id" cols="12" sm="6" md="4" >
+          <v-card class="pa-3" >
+            <v-card-title>{{ aluno.user.name }}</v-card-title>
+            <v-card-subtitle>Idade: {{ aluno.age }} anos</v-card-subtitle>
+            <divider></divider>
+            <v-card-text v-if="toggleMethodsPayment === 'confirmPayment'">
+
+             <p><strong>Valor R$: </strong>{{ aluno.payments[0].amount }} </p>
+             <p><strong>Próximo pagamento: </strong>{{formatDate(aluno.payments[0].due_date)}} </p>
+             <p><strong>Status: </strong>{{aluno.payments[0].status}} </p>
 
 
 
-      <v-col v-for="aluno in toggleCardPayment" :key="aluno.id" cols="12" sm="6" md="4" >
-        <v-card class="pa-3" >
-          <v-card-title>{{ aluno.user.name }}</v-card-title>
-          <v-card-subtitle>Idade: {{ aluno.age }} anos</v-card-subtitle>
-          <divider></divider>
-          <v-card-text v-if="toggleMethodsPayment === 'confirmPayment'">
+            </v-card-text>
 
-           <p><strong>Valor R$: </strong>{{ aluno.payments[0].amount }} </p>
-           <p><strong>Próximo pagamento: </strong>{{formatDate(aluno.payments[0].due_date)}} </p>
-           <p><strong>Status: </strong>{{aluno.payments[0].status}} </p>
+            <v-card-actions v-if="toggleMethodsPayment !== 'confirmPayment'">
+              <v-btn color="primary" @click="opensheet(aluno)">
+                Agendar Pagamento
+              </v-btn>
+            </v-card-actions>
 
+            <v-card-actions v-else>
+              <v-btn color="primary" @click="opensheet(toggleMethodsPayment, aluno)" :loading="loadingPayment">
+                Confirmar Pagamento
+                <template v-slot:loader>
+                    <v-progress-linear indeterminate></v-progress-linear>
+                  </template>
+              </v-btn>
+            </v-card-actions>
+          </v-card>
 
-
-          </v-card-text>
-
-          <v-card-actions v-if="toggleMethodsPayment !== 'confirmPayment'">
-            <v-btn color="primary" @click="opensheet(aluno)">
-              Agendar Pagamento
-            </v-btn>
-          </v-card-actions>
-
-          <v-card-actions v-else>
-            <v-btn color="primary" @click="opensheet(toggleMethodsPayment, aluno)" :loading="loadingPayment">
-              Confirmar Pagamento
-              <template v-slot:loader>
-                  <v-progress-linear indeterminate></v-progress-linear>
-                </template>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-
-      </v-col>
-
+        </v-col>
     </v-row>
 
     <div class="text-center">
@@ -146,6 +152,7 @@ import {
 import { useUserStore } from "@/stores/user.js";
 import SnackBarsView from "@/components/snackBar/SnackBarsView.vue";
 import {format} from 'date-fns';
+// import Pagamentos from "@/components/Pagamentos.vue";
 
 
 const userStore = useUserStore();
@@ -189,8 +196,10 @@ const fetchAllStudents = async()=>{
       }
       page++;
     } while (page <= response.meta.last_page);
-
+    // await userStore.getStudentsWithUser(allStudent);
+    // console.log('===', allStudent);
     data.value = allStudent;
+    // console.log('---------- ', data.value);
   } catch (error) {
     console.log('Erro ao buscar os estudantes',error);
 
@@ -208,8 +217,8 @@ watch(confirmPayment, (newValue) => {
 const getStudents = async () => {
   try {
     const response = await getStudentsWithUserApi();
+    console.log("metodo que retorna os pagamento :", response);
     userStore.getStudentsWithUser(response);
-    // console.log("Resposta da API:", response);
     data.value = response.data;
   } catch (error) {
     console.error("Error fetching students:", error);
@@ -341,3 +350,13 @@ const formatDate = (date) => {
 
 
 </script>
+
+<!--<style scoped>-->
+<!--.v-card-text {-->
+<!--  display: flex;-->
+<!--  flex-direction: column;-->
+<!--  align-items: center;-->
+<!--  justify-content: center;-->
+<!--  min-height: 150px;-->
+<!--}-->
+<!--</style>-->
