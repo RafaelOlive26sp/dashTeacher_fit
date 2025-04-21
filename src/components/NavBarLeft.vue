@@ -13,13 +13,38 @@
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home" title="Home" to="/"></v-list-item>
 
-        <v-list-group prepend-icon="mdi-cash-register">
+        <v-list-group>
           <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" title="Pagamentos" to="/pagamentos"></v-list-item>
+            <v-list-item v-bind="props" to="/pagamentos">
+              <template #prepend>
+                <v-badge color="warning" dot v-if="paymentPending || lengthPaymentsForSchedule ">
+                  <template #badge>
+                    <span></span>
+                  </template>
+                  <v-icon>mdi-cash-register</v-icon>
+                </v-badge>
+                <v-icon v-else>mdi-cash-register</v-icon>
+              </template>
+              <v-list-item-title>Pagamentos</v-list-item-title>
+            </v-list-item>
           </template>
-          <v-list-item title="Agendar Pagamentos"  @click="openDialog(item, 'agendar')"></v-list-item>
-          <v-list-item title="Confirmar Pagamentos"  @click="openDialog(item, 'confirmar')"></v-list-item>
+          <v-badge color="success" :content="lengthPaymentsForSchedule" v-if="lengthPaymentsForSchedule">
+
+            <v-list-item title="Agendar Pagamentos" @click="openDialog(item, 'agendar')"></v-list-item>
+          </v-badge>
+          <v-badge color="success" :content="lengthPaymentsConfirmed" v-if="lengthPaymentsConfirmed">
+            <v-list-item title="Confirmar Pagamentos" @click="openDialog(item, 'confirmar')"></v-list-item>
+          </v-badge>
+
         </v-list-group>
+
+<!--        <v-list-group prepend-icon="mdi-cash-register">-->
+<!--          <template v-slot:activator="{ props }">-->
+<!--            <v-list-item v-bind="props" title="Pagamentos" to="/pagamentos"></v-list-item>-->
+<!--          </template>-->
+<!--          <v-list-item title="Agendar Pagamentos"  @click="openDialog(item, 'agendar')"></v-list-item>-->
+<!--          <v-list-item title="Confirmar Pagamentos"  @click="openDialog(item, 'confirmar')"></v-list-item>-->
+<!--        </v-list-group>-->
 
         <v-list-item prepend-icon="mdi-account-group" title="Alunos" to="/alunos"></v-list-item>
         <v-list-item prepend-icon="mdi-notebook-outline" title="Agendamentos" to="/agenda"></v-list-item>
@@ -50,15 +75,18 @@
 </template>
 <script setup>
 import { useAuthStore } from '@/stores/auth';
-import { computed, ref } from 'vue';
+import { computed, ref,onMounted } from 'vue';
 import CreatedClassView from "@/components/CreatedClassView.vue";
 import createdScheduleView from "@/components/CreatedScheduleView.vue";
 import ContasStudantsView from "@/components/ContasStudantsView.vue";
 import EditPerfilView from "@/components/perfil/EditPerfilView.vue";
+import {useUserStore} from "@/stores/user.js";
+import {getStudentsWithUser as getStudentsWithUserApi} from "@/services/user.js";
 // import { useUserStore } from '@/stores/user.js';
 
 
 // const userStore = useUserStore();
+const userStore = useUserStore();
 const AuthStore = useAuthStore();
 const user = computed(() => AuthStore.user);
 
@@ -68,7 +96,57 @@ const dialogActionText = ref("");
 const selectedItem = ref(null);
 const actionType = ref("");
 const ifConfirmPayment = ref('');
+const lengthPaymentsConfirmed = ref(null);
+const lengthPaymentsForSchedule = ref(null);
+const paymentPending = ref(false)
 // const dialogMessage = ref("");
+
+
+onMounted(() => {
+  fetchAllStudents()
+
+})
+
+const fetchAllStudents = async()=>{
+  let page= 1
+  const itemsPerPage = 5
+  const allStudent = []
+  try {
+    let response
+
+    do {
+      response = await getStudentsWithUserApi(page, itemsPerPage);
+      if( response.data.length > 0){
+        allStudent.push(...response.data);
+      }
+      page++;
+    } while (page <= response.meta.last_page);
+    await userStore.getStudentsWithUser(allStudent);
+    // console.log('===', allStudent);
+    const payments = allStudent.filter(item => item.payments[0]?.status === 'pending') // retorna o aluno que esta com o pagamento pendente
+    paymentPending.value =  payments.some(item => item.payments[0]?.status === 'pending') // ira retornar se é true ou false para pagamentos pendentes
+    // console.log('Aluno sem pagamento agendado - ', allStudent.filter(item => item.payments.length === 0));
+
+    if (allStudent.filter(item => item.payments.length === 0).length === 0) {
+      console.log('sem alunos para agendar pagamentos')
+    }
+    if (allStudent.filter(item => item.payments.length === 0).length > 0){
+
+      lengthPaymentsForSchedule.value = allStudent.filter(item => item.payments.length === 0).length // passa quantos alunos estao com o pagamento para agendar
+
+    }
+
+    lengthPaymentsConfirmed.value = payments.length
+    // console.log('payments ',payments.length)
+    // console.log('pagamento pendente ', payments.some(item => item.payments[0].status === 'pending'))
+    // console.log('---------- ', data.value);
+    // console.log(paymentPending);
+  } catch (error) {
+    console.log('Erro ao buscar os estudantes',error);
+
+  }
+}
+
 
 
 const openDialog = (item, type) => {
