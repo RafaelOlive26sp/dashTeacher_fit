@@ -16,6 +16,7 @@ export const useUserStore = defineStore('user',{
     shouldRefreshSchedules: false,
     successAppointmentUserData:[],
     dataScheduleStoreUsersClass:[],
+    refreshNavBar: 0,
 
 
 
@@ -112,6 +113,11 @@ export const useUserStore = defineStore('user',{
       }catch (e) {
         console.log(e)
       }
+    },
+    triggerNavBarRefresh(){
+      this.refreshNavBar++
+      console.log('estamos no trigger');
+
     }
 
   }
