@@ -57,7 +57,7 @@
 
   </v-layout>
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm"  >
-    <ContasStudantsView v-if="actionType === 'agendar'|| actionType === 'confirmar' " :confirmPayment="ifConfirmPayment" @relodingPayments="reloadPayments()"></ContasStudantsView>
+    <ContasStudantsView v-if="actionType === 'agendar'|| actionType === 'confirmar' " :confirmPayment="ifConfirmPayment" @reloadPayments="reloadPayments()"></ContasStudantsView>
     <CreatedClassView v-if="actionType === 'createdClass'" @close="dialogVisible = false"></CreatedClassView>
     <createdScheduleView v-if="actionType === 'createdSchedule'"></createdScheduleView>
     <EditPerfilView v-if="actionType === 'perfil'" @close="dialogVisible = false"></EditPerfilView>
@@ -67,7 +67,7 @@
 </template>
 <script setup>
 import { useAuthStore } from '@/stores/auth';
-import { computed, ref,onMounted } from 'vue';
+import { computed, ref,onMounted, watch } from 'vue';
 import CreatedClassView from "@/components/CreatedClassView.vue";
 import createdScheduleView from "@/components/CreatedScheduleView.vue";
 import ContasStudantsView from "@/components/ContasStudantsView.vue";
@@ -98,6 +98,7 @@ onMounted(() => {
 
 })
 
+
 const fetchAllStudents = async()=>{
   let page= 1
   const itemsPerPage = 5
@@ -123,12 +124,27 @@ const fetchAllStudents = async()=>{
       studentsDotPayment.value = studentsNotPayments.length
       existPayments.value = true
     }
+    if(paymentsPending.length == 0 && studentsNotPayments.length === 0){
+        // console.log('variaveis vazias');
+        paymentPending.value = paymentsPending.length
+      studentsDotPayment.value = studentsNotPayments.length
+        existPayments.value = false
+
+    }
+    // console.log('pagamentos pendentes', paymentsPending.length)
+    // console.log('alunos sem pagamentos', studentsNotPayments.length)
 
   } catch (error) {
     console.log('Erro ao buscar os estudantes',error);
 
   }
 }
+watch(
+    ()=>userStore.triggerNavBarRefresh,()=>{
+      fetchAllStudents()
+      // console.log('chamando o metodo fetchAllStudents')
+    },{immediate:true}
+)
 
 
 
@@ -168,8 +184,8 @@ const openDialog = (item, type) => {
 };
 
 const reloadPayments =()=>{
-  console.log('estamos dentro da funcao de reload');
-
+  // console.log('estamos dentro da funcao de reload');
+  dialogVisible.value = false
   fetchAllStudents()
 }
 
