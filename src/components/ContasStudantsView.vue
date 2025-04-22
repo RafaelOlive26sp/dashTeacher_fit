@@ -2,119 +2,78 @@
   <v-container>
     <v-row>
 
-<!--        <v-card class="pa-6 mx-auto my-8" max-width="800" elevation="10" color="surface" v-if="toggleCardPayment.length === 0">-->
-
-<!--          <v-card-text class="text-body-1 text-medium-emphasis">-->
-<!--            <v-icon color="grey" size="32" class="mb-2">mdi-calendar-remove</v-icon>-->
-<!--            <div v-if="toggleMethodsPayment !== 'confirmPayment'">-->
-<!--              Não há alunos para agendar o pagamento-->
-<!--            </div>-->
-<!--            <div v-else>-->
-<!--              Não há alunos com pagamentos pendentes-->
-<!--            </div>-->
-<!--          </v-card-text>-->
-<!--        </v-card>-->
-        <v-col v-for="aluno in toggleCardPayment" :key="aluno.id" cols="12" sm="6" md="4" >
-          <v-card class="pa-3" >
-            <v-card-title>{{ aluno.user.name }}</v-card-title>
-            <v-card-subtitle>Idade: {{ aluno.age }} anos</v-card-subtitle>
-            <divider></divider>
-            <v-card-text v-if="toggleMethodsPayment === 'confirmPayment'">
-
-             <p><strong>Valor R$: </strong>{{ aluno.payments[0].amount }} </p>
-             <p><strong>Próximo pagamento: </strong>{{formatDate(aluno.payments[0].due_date)}} </p>
-             <p><strong>Status: </strong>{{aluno.payments[0].status}} </p>
-
-
-
-            </v-card-text>
-
-            <v-card-actions v-if="toggleMethodsPayment !== 'confirmPayment'">
-              <v-btn color="primary" @click="opensheet(aluno)">
-                Agendar Pagamento
-              </v-btn>
-            </v-card-actions>
-
-            <v-card-actions v-else>
-              <v-btn color="primary" @click="opensheet(toggleMethodsPayment, aluno)" :loading="loadingPayment">
-                Confirmar Pagamento
-                <template v-slot:loader>
-                    <v-progress-linear indeterminate></v-progress-linear>
-                  </template>
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-
-        </v-col>
+      <!-- Card que exibe os dados do aluno -->
+      <v-col v-for="aluno in toggleCardPayment" :key="aluno.id" cols="12" sm="6" md="4">
+        <v-card class="pa-3">
+          <v-card-title>{{ aluno.user.name }}</v-card-title>
+          <divider></divider>
+          <v-card-text v-if="toggleMethodsPayment === 'confirmPayment'">
+            <p><strong>Valor R$: </strong>{{ aluno.payments[0].amount }} </p>
+            <p><strong>Próximo pagamento: </strong>{{ formatDate(aluno.payments[0].due_date) }} </p>
+            <p><strong>Status: </strong>{{ aluno.payments[0].status }} </p>
+          </v-card-text>
+          <v-card-actions v-if="toggleMethodsPayment !== 'confirmPayment'">
+            <v-btn color="primary" @click="opensheet(aluno)">
+              Agendar Pagamento
+            </v-btn>
+          </v-card-actions>
+          <v-card-actions v-else>
+            <v-btn color="primary" @click="opensheet(toggleMethodsPayment, aluno)" :loading="loadingPayment">
+              Confirmar Pagamento
+              <template v-slot:loader>
+                <v-progress-linear indeterminate></v-progress-linear>
+              </template>
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
     </v-row>
 
     <div class="text-center">
       <v-bottom-sheet v-model="sheet" inset>
-        <v-card class="pa-5 text-center" >
-          <v-card-title class="text-h6" v-if="toggleMethodsPayment !== 'confirmPayment'">Agendar Pagamento</v-card-title>
+        <v-card class="pa-5 text-center">
+          <v-card-title class="text-h6" v-if="toggleMethodsPayment !== 'confirmPayment'">Agendar
+            Pagamento</v-card-title>
           <v-card-title class="text-h6" v-else>Pagamento Confirmado com Sucesso</v-card-title>
           <v-divider class="mb-4"></v-divider>
-
           <!-- Exibir formulário quando o pagamento ainda não foi confirmado -->
           <template v-if="!paymentSuccess && toggleMethodsPayment !== 'confirmPayment'">
             <v-card-text>
               <v-row justify="center">
                 <v-col cols="6">
-                  <v-text-field
-                    v-model="valor"
-                    :disabled="scheduleProgress"
-                    label="Valor do Pagamento"
-                    prefix="R$"
-                    type="number"
-                    required
-                  />
+                  <v-text-field v-model="valor" :disabled="scheduleProgress" label="Valor do Pagamento" prefix="R$"
+                    type="number" required />
                 </v-col>
               </v-row>
-
               <v-row justify="center" v-if="alunoSelecionado">
                 <v-col cols="6">
-                  <v-text-field
-                    :model-value="alunoSelecionado.user.name"
-                    disabled label="Aluno"
-                    readonly variant="outlined"
-                  />
+                  <v-text-field :model-value="alunoSelecionado.user.name" disabled label="Aluno" readonly
+                    variant="outlined" />
                 </v-col>
               </v-row>
-
               <v-row justify="center">
                 <v-col cols="6">
-                  <v-text-field
-                    :model-value="dataAtual"
-                    label="Data"
-                    disabled
-                    readonly variant="outlined"
-                  />
+                  <v-text-field :model-value="dataAtual" label="Data" disabled readonly variant="outlined" />
                 </v-col>
               </v-row>
             </v-card-text>
-
             <v-card-actions class="justify-center">
-                <v-btn
-                color="primary"
-                :loading="loadingPayment"
-                @click="toggleMethodsPayment === 'confirmPayment' ? paymentConfirmed() : schedulePayment()"
-              >
+              <v-btn color="primary" :loading="loadingPayment"
+                @click="toggleMethodsPayment === 'confirmPayment' ? paymentConfirmed() : schedulePayment()">
                 Confirmar Pagamento
-
                 <template v-slot:loader>
                   <v-progress-linear indeterminate></v-progress-linear>
                 </template>
               </v-btn>
             </v-card-actions>
-
             <div v-if="errorMessage" class="text-red">{{ errorMessage }}</div>
           </template>
-
           <!-- Tela de sucesso -->
           <template v-else>
             <v-card-text>
               <v-icon color="success" size="80">mdi-check-circle</v-icon>
-              <p class="text-h6 mt-3" v-if="toggleMethodsPayment !== 'confirmPayment'">Agendamento realizado com sucesso!</p>
+              <p class="text-h6 mt-3" v-if="toggleMethodsPayment !== 'confirmPayment'">Agendamento realizado com
+                sucesso!</p>
             </v-card-text>
 
             <v-card-actions class="justify-center">
@@ -123,25 +82,19 @@
           </template>
         </v-card>
       </v-bottom-sheet>
-
-
-
     </div>
-
-
   </v-container>
-  <SnackBarsView :textContent="snackbarMessage" v-model="snackbar" >
+  <SnackBarsView :textContent="snackbarMessage" v-model="snackbar">
     <template #actions>
       <v-btn color="pink" variant="text" @click="snackbar = false">
         Close
       </v-btn>
     </template>
   </SnackBarsView>
-
 </template>
 
 <script setup>
-import { onMounted, ref, shallowRef, computed, watch,toRef, defineProps } from "vue";
+import { onMounted, ref, shallowRef, computed, watch, toRef, defineProps } from "vue";
 import {
   getStudentsWithUser as getStudentsWithUserApi,
   fetchPaymentUser as fetchPaymentUserApi,
@@ -151,17 +104,13 @@ import {
 } from "@/services/user"
 import { useUserStore } from "@/stores/user.js";
 import SnackBarsView from "@/components/snackBar/SnackBarsView.vue";
-import {format} from 'date-fns';
-// import Pagamentos from "@/components/Pagamentos.vue";
+import { format } from 'date-fns';
 
 
 const userStore = useUserStore();
-
-
-
 const props = defineProps(["confirmPayment"]);
-
 const confirmPayment = toRef(props, "confirmPayment");
+const emit = defineEmits('relodingPayments')
 
 const data = ref([]);
 const sheet = shallowRef(false)
@@ -182,8 +131,9 @@ const dataAtual = computed(() => {
   return new Date().toLocaleDateString("pt-BR");
 });
 
-const fetchAllStudents = async()=>{
-  let page= 1
+// esta funcao lê cada objto do array que esta na paginação
+const fetchAllStudents = async () => {
+  let page = 1
   const itemsPerPage = 5
   const allStudent = []
   try {
@@ -191,17 +141,14 @@ const fetchAllStudents = async()=>{
 
     do {
       response = await getStudentsWithUserApi(page, itemsPerPage);
-      if( response.data.length > 0){
+      if (response.data.length > 0) {
         allStudent.push(...response.data);
       }
       page++;
     } while (page <= response.meta.last_page);
-    // await userStore.getStudentsWithUser(allStudent);
-    // console.log('===', allStudent);
-    data.value = allStudent;
-    // console.log('---------- ', data.value);
+        data.value = allStudent;
   } catch (error) {
-    console.log('Erro ao buscar os estudantes',error);
+    console.log('Erro ao buscar os estudantes', error);
 
   }
 }
@@ -212,12 +159,11 @@ onMounted(async () => {
 watch(confirmPayment, (newValue) => {
   // console.log("Novo valor de confirmPayment:", newValue);
   toggleMethodsPayment.value = newValue;
-},{immediate: true});
+}, { immediate: true });
 
 const getStudents = async () => {
   try {
     const response = await getStudentsWithUserApi();
-    console.log("metodo que retorna os pagamento :", response);
     userStore.getStudentsWithUser(response);
     data.value = response.data;
   } catch (error) {
@@ -239,8 +185,8 @@ const schedulePayment = async () => {
     alert("Por favor, insira um valor e selecione um aluno!");
     return;
   }
-    loadingPayment.value = true;
-    errorMessage.value = "";
+  loadingPayment.value = true;
+  errorMessage.value = "";
 
 
   try {
@@ -255,43 +201,40 @@ const schedulePayment = async () => {
         paymentSuccess.value = true; // Exibir a tela de sucesso
       }, 2000);
     }
-    // console.log("Resposta da API:", response);
-    userStore.fetchPayments(response);
-    // sheet.value = false
-    scheduleProgress.value = true;
-      getStudents()
-      updatePayments()
+        userStore.fetchPayments(response);
+        scheduleProgress.value = true;
+    getStudents()
+    updatePayments()
+    console.log('estamos enviando o emit de schedulePayment')
+    emit('relodingPayments')
 
   } catch (error) {
     snackbar.value = false
     scheduleProgress.value = false;
-    setTimeout(()=>{
-      snackbarMessage.value =  error.message;
+    setTimeout(() => {
+      snackbarMessage.value = error.message;
       snackbar.value = true
-    },100)
+    }, 100)
     loadingPayment.value = false
 
   }
 };
 
-const paymentConfirmed = async(aluno)=>{
-  // console.log(aluno);
+const paymentConfirmed = async (aluno) => {
+
 
   try {
-    // console.log('data ',aluno);
-
     const data = {
       id: aluno.id,
       amount: aluno.payments[0].amount,
       status: status.value
     }
-    // console.log(data);
-
 
     const response = await confirmPaymentApi(data);
-    // console.log('resposta da api ',response);
-    await userStore.confirmPaymentStore(response);
+     await userStore.confirmPaymentStore(response);
     updatePayments()
+    console.log('estamos enviando o emit paymentConfirmed')
+    emit('relodingPayments')
 
   } catch (error) {
     console.log(error);
@@ -302,9 +245,7 @@ const paymentConfirmed = async(aluno)=>{
 
 
 const opensheet = (metodo, aluno) => {
-  if(metodo === 'confirmPayment'){
-    // alunoSelecionado.value = aluno;
-    // console.log('dentro de open ',aluno);
+  if (metodo === 'confirmPayment') {
     paymentConfirmed(aluno)
     sheet.value = true;
     return;
@@ -316,47 +257,17 @@ const opensheet = (metodo, aluno) => {
   sheet.value = true;
 };
 
-const toggleCardPayment = computed(() =>{
+const toggleCardPayment = computed(() => {
   if (toggleMethodsPayment.value !== 'confirmPayment') {
 
-     return data.value.filter(a => a.payments?.length === 0) //nao tem pagamento
+    return data.value.filter(a => a.payments?.length === 0) //nao tem pagamento
 
   }
-  // console.log('-----------',data.value);
-  // const difLength = data.value.filter(a => a.payment.length > 0 && a.payment.some(p => p.status === 'pending')) //tem pagamento
-  // console.log('difLength pending',difLength);
   return data.value.filter(a => a.payments?.length > 0 && a.payments.some(p => p.status === 'pending')) //tem pagamento
 });
 
 const formatDate = (date) => {
   return format(new Date(date), "dd/MM/yyyy");
 };
-
-// const paymentSuccessMessages = computed(() => {
-//   // console.log('Valor de paymentConfirm:', userStore.paymentConfirm);
-//   return userStore.paymentConfirm ? "Pagamento confirmado com sucesso!" : "";
-// });
-
-
-// const confirmarPagamento = () => {
-//   if (!valor.value) {
-//     alert("Por favor, insira um valor!");
-//     return;
-//   }
-//   alert(`Pagamento de R$${valor.value} agendado para ${dataAtual.value}`);
-//   sheet.value = false;
-// };
-
-
-
 </script>
 
-<!--<style scoped>-->
-<!--.v-card-text {-->
-<!--  display: flex;-->
-<!--  flex-direction: column;-->
-<!--  align-items: center;-->
-<!--  justify-content: center;-->
-<!--  min-height: 150px;-->
-<!--}-->
-<!--</style>-->
