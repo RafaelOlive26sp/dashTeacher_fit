@@ -91,7 +91,7 @@ const userStore = useUserStore();
 
 
 
-onMounted(()=>{
+onMounted(async()=>{
   fethPayment()
 })
 
@@ -100,7 +100,7 @@ const fethPayment = async()=>{
   try {
     const response = await getPaymentApi()
     userStore.getPayment(response)
-    console.log(response)
+    // console.log(response)
   } catch (error) {
     console.error(error)
   }
