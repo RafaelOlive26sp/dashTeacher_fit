@@ -110,7 +110,7 @@ import { format } from 'date-fns';
 const userStore = useUserStore();
 const props = defineProps(["confirmPayment"]);
 const confirmPayment = toRef(props, "confirmPayment");
-const emit = defineEmits('relodingPayments')
+const emit = defineEmits('reloadPayments')
 
 const data = ref([]);
 const sheet = shallowRef(false)
@@ -155,6 +155,7 @@ const fetchAllStudents = async () => {
 
 onMounted(async () => {
   await fetchAllStudents();
+  getStudents();
 });
 watch(confirmPayment, (newValue) => {
   // console.log("Novo valor de confirmPayment:", newValue);
@@ -205,8 +206,9 @@ const schedulePayment = async () => {
         scheduleProgress.value = true;
     getStudents()
     updatePayments()
-    console.log('estamos enviando o emit de schedulePayment')
-    emit('relodingPayments')
+    fetchAllStudents()
+    // console.log('estamos enviando o emit de schedulePayment')
+    emit('reloadPayments')
 
   } catch (error) {
     snackbar.value = false
@@ -233,8 +235,9 @@ const paymentConfirmed = async (aluno) => {
     const response = await confirmPaymentApi(data);
      await userStore.confirmPaymentStore(response);
     updatePayments()
-    console.log('estamos enviando o emit paymentConfirmed')
-    emit('relodingPayments')
+    fetchAllStudents()
+    // console.log('estamos enviando o emit paymentConfirmed')
+    emit('reloadPayments')
 
   } catch (error) {
     console.log(error);
