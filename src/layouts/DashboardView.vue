@@ -93,9 +93,10 @@ const filtroNivel = ref('todos')
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 
-onMounted(() => {
+onMounted(async() => {
 
   getDataClsSchedule()
+  userStore.triggerNavBarRefresh()
 
 
 })
@@ -105,13 +106,14 @@ watch(
   () => userStore.dataScheduleStoreUsersClass,
   (newValue) => {
     if (newValue && Array.isArray(newValue.data)) {
-      console.log('estamos dentro do watch', newValue.data)
+      // console.log('estamos dentro do watch', newValue.data)
       dataScheduleStore.value = newValue.data
     } else {
       dataScheduleStore.value = []
     }
   },
-  { immediate: true }
+  { immediate: true },
+
 )
 const turmasFiltradas = computed(() => {
   if (!Array.isArray(dataScheduleStore.value)) return []
@@ -165,7 +167,8 @@ const corPorNivel = (level) => {
 const getDataClsSchedule = async () => {
   try {
     const response = await getDataScheduleClsServicesApi()
-    // console.log('estamos dentro da funcao getDataCls ', response)
+    // console.log('estamos dentro da funcao getDataCls ')
+
     await userStore.getDataScheduleStore(response)
   } catch (e) {
     console.log(e)
