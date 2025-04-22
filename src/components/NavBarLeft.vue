@@ -12,12 +12,11 @@
       <v-divider></v-divider>
       <v-list density="compact" nav>
         <v-list-item prepend-icon="mdi-home" title="Home" to="/"></v-list-item>
-
         <v-list-group>
           <template v-slot:activator="{ props }">
             <v-list-item v-bind="props" to="/pagamentos">
               <template #prepend>
-                <v-badge color="warning" dot v-if="paymentPending || lengthPaymentsForSchedule ">
+                <v-badge color="warning" dot v-if="existPayments">
                   <template #badge>
                     <span></span>
                   </template>
@@ -28,23 +27,16 @@
               <v-list-item-title>Pagamentos</v-list-item-title>
             </v-list-item>
           </template>
-          <v-badge color="success" :content="lengthPaymentsForSchedule" v-if="lengthPaymentsForSchedule">
-
+          <v-badge color="success" :content="studentsDotPayment" v-if="studentsDotPayment > 0">
             <v-list-item title="Agendar Pagamentos" @click="openDialog(item, 'agendar')"></v-list-item>
           </v-badge>
-          <v-badge color="success" :content="lengthPaymentsConfirmed" v-if="lengthPaymentsConfirmed">
+          <v-badge color="success" :content="paymentPending" v-if="paymentPending > 0">
             <v-list-item title="Confirmar Pagamentos" @click="openDialog(item, 'confirmar')"></v-list-item>
           </v-badge>
 
         </v-list-group>
 
-<!--        <v-list-group prepend-icon="mdi-cash-register">-->
-<!--          <template v-slot:activator="{ props }">-->
-<!--            <v-list-item v-bind="props" title="Pagamentos" to="/pagamentos"></v-list-item>-->
-<!--          </template>-->
-<!--          <v-list-item title="Agendar Pagamentos"  @click="openDialog(item, 'agendar')"></v-list-item>-->
-<!--          <v-list-item title="Confirmar Pagamentos"  @click="openDialog(item, 'confirmar')"></v-list-item>-->
-<!--        </v-list-group>-->
+
 
         <v-list-item prepend-icon="mdi-account-group" title="Alunos" to="/alunos"></v-list-item>
         <v-list-item prepend-icon="mdi-notebook-outline" title="Agendamentos" to="/agenda"></v-list-item>
@@ -65,7 +57,7 @@
 
   </v-layout>
   <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm"  >
-    <ContasStudantsView v-if="actionType === 'agendar'|| actionType === 'confirmar' " :confirmPayment="ifConfirmPayment"></ContasStudantsView>
+    <ContasStudantsView v-if="actionType === 'agendar'|| actionType === 'confirmar' " :confirmPayment="ifConfirmPayment" @relodingPayments="reloadPayments()"></ContasStudantsView>
     <CreatedClassView v-if="actionType === 'createdClass'" @close="dialogVisible = false"></CreatedClassView>
     <createdScheduleView v-if="actionType === 'createdSchedule'"></createdScheduleView>
     <EditPerfilView v-if="actionType === 'perfil'" @close="dialogVisible = false"></EditPerfilView>
@@ -96,10 +88,9 @@ const dialogActionText = ref("");
 const selectedItem = ref(null);
 const actionType = ref("");
 const ifConfirmPayment = ref('');
-const lengthPaymentsConfirmed = ref(null);
-const lengthPaymentsForSchedule = ref(null);
-const paymentPending = ref(false)
-// const dialogMessage = ref("");
+const existPayments = ref(false)
+const studentsDotPayment = ref(null)
+const paymentPending = ref(null)
 
 
 onMounted(() => {
@@ -122,25 +113,17 @@ const fetchAllStudents = async()=>{
       page++;
     } while (page <= response.meta.last_page);
     await userStore.getStudentsWithUser(allStudent);
-    // console.log('===', allStudent);
-    const payments = allStudent.filter(item => item.payments[0]?.status === 'pending') // retorna o aluno que esta com o pagamento pendente
-    paymentPending.value =  payments.some(item => item.payments[0]?.status === 'pending') // ira retornar se é true ou false para pagamentos pendentes
-    // console.log('Aluno sem pagamento agendado - ', allStudent.filter(item => item.payments.length === 0));
 
-    if (allStudent.filter(item => item.payments.length === 0).length === 0) {
-      console.log('sem alunos para agendar pagamentos')
-    }
-    if (allStudent.filter(item => item.payments.length === 0).length > 0){
 
-      lengthPaymentsForSchedule.value = allStudent.filter(item => item.payments.length === 0).length // passa quantos alunos estao com o pagamento para agendar
+    const paymentsPending = allStudent.filter(item => item.payments[0]?.status === 'pending') // retorna o aluno que esta com o pagamento pendente
+    const studentsNotPayments = allStudent.filter(s => s.payments?.length === 0)
 
+    if(paymentsPending.length !== 0 || studentsNotPayments.length !== 0){
+      paymentPending.value = paymentsPending.length
+      studentsDotPayment.value = studentsNotPayments.length
+      existPayments.value = true
     }
 
-    lengthPaymentsConfirmed.value = payments.length
-    // console.log('payments ',payments.length)
-    // console.log('pagamento pendente ', payments.some(item => item.payments[0].status === 'pending'))
-    // console.log('---------- ', data.value);
-    // console.log(paymentPending);
   } catch (error) {
     console.log('Erro ao buscar os estudantes',error);
 
@@ -183,6 +166,12 @@ const openDialog = (item, type) => {
 
   }
 };
+
+const reloadPayments =()=>{
+  console.log('estamos dentro da funcao de reload');
+
+  fetchAllStudents()
+}
 
 
 
