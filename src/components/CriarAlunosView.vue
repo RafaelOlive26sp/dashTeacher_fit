@@ -23,38 +23,37 @@
     <EditAccount>
       <template v-slot:content>
         <v-col cols="" md="4" sm="6">
-          <v-text-field label="Idade" v-model="editAccount.age" type="number"></v-text-field>
+          <v-text-field label="Idade*" v-model="editAccount.age" type="number" :rules="[rules.required, rules.idade, rules.noCaracterSpecial ]"></v-text-field>
         </v-col>
 
         <v-col cols="12" md="4" sm="6">
-          <v-text-field hint="1.75" label="Altura" v-model="editAccount.height" type="number"></v-text-field>
+          <v-text-field :hint="[(editAccount.height / 100).toFixed(2)+' Alt']" label="Altura*" v-model="editAccount.height" type="number" :rules="[rules.min, rules.required, rules.noCaracterSpecial]"></v-text-field>
         </v-col>
 
         <v-col cols="12" md="4" sm="6">
-          <v-text-field hint="65.00" label="Peso*" required v-model="editAccount.weight" type="number"></v-text-field>
+          <v-text-field  label="Peso*" required v-model="editAccount.weight" type="number" :rules="[rules.required, rules.noCaracterSpecial]"></v-text-field>
         </v-col>
         <v-col cols="12" md="4" sm="6">
           <v-select label="Genero*" :items="itemGender" item-title="text" item-value="value" persistent-hint required
-            v-model="editAccount.gender"></v-select>
+            v-model="editAccount.gender" :rules="[rules.required]"></v-select>
         </v-col>
         <v-col cols="12" md="4" sm="6">
           <v-select label="Fumante*" :items="itemSmoker" item-title="text" item-value="value" persistent-hint required
-            v-model="editAccount.smoker" type=""></v-select>
+            v-model="editAccount.smoker" :rules="[rules.required]"></v-select>
         </v-col>
         <v-col cols="12" md="4" sm="6">
           <v-textarea row-height="20" rows="2" variant="filled" auto-grow label="Condição Medica*" persistent-hint
-            required v-model="editAccount.medical_condition"></v-textarea>
+            required v-model="editAccount.medical_condition" :rules="[rules.min, rules.required, rules.noCaracterSpecial]"></v-textarea>
         </v-col>
         <v-col cols="12" md="4" sm="6">
           <v-select :items="itemPreviousExperience" item-title="text" item-value="value"
             hint="Praticou algum exercicio fisico nos ultimos 6 meses? " label="Experiência Anterior*" persistent-hint
-            required v-model="editAccount.previous_experience"></v-select>
+            required v-model="editAccount.previous_experience" :rules="[rules.required]"></v-select>
         </v-col>
         <v-col cols="12" md="4" sm="6">
           <v-select :items="itemCurrentlyPraticing" item-title="text" item-value="value"
             label="Pratica algum esporte atualmente*" hint="Pratica Atividade Fisica Atualmente ? " persistent-hint
-            required v-model="editAccount.currently_praticing"></v-select>
-          {{ editAccount.currently_praticing }}
+            required v-model="editAccount.currently_praticing" :rules="[rules.required]"></v-select>
         </v-col>
       </template>
       <template v-slot:btnContent>
@@ -148,6 +147,14 @@ const itemCurrentlyPraticing = ref([
   { text: 'Sim', value: "1" },
   { text: 'Não', value: "0" }
 ]);
+const rules = {
+  required: v => !!v || 'Campo Obrigatorio',
+  idade: v => v >= 8 && v <= 99 || 'Idade Invalida',
+  min: v => v?.length >= 3 || 'Minimo de 3 Caracteres',
+  peso: v => v >= 10 && v <= 150 || 'Peso Invalido',
+  noCaracterSpecial: v => /^[a-zA-Z0-9]*$/.test(v) || 'Caracteres Especiais não são permitidos',
+  noCaracterSpecialCondMedica: v => /^[a-zA-Z]*$/.test(v) || 'Caracteres Especiais e números não são permitidos'
+}
 
 
 
@@ -174,7 +181,7 @@ const handleDialog = (item, toggle, isSelected) => {
 
   toggle();
 
-  console.log('Selected ', isSelected)
+  // console.log('Selected ', isSelected)
   if (!isSelected) {
     dialogVisible.value = true;
     dialogTitle.value = `Titulo`;
@@ -192,7 +199,7 @@ const createdProfileUser = async (data) => {
     const dataProfile = {
       id: editAccount.value.Id,
       age: editAccount.value.age,
-      height: editAccount.value.height,
+      height: (editAccount.value.height / 100).toFixed(2),
       weight: editAccount.value.weight,
       gender: editAccount.value.gender,
       smoker: editAccount.value.smoker,
@@ -214,7 +221,7 @@ const createdProfileUser = async (data) => {
 
     snackbarMessage.value = 'Erro ao criar perfil'
     snackbar.value = true
-    throw new Error("Erro ao criar perfil");
+    throw new Error(e,"Erro ao criar perfil");
   }
 }
 
