@@ -42,7 +42,7 @@
               <v-row justify="center">
                 <v-col cols="6">
                   <v-text-field v-model="valor" :disabled="scheduleProgress" label="Valor do Pagamento" prefix="R$"
-                    type="number" required />
+                    type="number" :rules="[rules.required, rules.valor, rules.noCaracters, rules.min]"  />
                 </v-col>
               </v-row>
               <v-row justify="center" v-if="alunoSelecionado">
@@ -124,6 +124,12 @@ const scheduleProgress = ref(false)
 const paymentSuccess = ref("");
 const toggleMethodsPayment = ref("");
 const status = ref("paid");
+const rules = {
+  required: v => !!v || "Campo obrigatório",
+  valor: v =>  v >= 10 || "Valor deve ser maior que 10",
+  min: v=> v.length >=2 || 'Deve ter pelo menos 2 caracteres',
+  noCaracters: v => /^[0-9]*$/.test(v) || "Não pode conter caracteres especiais ou letras",
+}
 
 
 
