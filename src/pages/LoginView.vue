@@ -6,8 +6,8 @@
           <v-card-title>Login</v-card-title>
           <v-card-text>
             <v-form @submit.prevent="handleLogin">
-              <v-text-field v-model="userEmail" label="Email" required></v-text-field>
-              <v-text-field v-model="userPassword" label="Password" type="password" required></v-text-field>
+              <v-text-field v-model="userEmail" label="Email" required :rules="[rules.required, rules.email]"></v-text-field>
+              <v-text-field v-model="userPassword" label="Password" type="password" required :rules="[rules.required, rules.password]"></v-text-field>
               <v-btn type="submit" color="primary" block>Login</v-btn>
             </v-form>
           </v-card-text>
@@ -35,6 +35,17 @@ const userPassword = ref('')
 const router = useRouter()
 const authStore = useAuthStore()
 const showError = ref(false)
+const rules = {
+  required: v => !!v || 'Campo Obrigatorio',
+  email: v => {
+      const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return pattern.test(v) || 'E-mail inválido';
+    },
+  password: v => {
+      const pattern = /^.{6,}$/; //
+      return pattern.test(v) || `Senha deve ter pelo menos 6 caracteres.`;
+    },
+}
 
 const handleLogin = async () => {
   try {
