@@ -4,7 +4,7 @@
     <!-- <AppHeader/> -->
     <NavBarLeft >
       <template v-slot:content >
-        <v-main>
+        <v-main >
           <router-view  />
         </v-main>
       </template>
@@ -13,7 +13,3 @@
     <AppFooter />
   </v-app>
 </template>
-
-<script setup>
-//
-</script>
