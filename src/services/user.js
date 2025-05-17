@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 
 export const getPayments = async () =>{
   try{
-
     const token = Cookies.get('access_token');
     if(!token){
       throw new Error('User not authenticated', 'Error getting payments');
@@ -34,8 +33,6 @@ export const getPayments = async () =>{
           per_page: itemsPerPage
         }
       })
-      // console.log('Services ',response.data);
-
       return response.data
     }catch(error){
       console.error(error);
@@ -54,8 +51,6 @@ export const getPayments = async () =>{
           Authorization: `Bearer ${token}`
         }
       })
-      console.log(' resposta do back ',response.data);
-
       return response.data
     }catch(error){
       console.error(error);
@@ -66,8 +61,6 @@ export const getPayments = async () =>{
 
   export const removeUserApi = async (id)=>{
     try {
-      // console.log('antes da requisição ',id);
-
       const token = Cookies.get('access_token');
       if(!token){
         throw new Error('User not authenticated', 'Error getting students');
@@ -77,12 +70,7 @@ export const getPayments = async () =>{
           Authorization:`Bearer ${token}`
         }
       })
-
-      // console.log(' resposta do back ',response);
-
       return response.data
-
-
     } catch (error) {
       console.error(error);
     }
@@ -107,7 +95,7 @@ export const getPayments = async () =>{
   }
   export const handleCreatedProfileUser = async (data)=>{
     try{
-      // console.log('Data antes do post ',data);
+
       const UserID = data.id;
 
       const token = Cookies.get('access_token');
@@ -129,8 +117,6 @@ export const getPayments = async () =>{
   }
   export const fetchPaymentUser = async (data)=>{
     try{
-      // console.log('Data antes do post ',data);
-      // console.log('Data antes do post ',data);
       const UserID = data.userId;
 
       const token = Cookies.get('access_token');
@@ -144,10 +130,10 @@ export const getPayments = async () =>{
         },
 
       })
-      // console.log("log da resposta da Api  ", response.data);
+
       return response.data
     }catch(error){
-      // console.error(error.response.status);
+
       throw new Error(error.response.data.message, 'Error getting students');
     }
   }
@@ -163,7 +149,7 @@ export const getPayments = async () =>{
           Authorization: `Bearer ${token}`
         }
       });
-      // console.log(response);
+
       return response.data
 
 
@@ -185,7 +171,7 @@ export const getPayments = async () =>{
         }
       })
 
-      // console.log(response);
+
 
       return response.data
 
@@ -206,7 +192,7 @@ export const getPayments = async () =>{
           Authorization: `Bearer ${token}`
         }
       })
-      // console.log(' resposta do back ',response.data);
+
       return response.data
 
     }catch (e) {
@@ -225,7 +211,7 @@ export const getPayments = async () =>{
           Authorization: `Bearer ${token}`
         }
       })
-      console.log(' resposta do back ',response.data);
+
       return response.data
 
     }catch (e) {
@@ -260,7 +246,7 @@ export const getPayments = async () =>{
           Authorization: `Bearer ${token}`
         },
       })
-      // console.log(' resposta do back ',response.data);
+
 
       return response.data
     }catch(error){
@@ -280,7 +266,7 @@ export const getPayments = async () =>{
           Authorization: `Bearer ${token}`
         }
       })
-      console.log(' resposta do back ',response.data);
+
       return response.data
 
     }catch (e) {
