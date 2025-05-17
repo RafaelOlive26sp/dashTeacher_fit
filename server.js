@@ -1,13 +1,15 @@
 // Importando o express (já instalado) e o path (nativo do Node.js)
 import express from 'express';
 import path from 'path';
-// Criando a aplicação Express
-const app = express();
 import { fileURLToPath } from 'url';
 
 // Obter o caminho do diretório atual
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Criando a aplicação Express
+const app = express();
+
 // Definindo a porta (usando a variável de ambiente PORT ou 3000 por padrão)
 const port = process.env.PORT || 3000;
 
