@@ -5,6 +5,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
     "Accept": "application/json",
+    "X-Application-Source": "dashboard",
   },
 });
 api.interceptors.request.use((config)=>{
