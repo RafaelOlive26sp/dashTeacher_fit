@@ -1,7 +1,7 @@
 <template>
   <v-conteiner>
     <v-row aling="center" justify="center" class="ma-3 rounded">
-      <v-col cols="3">
+      <v-col cols="12" sm="6" md="4" lg="3" class="mb-4">
         <expansions_Panel colorIcon="warning" icon="mdi-cash-clock">
           <template v-slot:contentTitle>
             <p>Pagamentos Pendentes</p>
@@ -24,7 +24,7 @@
           </template>
         </expansions_Panel>
       </v-col>
-      <v-col cols="3">
+      <v-col cols="12" sm="6" md="4" lg="3" class="mb-4">
         <expansions_Panel colorIcon="success" icon="mdi-cash-check">
           <template v-slot:contentTitle>
             <p>Pagamentos Vigentes</p>
@@ -48,7 +48,7 @@
         </expansions_Panel>
       </v-col>
 
-      <v-col cols="3  ">
+      <v-col cols="12" sm="6" md="4" lg="3" class="mb-4">
         <expansions_Panel colorIcon="error" icon="mdi-cash-remove">
           <template v-slot:contentTitle>
             <p>Pagamentos Vencidos</p>
