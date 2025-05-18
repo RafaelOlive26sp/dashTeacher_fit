@@ -1,24 +1,46 @@
 <template>
+  <v-layout>
+    <!-- App Bar com ícone de menu para mobile -->
+    <v-app-bar
+      v-if="$vuetify.display.mdAndDown"
+      app
+      color="dark"
+      dark
+    >
+      <v-app-bar-nav-icon
+      class="d-md-none"
+      @click="drawer = !drawer"
+      />
+      <v-toolbar-title>Nome do Usuario</v-toolbar-title>
+    </v-app-bar>
 
-  <v-layout app>
-    <v-navigation-drawer expand-on-hover rail>
+    <!-- Drawer responsivo -->
+    <v-navigation-drawer
+       v-model="drawer"
+      :temporary="$vuetify.display.mdAndDown"
+      :permanent="$vuetify.display.lgAndUp"
+      expand-on-hover
+      rail
+    >
       <v-list>
-        <!-- <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg" subtitle="email@gmailcom"
-          :title="user?.name"></v-list-item> -->
-        <v-list-item prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-          :title="user?.name" @click="openDialog(item, 'perfil')"></v-list-item>
+        <v-list-item
+          prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
+          :title="user?.name"
+          @click="openDialog(item, 'perfil')"
+        />
       </v-list>
 
-      <v-divider></v-divider>
+      <v-divider />
+
       <v-list density="compact" nav>
-        <v-list-item prepend-icon="mdi-home" title="Home" to="/"></v-list-item>
+        <v-list-item prepend-icon="mdi-home" title="Home" to="/" />
         <v-list-group>
-          <template v-slot:activator="{ props }">
+          <template #activator="{ props }">
             <v-list-item v-bind="props" to="/pagamentos">
               <template #prepend>
                 <v-badge color="warning" dot v-if="existPayments">
                   <template #badge>
-                    <span></span>
+                    <span />
                   </template>
                   <v-icon>mdi-cash-register</v-icon>
                 </v-badge>
@@ -28,43 +50,46 @@
             </v-list-item>
           </template>
           <v-badge color="success" :content="studentsDotPayment" v-if="studentsDotPayment > 0">
-            <v-list-item title="Agendar Pagamentos" @click="openDialog(item, 'agendar')"></v-list-item>
+            <v-list-item title="Agendar Pagamentos" @click="openDialog(item, 'agendar')" />
           </v-badge>
           <v-badge color="success" :content="paymentPending" v-if="paymentPending > 0">
-            <v-list-item title="Confirmar Pagamentos" @click="openDialog(item, 'confirmar')"></v-list-item>
+            <v-list-item title="Confirmar Pagamentos" @click="openDialog(item, 'confirmar')" />
           </v-badge>
-
         </v-list-group>
-
-
-
-        <v-list-item prepend-icon="mdi-account-group" title="Alunos" to="/alunos"></v-list-item>
-        <v-list-item prepend-icon="mdi-notebook-outline" title="Agendamentos" to="/agenda"></v-list-item>
+        <v-list-item prepend-icon="mdi-account-group" title="Alunos" to="/alunos" />
+        <v-list-item prepend-icon="mdi-notebook-outline" title="Agendamentos" to="/agenda" />
         <v-list-group prepend-icon="mdi-book-cog-outline">
-          <template v-slot:activator="{ props }">
-            <v-list-item v-bind="props" title="Aulas/Turmas"></v-list-item>
+          <template #activator="{ props }">
+            <v-list-item v-bind="props" title="Aulas/Turmas" />
           </template>
-          <v-list-item title="Criar Turmas" @click="openDialog(item, 'createdClass')" ></v-list-item>
-          <v-list-item title="Criar Horarios"  @click="openDialog(item, 'createdSchedule')"></v-list-item>
+          <v-list-item title="Criar Turmas" @click="openDialog(item, 'createdClass')" />
+          <v-list-item title="Criar Horarios" @click="openDialog(item, 'createdSchedule')" />
         </v-list-group>
       </v-list>
-
     </v-navigation-drawer>
 
     <v-main class="pa-4">
       <slot name="content"></slot>
     </v-main>
 
+    <Dialogs
+      v-model="dialogVisible"
+      :title="dialogTitle"
+      :confirm-button-text="dialogActionText"
+      @confirm="handleConfirm"
+    >
+      <ContasStudantsView
+        v-if="actionType === 'agendar'|| actionType === 'confirmar'"
+        :confirm-payment="ifConfirmPayment"
+        @reload-payments="reloadPayments()"
+      />
+      <CreatedClassView v-if="actionType === 'createdClass'" @close="dialogVisible = false" />
+      <createdScheduleView v-if="actionType === 'createdSchedule'" />
+      <EditPerfilView v-if="actionType === 'perfil'" @close="dialogVisible = false" />
+    </Dialogs>
   </v-layout>
-  <Dialogs v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm"  >
-    <ContasStudantsView v-if="actionType === 'agendar'|| actionType === 'confirmar' " :confirmPayment="ifConfirmPayment" @reloadPayments="reloadPayments()"></ContasStudantsView>
-    <CreatedClassView v-if="actionType === 'createdClass'" @close="dialogVisible = false"></CreatedClassView>
-    <createdScheduleView v-if="actionType === 'createdSchedule'"></createdScheduleView>
-    <EditPerfilView v-if="actionType === 'perfil'" @close="dialogVisible = false"></EditPerfilView>
-  </Dialogs>
-
-
 </template>
+
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { computed, ref,onMounted, watch } from 'vue';
@@ -91,10 +116,12 @@ const ifConfirmPayment = ref('');
 const existPayments = ref(false)
 const studentsDotPayment = ref(null)
 const paymentPending = ref(null)
+const drawer = ref(false);
 
 
 onMounted(() => {
-  fetchAllStudents()
+  fetchAllStudents(),
+  drawer.value = !window.innerWidth < 960; // 960px é o breakpoint md do Vuetify
 
 })
 
