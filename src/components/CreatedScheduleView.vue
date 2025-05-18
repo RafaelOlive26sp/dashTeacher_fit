@@ -1,16 +1,12 @@
 <template>
-
-
-  <v-col cols="12" md="8">
+  <v-col cols="12" sm="6" md="4" lg="3" class="mb-3">
     <v-sheet elevation="3" class="pa-4">
       <v-item-group v-model="selectedClasses">
         <v-item :value="turma" v-for="turma in classSchedules" :key="turma.id" v-slot="{ isSelected, toggle }">
 
           <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3" @click="toggle" hover>
             <v-card-title>{{ turma.name }}</v-card-title>
-            <!-- <pre>
-              {{ turma }}
-            </pre> -->
+
 
             <v-fab :active="isSelected" icon="mdi-plus" class="fab-overlap fab-edit" absolute
               @click="openDialog(turma.id, 'createClass')">
@@ -25,12 +21,12 @@
 
             <v-card-text>
               <v-row>
-                <v-col cols="6">
+                <v-col cols="12" sm="6" md="4" lg="3" class="mb-4">
                   <div><strong>Nível:</strong> {{ levelLabel(turma.level) }}</div>
                   <div><strong>Máx. alunos:</strong> {{ turma.max_students }}</div>
                   <div><strong>Criada em:</strong> {{ formatDate(turma.created_at) }}</div>
                 </v-col>
-                <v-col cols="6">
+                <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
                   <div><strong>Horários:</strong></div>
                   <ul class="pl-4">
                     <li v-for="(schedule, index) in turma.schedules_patterns" :key="index">

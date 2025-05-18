@@ -1,30 +1,30 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" md="8">
+      <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedClasses" mandatory>
             <v-item :value="turma" v-for="turma in classSchedules" :key="turma.id" v-slot="{ isSelected, toggle }">
               <!-- {{turma}} -->
 
-              <v-card :color="isSelected ? 'primary' : ''" class="ma-2 pa-3"
+              <v-card :color="isSelected ? 'primary' : ''" cols="12" sm="6" md="4" lg="3" class="ma-2 pa-3"
                 @click="handleApoointment(turma, toggle, 'turma')" hover>
                 <v-card-title>{{ turma.name }}</v-card-title>
                 <!-- {{turma}} -->
                 <!-- Marca d'água "Sem Aluno" -->
                 <div v-if="turma.students.length === 0" class="position-absolute text-grey-lighten-1 text-center"
-                  style="top: 50%; left: 35%; transform: translate(-50%, -50%); opacity: 0.2; font-size: 1.5rem;">
+                  style="top: 55%; left: 35%; transform: translate(-50%, -50%); opacity: 0.2; font-size: 1.5rem;">
                   Sem Aluno
                 </div>
                 <v-card-text>
                   <v-row>
-                    <v-col cols="6">
+                    <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
                       <div><strong>Nível:</strong> {{ levelLabel(turma.level) }}</div>
                       <div><strong>Máx. alunos:</strong> {{ turma.max_students }}</div>
                       <div><strong>Qtd. alunos:</strong> {{ turma.students?.length }}</div>
                       <div><strong>Criada em:</strong> {{ formatDate(turma.created_at) }}</div>
                     </v-col>
-                    <v-col cols="6">
+                    <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
                       <div><strong>Horários:</strong></div>
                       <ul class="pl-4">
                         <li v-for="(schedule, index) in turma.schedules_patterns" :key="index">
@@ -47,7 +47,7 @@
       <divider></divider>
 
 
-      <v-col cols="12" md="4">
+      <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedUsers">
             <v-item v-for="user in paymentConfirmed" :key="user.id" v-slot="{ isSelected, toggle }">
@@ -56,12 +56,12 @@
                 <v-card-title>{{ user.user.name }}</v-card-title>
                 <v-card-text>
                   <v-row>
-                    <v-col cols="6">
+                    <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
                       <div>Idade: {{ user.age }} anos</div>
                       <div>Altura: {{ user.height }}m</div>
                       <div>Peso: {{ user.weight }}kg</div>
                     </v-col>
-                    <v-col cols="6">
+                    <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
                       <div>Gênero: {{ user.gender === 'male' ? 'Masculino' : 'Feminino' }}</div>
                       <div>Condição médica: {{ user.medical_condition || 'Nenhuma' }}</div>
                       <div>Status Pagamento: {{ user.payments[0].status === 'paid' ? 'Pago' : 'Pendente' }}</div>

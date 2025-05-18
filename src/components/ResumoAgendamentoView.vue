@@ -5,18 +5,18 @@
     <!--    {{props.data[0].turma}}-->
     <v-row justify="center">
       <!-- Card da Turma -->
-      <v-col cols="12" md="8">
+      <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
         <v-sheet elevation="3" class="pa-4">
           <v-card color="primary" dark class="ma-2 pa-3">
             <v-card-title class="text-h6">Turma Selecionada: {{ turma?.name }}</v-card-title>
             <v-card-text>
               <v-row>
-                <v-col cols="6">
+                <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
                   <div><strong>Nível:</strong> {{ levelLabel(turma?.level) }}</div>
                   <div><strong>Máx. alunos:</strong> {{ turma?.max_students }}</div>
                   <div><strong>Criada em:</strong> {{ formatDate(turma?.created_at) }}</div>
                 </v-col>
-                <v-col cols="6">
+                <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
                   <div><strong>Horários:</strong></div>
                   <ul class="pl-4">
                     <li v-for="(schedule, index) in turma?.schedules_patterns" :key="index">
@@ -34,7 +34,7 @@
       </v-col>
 
       <!-- Card do Aluno -->
-      <v-col cols="12" md="8">
+      <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
         <v-sheet elevation="3" class="pa-4">
           <v-card color="success" dark class="ma-2 pa-3">
             <v-card-title class="text-h6">Aluno Selecionado: {{ aluno?.user.name }}</v-card-title>
@@ -57,20 +57,20 @@
       </v-col>
 
       <!-- Campo de Data de Início -->
-      <v-col cols="12" md="8">
+      <v-col cols="12" sm="6" md="4" lg="3" >
         <v-text-field v-model="startDate" type="date" label="Data de Início do Aluno na Turma"
           :rules="[v => !!v || 'A data de início é obrigatória']" outlined dense clearable></v-text-field>
       </v-col>
 
       <!-- Botão de Confirmação -->
-      <v-col cols="12" md="8" class="text-right">
-        <v-btn color="primary" @click="confirmarAgendamento" :loading="loading">
+      <v-col cols="12" sm="6" md="4" lg="3" class="text-right">
+        <v-btn cols="12" sm="6" md="4" lg="3" class="mb-2" color="primary" @click="confirmarAgendamento" :loading="loading">
           Confirmar Agendamento
           <template v-slot:loader>
             <v-progress-linear indeterminate></v-progress-linear>
           </template>
         </v-btn>
-        <v-btn color="deep-orange-lighten-3" class="ml-2" @click="emit('recarregar',{cancelado: true})">Cancelar</v-btn>
+        <v-btn cols="12" sm="6" md="4" lg="3"  color="deep-orange-lighten-3" class="ml-2" @click="emit('recarregar',{cancelado: true})">Cancelar</v-btn>
       </v-col>
     </v-row>
   </v-container>

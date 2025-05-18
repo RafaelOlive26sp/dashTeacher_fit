@@ -3,7 +3,7 @@
 
     <v-container>
       <v-row justify="space-around">
-        <v-col cols-12 md="4" v-for="itens in usersData()" :key="itens.id">
+        <v-col cols="12" sm="6" md="4" lg="3" class="mb-1"  v-for="itens in usersData()" :key="itens.id">
           <v-sheet class="mx-auto mb-4" elevation="7">
             <v-item v-slot="{ isSelected, toggle }">
               <v-card :variant="variant" class="mx-auto" :color="isSelected ? 'success' : ''" :subtitle="itens.email"

@@ -2,13 +2,26 @@
   <v-container fluid>
     <v-row class="mb-4">
       <v-col cols="12" md="6" lg="4">
-        <v-select v-model="filtroNivel" :items="[
-          { title: 'Todas', value: 'todos' },
-          { title: 'Iniciante', value: 'beginner' },
-          { title: 'Intermediário', value: 'intermediate' },
-          { title: 'Avançado', value: 'advanced' },
-        ]" label="Filtrar por Nível" variant="outlined" density="compact" />
-      <v-btn class="me-2" prepend-icon="mdi-pencil" rounded="lg" text="Editar Turmas"  @click="openDialog(item, 'created')"></v-btn>
+        <v-select
+          v-model="filtroNivel"
+          :items="[
+            { title: 'Todas', value: 'todos' },
+            { title: 'Iniciante', value: 'beginner' },
+            { title: 'Intermediário', value: 'intermediate' },
+            { title: 'Avançado', value: 'advanced' },
+          ]"
+          label="Filtrar por Nível"
+          variant="outlined"
+          density="compact"
+        />
+        <v-btn
+          class="me-2 mt-2 mt-md-0"
+          prepend-icon="mdi-pencil"
+          rounded="lg"
+          text="Editar Turmas"
+          @click="openDialog(item, 'created')"
+          block
+        ></v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -29,13 +42,20 @@
         </v-card>
       </v-col>
     </v-row>
-    <!-- {{filtroNivel}} -->
 
     <v-row>
-      <v-col v-for="turma in turmasFiltradas" :key="turma.id" cols="12" md="6">
+      <v-col
+        v-for="turma in turmasFiltradas"
+        :key="turma.id"
+        cols="12"
+        md="6"
+      >
         <v-card class="mb-4 pa-3" elevation="5" rounded="xl">
-          <v-card-title class="py-2 px-4 d-flex justify-space-between align-center"
-            :class="corPorNivel(turma.classe.level)" style="font-size: 1rem;">
+          <v-card-title
+            class="py-2 px-4 d-flex justify-space-between align-center"
+            :class="corPorNivel(turma.classe.level)"
+            style="font-size: 1rem;"
+          >
             <span>{{ turma.classe.name }} ({{ turma.classe.level }})</span>
           </v-card-title>
           <v-card-text class="pt-2">
@@ -48,14 +68,20 @@
 
             <strong>Alunos:</strong>
             <v-row>
-              <v-col v-for="aluno in turma.students" :key="aluno.id" cols="12" sm="6">
-                <v-card outlined class="pa-3 h-100">
+              <v-col
+                v-for="aluno in turma.students"
+                :key="aluno.id"
+                cols="12"
+                sm="6"
+                class="d-flex"
+              >
+                <v-card outlined class="pa-3 flex-grow-1">
                   <div style="font-size: 0.9rem;">
                     <strong>Nome:</strong> {{ aluno.name }} <br />
                     <strong>Idade:</strong> {{ aluno.age }} <br />
                     <strong>Sexo:</strong> {{ aluno.gender }} <br />
-                    <strong>Condição Médica:</strong> {{ aluno.medical_condition }}
-                    <strong>Pagamento:</strong>{{ aluno.payments.length > 0 ? aluno.payments[0].status : 'Não pago' }}
+                    <strong>Condição Médica:</strong> {{ aluno.medical_condition }}<br />
+                    <strong>Pagamento:</strong> {{ aluno.payments.length > 0 ? aluno.payments[0].status : 'Não pago' }}
                   </div>
                 </v-card>
               </v-col>
@@ -72,11 +98,7 @@
     </v-row>
   </v-container>
   <Dialog v-model="dialogVisible" :title="dialogTitle" :confirmButtonText="dialogActionText" @confirm="handleConfirm">
-
-    <EditClassesView @updateClass="getDataClsSchedule">
-
-    </EditClassesView>
-
+    <EditClassesView @updateClass="getDataClsSchedule" />
   </Dialog>
 </template>
 
@@ -87,18 +109,14 @@ import { useUserStore } from '@/stores/user.js'
 import EditClassesView from '@/components/EditClasses/EditClassesView.vue'
 import Dialog from '@/components/Dialogs.vue'
 
-
 const userStore = useUserStore()
 const filtroNivel = ref('todos')
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 
-onMounted(async() => {
-
+onMounted(async () => {
   getDataClsSchedule()
   userStore.triggerNavBarRefresh()
-
-
 })
 const dataScheduleStore = ref([])
 
@@ -106,14 +124,12 @@ watch(
   () => userStore.dataScheduleStoreUsersClass,
   (newValue) => {
     if (newValue && Array.isArray(newValue.data)) {
-      // console.log('estamos dentro do watch', newValue.data)
       dataScheduleStore.value = newValue.data
     } else {
       dataScheduleStore.value = []
     }
   },
-  { immediate: true },
-
+  { immediate: true }
 )
 const turmasFiltradas = computed(() => {
   if (!Array.isArray(dataScheduleStore.value)) return []
@@ -122,7 +138,6 @@ const turmasFiltradas = computed(() => {
 
   for (const aluno of dataScheduleStore.value) {
     for (const matricula of aluno.classes) {
-
       const turma = matricula.classe
       const turmaId = turma.id
 
@@ -167,15 +182,43 @@ const corPorNivel = (level) => {
 const getDataClsSchedule = async () => {
   try {
     const response = await getDataScheduleClsServicesApi()
-    // console.log('estamos dentro da funcao getDataCls ')
-
     await userStore.getDataScheduleStore(response)
   } catch (e) {
     console.log(e)
   }
 }
-const openDialog =()=>{
+const openDialog = () => {
   dialogVisible.value = true
-
 }
 </script>
+
+<style scoped>
+/* Responsividade extra para mobile */
+@media (max-width: 600px) {
+  .v-card-title {
+    font-size: 0.95rem !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  .v-card-text {
+    font-size: 0.95rem !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  .v-btn {
+    width: 100% !important;
+    margin-top: 8px !important;
+  }
+  .v-select {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .v-col {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+  }
+  ul {
+    margin-left: 1rem !important;
+  }
+}
+</style>
