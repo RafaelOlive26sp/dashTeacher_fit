@@ -1,15 +1,15 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
+      <v-col cols="12" sm="6" md="4" lg="6" class="mb-1 ">  
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedClasses" mandatory>
             <v-item :value="turma" v-for="turma in classSchedules" :key="turma.id" v-slot="{ isSelected, toggle }">
               <!-- {{turma}} -->
 
-              <v-card :color="isSelected ? 'primary' : ''" cols="12" sm="6" md="4" lg="3" class="ma-2 pa-3"
+              <v-card :color="isSelected ? 'primary' : ''" cols="12" sm="6" md="4"  class="ma-2 pa-4" elevation="3"
                 @click="handleApoointment(turma, toggle, 'turma')" hover>
-                <v-card-title>{{ turma.name }}</v-card-title>
+                <v-card-title class="text-h6">{{ turma.name }}</v-card-title>
                 <!-- {{turma}} -->
                 <!-- Marca d'água "Sem Aluno" -->
                 <div v-if="turma.students.length === 0" class="position-absolute text-grey-lighten-1 text-center"
@@ -25,7 +25,7 @@
                       <div><strong>Criada em:</strong> {{ formatDate(turma.created_at) }}</div>
                     </v-col>
                     <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
-                      <div><strong>Horários:</strong></div>
+                      <strong>Horários:</strong>
                       <ul class="pl-4">
                         <li v-for="(schedule, index) in turma.schedules_patterns" :key="index">
                           {{ translateDay(schedule.day_of_week) }} -
@@ -47,13 +47,13 @@
       <divider></divider>
 
 
-      <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
+      <v-col cols="12" sm="6" md="4" lg="5" class="mb-2 ">
         <v-sheet elevation="3" class="pa-4">
           <v-item-group v-model="selectedUsers">
             <v-item v-for="user in paymentConfirmed" :key="user.id" v-slot="{ isSelected, toggle }">
-              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-3"
+              <v-card :color="isSelected ? 'success' : ''" class="ma-2 pa-4" elevation="3"
                 @click="handleApoointment(user, toggle, 'user')" hover v-if="user.classes.length === 0">
-                <v-card-title>{{ user.user.name }}</v-card-title>
+                <v-card-title class="text-h6">{{ user.user.name }}</v-card-title>
                 <v-card-text>
                   <v-row>
                     <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">

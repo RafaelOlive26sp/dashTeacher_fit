@@ -60,15 +60,15 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn text="Close" variant="plain" @click="createdProfileUser('close')"></v-btn>
+          <v-btn text="Fechar" variant="plain" @click="createdProfileUser('close')"></v-btn>
 
-          <v-btn color="primary" text="Save" variant="tonal" @click="createdProfileUser('save')"></v-btn>
+          <v-btn color="primary" text="Salvar" variant="tonal" @click="createdProfileUser('save')"></v-btn>
         </v-card-actions>
       </template>
     </EditAccount>
     <template #actions>
       <v-btn color="pink" variant="text" @click="snackbar = false">
-        Close
+        Fechar
       </v-btn>
     </template>
 
@@ -76,7 +76,7 @@
   <SnackBarsView :textContent="snackbarMessage" v-model="snackbar">
     <template #actions>
       <v-btn color="pink" variant="text" @click="snackbar = false">
-        Close
+        Fechar
       </v-btn>
     </template>
   </SnackBarsView>
@@ -152,7 +152,7 @@ const rules = {
   idade: v => v >= 8 && v <= 99 || 'Idade Invalida',
   min: v => v?.length >= 3 || 'Minimo de 3 Caracteres',
   peso: v => v >= 10 && v <= 150 || 'Peso Invalido',
-  noCaracterSpecial: v => /^[a-zA-Z0-9]*$/.test(v) || 'Caracteres Especiais não são permitidos',
+  noCaracterSpecial: v => /^[a-zA-Z0-9\s]*$/.test(v) || 'Caracteres Especiais não são permitidos',
   noCaracterSpecialCondMedica: v => /^[a-zA-Z]*$/.test(v) || 'Caracteres Especiais e números não são permitidos'
 }
 

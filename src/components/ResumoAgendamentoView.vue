@@ -1,14 +1,12 @@
 <template>
   <v-container>
-    <!--    {{props.data[0].user}}-->
-    <!--    <br>-->
-    <!--    {{props.data[0].turma}}-->
     <v-row justify="center">
       <!-- Card da Turma -->
       <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
         <v-sheet elevation="3" class="pa-4">
           <v-card color="primary" dark class="ma-2 pa-3">
-            <v-card-title class="text-h6">Turma Selecionada: {{ turma?.name }}</v-card-title>
+            <v-card-title class="text-h6" style="word-break: break-word; white-space: normal;"
+              >Turma Selecionada: {{ turma?.name }}</v-card-title>
             <v-card-text>
               <v-row>
                 <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
@@ -37,7 +35,9 @@
       <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
         <v-sheet elevation="3" class="pa-4">
           <v-card color="success" dark class="ma-2 pa-3">
-            <v-card-title class="text-h6">Aluno Selecionado: {{ aluno?.user.name }}</v-card-title>
+            <v-card-title class="text-h6" style="word-break: break-word; white-space: normal;">
+              Aluno Selecionado: {{ aluno?.user.name }}
+            </v-card-title>
             <v-card-text>
               <div><strong>Idade:</strong> {{ aluno?.age }} anos</div>
               <div><strong>Altura:</strong> {{ aluno?.height }} m</div>
