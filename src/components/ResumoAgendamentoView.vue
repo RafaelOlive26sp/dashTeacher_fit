@@ -2,14 +2,14 @@
   <v-container>
     <v-row justify="center">
       <!-- Card da Turma -->
-      <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
+      <v-col cols="12" sm="6" md="4" lg="10" class="mb-1">
         <v-sheet elevation="3" class="pa-4">
           <v-card color="primary" dark class="ma-2 pa-3">
             <v-card-title class="text-h6" style="word-break: break-word; white-space: normal;"
               >Turma Selecionada: {{ turma?.name }}</v-card-title>
             <v-card-text>
               <v-row>
-                <v-col cols="12" sm="6" md="4" lg="3" class="mb-2">
+                <v-col cols="12" sm="6" md="4" lg="5" class="mb-2">
                   <div><strong>Nível:</strong> {{ levelLabel(turma?.level) }}</div>
                   <div><strong>Máx. alunos:</strong> {{ turma?.max_students }}</div>
                   <div><strong>Criada em:</strong> {{ formatDate(turma?.created_at) }}</div>
@@ -32,7 +32,7 @@
       </v-col>
 
       <!-- Card do Aluno -->
-      <v-col cols="12" sm="6" md="4" lg="3" class="mb-1">
+      <v-col cols="12" sm="6" md="4" lg="10" class="mb-1">
         <v-sheet elevation="3" class="pa-4">
           <v-card color="success" dark class="ma-2 pa-3">
             <v-card-title class="text-h6" style="word-break: break-word; white-space: normal;">
@@ -55,23 +55,25 @@
           </v-card>
         </v-sheet>
       </v-col>
+      <v-row class="d-flex justify-center">
+        <!-- Campo de Data de Início -->
+        <v-col cols="12" sm="6" md="4" lg="3" class="">
+          <v-text-field v-model="startDate" type="date" label="Data de Início do Aluno na Turma"
+            :rules="[v => !!v || 'A data de início é obrigatória']" outlined dense clearable></v-text-field>
+        </v-col>
 
-      <!-- Campo de Data de Início -->
-      <v-col cols="12" sm="6" md="4" lg="3" >
-        <v-text-field v-model="startDate" type="date" label="Data de Início do Aluno na Turma"
-          :rules="[v => !!v || 'A data de início é obrigatória']" outlined dense clearable></v-text-field>
-      </v-col>
+        <!-- Botão de Confirmação -->
+        <v-col cols="12" sm="6" md="4" lg="3" class="text-right d-flex flex-column align-center ">
+          <v-btn cols="12" sm="6" md="4" lg="3" class="mb-2" color="primary" @click="confirmarAgendamento" :loading="loading">
+            Confirmar Agendamento
+            <template v-slot:loader>
+              <v-progress-linear indeterminate></v-progress-linear>
+            </template>
+          </v-btn>
+          <v-btn cols="12" sm="6" md="4" lg="3"  color="deep-orange-lighten-3" class="" @click="emit('recarregar',{cancelado: true})">Cancelar</v-btn>
+        </v-col>
+      </v-row>
 
-      <!-- Botão de Confirmação -->
-      <v-col cols="12" sm="6" md="4" lg="3" class="text-right">
-        <v-btn cols="12" sm="6" md="4" lg="3" class="mb-2" color="primary" @click="confirmarAgendamento" :loading="loading">
-          Confirmar Agendamento
-          <template v-slot:loader>
-            <v-progress-linear indeterminate></v-progress-linear>
-          </template>
-        </v-btn>
-        <v-btn cols="12" sm="6" md="4" lg="3"  color="deep-orange-lighten-3" class="ml-2" @click="emit('recarregar',{cancelado: true})">Cancelar</v-btn>
-      </v-col>
     </v-row>
   </v-container>
   <v-alert :text="messageAlert" :type="color" variant="tonal" border="start" :border-color="border_color_alert"
