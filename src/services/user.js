@@ -117,6 +117,7 @@ export const getPayments = async () =>{
   }
   export const fetchPaymentUser = async (data)=>{
     try{
+
       const UserID = data.userId;
 
       const token = Cookies.get('access_token');
@@ -144,6 +145,7 @@ export const getPayments = async () =>{
       if(!token){
         throw new Error('User not authenticated', 'Error getting students');
       }
+
       const response = await api.put(`/api/v1/payment/${UserID}`,data,{
         headers:{
           Authorization: `Bearer ${token}`

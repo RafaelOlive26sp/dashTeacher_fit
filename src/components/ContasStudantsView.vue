@@ -202,6 +202,7 @@ const schedulePayment = async () => {
       amount: valor.value,
     };
     const response = await fetchPaymentUserApi(paymentData)
+
     if (response) {
       setTimeout(() => {
         loadingPayment.value = false;
@@ -235,8 +236,10 @@ const paymentConfirmed = async (aluno) => {
     const data = {
       id: aluno.id,
       amount: aluno.payments[0].amount,
-      status: status.value
+      status: status.value,
+      due_date: aluno.payments[0].due_date,
     }
+
 
     const response = await confirmPaymentApi(data);
      await userStore.confirmPaymentStore(response);
