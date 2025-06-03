@@ -1,5 +1,5 @@
 <template>
-  <v-col cols="12" sm="6" md="4" lg="3" class="mb-3">
+  <v-col cols="12" sm="6" md="4" lg="12" class="mb-3">
     <v-sheet elevation="3" class="pa-4">
       <v-item-group v-model="selectedClasses">
         <v-item :value="turma" v-for="turma in classSchedules" :key="turma.id" v-slot="{ isSelected, toggle }">
