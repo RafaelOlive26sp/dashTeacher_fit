@@ -64,6 +64,15 @@ Para servir a aplicação em produção (após o build):
 ```bash
 npm run start
 ```
+## 🧪 Sinta-se à vontade para testar a aplicação
+
+Para testar as funcionalidades do sistema, utilize as seguintes credenciais:
+
+**E-mail:** admin@example.com  
+**Senha:** password  
+
+> **Nota:** Estas credenciais são exclusivamente para um ambiente de teste dedicado e não devem ser usadas em produção.
+
 
 ## 📚 Estrutura de Pastas
 
