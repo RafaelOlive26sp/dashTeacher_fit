@@ -179,7 +179,7 @@ const openDialog = (item, type) => {
   selectedItem.value = item;
   actionType.value = type;
   dialogVisible.value = true;
-  ifConfirmPayment.value = 'false'
+  ifConfirmPayment.value = 'schedulePayment';
 
   if (type === "agendar") {
     dialogTitle.value = "Agendar Pagamentos";
