@@ -13,7 +13,7 @@
             <p><strong>Status: </strong>{{ aluno.payments[0].status }} </p>
           </v-card-text>
           <v-card-actions v-if="toggleMethodsPayment !== 'confirmPayment'">
-            <v-btn color="primary" @click="opensheet(aluno)">
+            <v-btn color="primary" @click="opensheet('agendar',aluno)">
               Agendar Pagamento
             </v-btn>
           </v-card-actions>
@@ -130,6 +130,7 @@ const rules = {
   min: v=> v.length >=2 || 'Deve ter pelo menos 2 caracteres',
   noCaracters: v => /^[0-9]*$/.test(v) || "Não pode conter caracteres especiais ou letras",
 }
+const loadingInitialData = ref(true);
 
 
 
@@ -153,15 +154,18 @@ const fetchAllStudents = async () => {
       page++;
     } while (page <= response.meta.last_page);
         data.value = allStudent;
+          
   } catch (error) {
-    console.log('Erro ao buscar os estudantes', error);
-
+    console.error('Erro ao buscar os estudantes', error);
+  }finally {
+    loadingInitialData.value = false;
   }
+
 }
 
 onMounted(async () => {
   await fetchAllStudents();
-  getStudents();
+  // getStudents();
 });
 watch(confirmPayment, (newValue) => {
   // console.log("Novo valor de confirmPayment:", newValue);
@@ -211,7 +215,7 @@ const schedulePayment = async () => {
     }
         userStore.fetchPayments(response);
         scheduleProgress.value = true;
-    getStudents()
+    // getStudents()
     updatePayments()
     fetchAllStudents()
     // console.log('estamos enviando o emit de schedulePayment')
@@ -245,7 +249,7 @@ const paymentConfirmed = async (aluno) => {
      await userStore.confirmPaymentStore(response);
     updatePayments()
     fetchAllStudents()
-    // console.log('estamos enviando o emit paymentConfirmed')
+    
     emit('reloadPayments')
 
   } catch (error) {
@@ -263,20 +267,34 @@ const opensheet = (metodo, aluno) => {
     return;
 
   }
-  alunoSelecionado.value = metodo;
+  alunoSelecionado.value = aluno;
 
 
   sheet.value = true;
 };
 
 const toggleCardPayment = computed(() => {
-  if (toggleMethodsPayment.value !== 'confirmPayment') {
-
-    return data.value.filter(a => a.payments?.length === 0) //nao tem pagamento
-
+  if (loadingInitialData.value) {
+    return [];
   }
-  return data.value.filter(a => a.payments?.length > 0 && a.payments.some(p => p.status === 'pending')) //tem pagamento
+  if (toggleMethodsPayment.value === 'schedulePayment') {
+    return studentsNotPayment(); 
+  }
+  return studentsWithPendingPayments(); // Retorna todos os alunos com pagamentos pendentes
+
 });
+
+const studentsNotPayment = ()=>{
+  return [...data.value].filter(student => !student.payments || student.payments.length === 0);
+}
+
+const studentsWithPendingPayments = () => {
+   return [...data.value].filter(student => 
+    student.payments?.length > 0 && 
+    student.payments.some(p => p.status === 'pending')
+  );
+  
+};
 
 const formatDate = (date) => {
   return format(new Date(date), "dd/MM/yyyy");
