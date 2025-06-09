@@ -24,6 +24,8 @@
 
 <script setup>
 import { useAuthStore } from '@/stores/auth';
+import { handleError } from '@/utils/ErrorHandle';
+
 
 
  const AuthStore = useAuthStore();
@@ -43,7 +45,7 @@ import { useAuthStore } from '@/stores/auth';
     await AuthStore.logout()
 
   }catch (error) {
-    console.error('Error ao fazer o Logout ',error)
+    handleError('Error ao fazer o Logout ',error)
   }
 }
 

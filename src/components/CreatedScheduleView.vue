@@ -64,6 +64,7 @@ import { format } from 'date-fns'
 import Dialogs from './Dialogs.vue';
 import Schedules from './SchedulesView.vue';
 import tutorial from './tutorial/CriarHoraio.vue';
+import { handleError } from '@/utils/ErrorHandle';
 
 const classSchedules = ref([]);
 const selectedClasses = ref([]);
@@ -88,7 +89,7 @@ const loadDataClasses = async () => {
     const response = await loadClassesApi()
     classSchedules.value = response.data
   } catch (error) {
-    console.log(error);
+    handleError(error);
 
   }
 }

@@ -61,6 +61,7 @@ import Dialogs from './Dialogs.vue';
 import EditAccount from './EditAccount.vue'
 import CriarAlunosView from './CriarAlunosView.vue'
 import TutorialView from "@/components/tutorial/TutorialView.vue";
+import { handleError } from '@/utils/ErrorHandle';
 
 
 const userStore = useUserStore();
@@ -110,7 +111,7 @@ const loadStudents = async (options = {page: 1, itemsPerPage: 5}) => {
     totalItems.value = response.meta.total;
 
   } catch (error) {
-    console.log(error);
+    handleError(error);
 
   } finally {
     loading.value = false
@@ -157,7 +158,7 @@ const handleConfirm = async () => {
       snackbar.value = true;
 
     } catch (error) {
-      console.error(error);
+      handleError(error);
     }
 
   }

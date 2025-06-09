@@ -99,6 +99,7 @@ import ContasStudantsView from "@/components/ContasStudantsView.vue";
 import EditPerfilView from "@/components/perfil/EditPerfilView.vue";
 import {useUserStore} from "@/stores/user.js";
 import {getStudentsWithUser as getStudentsWithUserApi} from "@/services/user.js";
+import { handleError } from '@/utils/ErrorHandle';
 // import { useUserStore } from '@/stores/user.js';
 
 
@@ -158,12 +159,8 @@ const fetchAllStudents = async()=>{
         existPayments.value = false
 
     }
-    // console.log('pagamentos pendentes', paymentsPending.length)
-    // console.log('alunos sem pagamentos', studentsNotPayments.length)
-
   } catch (error) {
-    console.log('Erro ao buscar os estudantes',error);
-
+    handleError('Erro ao buscar os estudantes',error);
   }
 }
 watch(

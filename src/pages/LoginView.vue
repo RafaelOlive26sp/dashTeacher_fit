@@ -51,6 +51,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import {useAuthStore} from '@/stores/auth.js'
 import {login as loginApi} from '@/services/auth.js'
+import {handleError} from '@/utils/ErrorHandle.js'
 
 
 const userEmail = ref('')
@@ -76,7 +77,7 @@ const handleLogin = async () => {
       authStore.login(response)
       router.push('/')
   } catch (error) {
-    console.error(error)
+    handleError(error, 'Erro ao fazer login')
     showError.value = true
   }
 }

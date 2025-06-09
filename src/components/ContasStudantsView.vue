@@ -105,6 +105,7 @@ import {
 import { useUserStore } from "@/stores/user.js";
 import SnackBarsView from "@/components/snackBar/SnackBarsView.vue";
 import { format } from 'date-fns';
+import { handleError } from "@/utils/ErrorHandle";
 
 
 const userStore = useUserStore();
@@ -156,7 +157,7 @@ const fetchAllStudents = async () => {
         data.value = allStudent;
           
   } catch (error) {
-    console.error('Erro ao buscar os estudantes', error);
+    handleError('Erro ao buscar os estudantes', error);
   }finally {
     loadingInitialData.value = false;
   }
@@ -178,7 +179,7 @@ const getStudents = async () => {
     userStore.getStudentsWithUser(response);
     data.value = response.data;
   } catch (error) {
-    console.error("Error fetching students:", error);
+    handleError("Error fetching students:", error);
   }
 };
 
@@ -187,7 +188,7 @@ const updatePayments = async () => {
     const response = await getPaymentsApi();
     userStore.getPayment(response);
   } catch (error) {
-    console.error('Erro ao atualizar pagamentos:', error);
+    handleError('Erro ao atualizar pagamentos:', error);
   }
 };
 
@@ -222,6 +223,7 @@ const schedulePayment = async () => {
     emit('reloadPayments')
 
   } catch (error) {
+    handleError('Erro ao agendar pagamento', error);
     snackbar.value = false
     scheduleProgress.value = false;
     setTimeout(() => {
@@ -253,7 +255,7 @@ const paymentConfirmed = async (aluno) => {
     emit('reloadPayments')
 
   } catch (error) {
-    console.log(error);
+    handleError(error, 'Erro ao confirmar pagamento');
 
   }
 }

@@ -50,10 +50,10 @@ import { createdClass as createdClassApi } from '@/services/user.js'
 import { useUserStore } from '@/stores/user.js'
 import SnackBarsView from "@/components/snackBar/SnackBarsView.vue";
 import TutorialView from "@/components/tutorial/TutorialView.vue";
+import { handleError } from '@/utils/ErrorHandle';
 
 const userStore = useUserStore()
 const emit = defineEmits(['close'])
-const dialog = ref(false)
 const valid = ref(false)
 
 const form = ref(null)
@@ -105,15 +105,12 @@ const submit = () => {
         }, 2000);
         userStore.shouldRefreshSchedules = true
       } catch (error) {
-        console.error('Erro ao criar turma:', error)
+        handleError('Erro ao criar turma:', error)
       }
       finally {
-        // dialog.value = false
         clearInputs()
       }
     }
-    // console.log('Dados da turma:', classData.value)
-    // dialog.value = false
     createClass()
   }
 }

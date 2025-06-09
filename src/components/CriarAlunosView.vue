@@ -113,6 +113,7 @@ import Dialogs from "@/components/Dialogs.vue";
 import EditAccount from "@/components/EditAccount.vue";
 import SnackBarsView from "./snackBar/SnackBarsView.vue";
 import TutorialView from "@/components/tutorial/TutorialView.vue";
+import { handleError } from "@/utils/ErrorHandle";
 
 const emit = defineEmits(["profileCreated"]);
 const userStore = useUserStore();
@@ -172,7 +173,7 @@ const fetchUsers = async () => {
 
     userStore.usersWithIncompleteProfile(response)
   } catch (e) {
-    console.log(e)
+    handleError(e)
   }
 }
 const usersData = () => userStore.usersIncompleteProfile;
@@ -218,7 +219,6 @@ const createdProfileUser = async (data) => {
     }
 
   } catch (e) {
-
     snackbarMessage.value = 'Erro ao criar perfil'
     snackbar.value = true
     throw new Error(e,"Erro ao criar perfil");
