@@ -13,7 +13,18 @@ const app = express();
 // Definindo a porta (usando a variável de ambiente PORT ou 3000 por padrão)
 const port = process.env.PORT || 3000;
 
-// Serve arquivos estáticos da pasta 'dist' (pasta gerada pelo build do Vue.js)
+// Middleware para remover/ajustar Content-Security-Policy (opcional, mas recomendado)
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; img-src 'self' data:;");
+  next();
+});
+
+// Impede erro 404 para favicon.ico e evita que o navegador reclame
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end(); // No Content
+});
+
+// Serve arquivos estáticos da pasta 'dist' (gerada pelo build do Vue.js)
 app.use(express.static(path.join(__dirname, 'dist')));
 
 // Roteamento para sempre servir o index.html para qualquer requisição
