@@ -10,16 +10,15 @@ export function handleError(error, context = '')
 
 
     //Envia para API de logs em produção
-    fetch('/api/logs',{
+    fetch('/api/log-error',{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            message: error.message,
-            stack: error.stack,
+            message: error.message || 'Unknown error',
+            stack: error.stack || '',
             context: context,
-            time: new Date().toISOString(),
         }),
     }).catch(err => {
         if (import.meta.env.DEV)
