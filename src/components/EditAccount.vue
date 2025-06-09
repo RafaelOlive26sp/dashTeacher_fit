@@ -29,23 +29,23 @@ const emit = defineEmits(['update:dialogVisible']);
 
 // const dialogVisible = ref("");
 
-const closeDialog = () => {
-  emit('update:dialogVisible', false);
+// const closeDialog = () => {
+//   emit('update:dialogVisible', false);
 
-}
+// }
 
-const saveDialog = () => {
-  // console.log('Save dialog', editAccount.value);
-  let data = {
-    name: editAccount.value.name,
-    height: editAccount.value.height,
-    weight: editAccount.value.weight,
-    medical_condition: editAccount.value.medical_condition,
-  }
-  console.log('Data', data);
+// const saveDialog = () => {
+//   // console.log('Save dialog', editAccount.value);
+//   let data = {
+//     name: editAccount.value.name,
+//     height: editAccount.value.height,
+//     weight: editAccount.value.weight,
+//     medical_condition: editAccount.value.medical_condition,
+//   }
+//   console.log('Data', data);
 
-  emit('update:dialogVisible', false);
-}
+//   emit('update:dialogVisible', false);
+// }
 
 
 

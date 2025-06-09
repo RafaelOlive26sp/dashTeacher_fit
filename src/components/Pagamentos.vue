@@ -85,6 +85,7 @@
 import { useUserStore } from '@/stores/user';
 import {getPayments as getPaymentApi} from '@/services/user.js'
 import {  onMounted, computed } from 'vue'
+import { handleError } from '@/utils/ErrorHandle';
 
 const userStore = useUserStore();
 
@@ -102,7 +103,7 @@ const fethPayment = async()=>{
     userStore.getPayment(response)
     // console.log(response)
   } catch (error) {
-    console.error(error)
+    handleError(error)
   }
 }
 

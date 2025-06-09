@@ -84,7 +84,7 @@ const submitForm = async () => {
   try {
     // console.log('NewClass enviando para services ',newClass.value);
     const response = await createdScheduleInClassApi(newClass.value);
-    console.log('resposta da api dentro da view ', response);
+    // console.log('resposta da api dentro da view ', response);
     snackbarMessage.value = response.message
     snackbar.value = true
     loading.value = true

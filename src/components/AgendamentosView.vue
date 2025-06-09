@@ -130,6 +130,7 @@ import { format } from 'date-fns';
 import Dialogs from "@/components/Dialogs.vue";
 import ResumoAgendamentoView from "@/components/ResumoAgendamentoView.vue";
 import TutorialView from "@/components/tutorial/TutorialView.vue";
+import {handleError} from '@/utils/ErrorHandle.js'
 
 
 const userStore = useUserStore();
@@ -204,7 +205,7 @@ const loadDataClasses = async () => {
     classSchedules.value = response.data
 
   } catch (error) {
-    console.log(error);
+    handleError(error, 'Erro ao carregar turmas');
 
   }
 }
@@ -215,7 +216,7 @@ const getStudents = async () => {
     userStore.getStudentsWithUser(response);
     users.value = response.data;
   } catch (error) {
-    console.error("Error fetching students:", error);
+    handleError("Error fetching students:", error);
   }
 };
 
